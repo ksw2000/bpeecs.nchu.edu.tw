@@ -1,0 +1,247 @@
+<style>
+#newArticleArea #title{
+    border-width: 0px 0px 2px 0px;
+    border-radius: 0px;
+    background-color: transparent;
+    height: 50px;
+    font-size: 25px;
+    line-height: 50px;
+    margin-top: 0px;
+    max-width: 1200px!important;
+    padding: 0px 10px;
+    width: 100%;
+}
+
+#newArticleArea #title:focus{
+    outline: none;
+    border-width: 0px 0px 2px 0px;
+    border-color: rgb(7, 126, 224);
+    transition-duration: 1s;
+    transition-property: color;
+    transition-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+
+.buttonarea button{
+    display: inline-block;
+    margin: 3px 5px;
+}
+</style>
+
+<h1>Manage</h1>
+
+<div class="buttonarea">
+    <button onclick="javascript:newArticle()" id="btn-add">Add</button>
+    <button onclick="javascript:goToAll()" id="btn-all">All</button>
+    <button onclick="javascript:goToDraft()" id="btn-draft">Draft</button>
+    <button onclick="javascript:goToPublished()" id="btn-published">Published</button>
+</div>
+
+<div class="article" id="newArticleArea" style="display:none">
+    <div class="title"><input id="title" placeholder="Title" autocomplete="off"/></div>
+    <div class="content">
+        <textarea id="main-md-editor"></textarea>
+    </div>
+    <div class="buttonarea" style="text-align: right;">
+        <button id="attachment" onclick="javascript:attach()">Attachment</button>
+        <button id="save" onclick="javascript:save()">Save (Draft)</button>
+        <button id="publish" onclick="javascript:publish()" class="blue">Publish</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+function newArticle(){
+    if($("#newArticleArea").css("display")==="none"){
+        if(window.serial === undefined){
+            $.post('/function/add_news',{}
+            ,function(data){
+                console.log(data)
+                if(data['err']){
+                    if(data['code'] === 1){
+                        window.location = "/?notlogin"
+                    }
+                    notice(data['msg'])
+                }else{
+                    window.serial = Number(data['msg'])
+                    toggleNewArticleArea();
+                }
+            },'json');
+        }else{
+            toggleNewArticleArea();
+        }
+    }else{
+        toggleNewArticleArea();
+    }
+}
+
+function toggleNewArticleArea(){
+    if($("#newArticleArea").css("display")==="none"){
+        $("#newArticleArea").slideDown('fast');
+        $("#btn-add").text('Close Editor');
+    }else{
+        $("#newArticleArea").slideUp('fast');
+        $("#btn-add").text('Add');
+    }
+}
+
+var editor = new SimpleMDE({
+    placeholder: "Type here...",
+    element: document.getElementById("main-md-editor"),
+    spellChecker: false
+});
+
+/*
+editor.prototype.toggleSideBySide = function(){
+    console.log("不支援");
+    return;
+}
+*/
+
+function attach(){
+    notice("creating");
+}
+
+function save(){
+    $.post('/function/save_news',{
+        serial: window.serial,
+        title: $("#newArticleArea #title").val(),
+        content: editor.value()
+    },function(data){
+        console.log(data)
+        if(data['err']){
+            if(data['code'] === 1){
+                window.location = "/?notlogin"
+            }
+            notice(data['msg'])
+        }else{
+            // clear editor
+            editor.value("");
+            // close editor
+            toggleNewArticleArea();
+            // refresh
+            notice("Done!");
+            // goto draft
+            goToDraft();
+        }
+    },'json');
+}
+
+function publish(){
+    $.post('/function/publish_news',{
+        serial: window.serial,
+        title: $("#newArticleArea #title").val(),
+        content: editor.value()
+    }
+    ,function(data){
+        console.log(data)
+        if(data['err']){
+            if(data['code'] === 1){
+                window.location = "/?notlogin"
+            }
+            notice(data['msg'])
+        }else{
+            // clear editor
+            editor.value("");
+            // close editor
+            toggleNewArticleArea();
+            // refresh
+            notice("Done!")
+            loadAllNews();
+        }
+    },'json');
+}
+
+function delete_news(obj, num){
+    obj = $(obj);
+    obj.fadeOut('fast', ()=>{
+        obj.text("SURE ?");
+        obj.attr('onclick', 'javascript:real_delete_news('+num+')');
+        obj.fadeIn('slow', ()=>{
+            setTimeout(()=>{
+                obj.fadeOut('fast',()=>{
+                    obj.text("Delete");
+                    obj.attr('onclick', 'javascript:delete_news(this, '+num+')');
+                    obj.fadeIn('slow');
+                });
+            }, 3000);
+        }, )
+    });
+}
+
+function real_delete_news(num){
+    $.ajax({
+        url: '/function/del_news',
+        data: {
+            'serial' : num
+        },
+        type: 'POST',
+        success: function(data){
+            // close news area
+            $('.article[data-id="' + num + '"]').slideUp('slow');
+            notice('Deleted!');
+        },
+        error: function(err) {
+            console.log(err);
+            notice('Error' + err.status);
+        },
+        dataType: 'json'
+    });
+}
+
+function edit_news(){
+
+}
+
+function loadNext(obj){
+    window.lnfw.next().then((data) => {
+        $("#article-parent").append(data);
+        obj.remove();
+    }).catch((reason) => {
+        console.log(reason);
+        notice("Error " + reason.status);
+    })
+}
+
+function reload_news(type){
+    $("#article-parent").animate({width: 'toggle'});
+    // Reload news
+    let lnfw = new loadNewsForWhat('management', type, 0, 5);
+    lnfw.load().then((data) => {
+        $("#article-parent").html(data);
+    }).catch((reason) => {
+        console.log(reason);
+        $("#article-parent").html("Error " + reason.status);
+    });
+
+    window.lnfw = lnfw;
+    $("#article-parent").animate({width: 'toggle'});
+}
+
+function resetBtnColor(id){
+    $('#btn-all').removeClass('blue-green');
+    $('#btn-draft').removeClass('blue-green');
+    $('#btn-published').removeClass('blue-green');
+    $('#btn-'+id).addClass('blue-green');
+}
+
+function goToAll(){
+    resetBtnColor('all');
+    reload_news('all');
+}
+
+function goToDraft(){
+    resetBtnColor('draft');
+    reload_news('draft');
+}
+
+function goToPublished(){
+    resetBtnColor('published');
+    reload_news('public');
+}
+
+goToAll();
+
+</script>
+
+<div id="article-parent">
+    Loading...
+</div>

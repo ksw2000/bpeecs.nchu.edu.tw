@@ -1,0 +1,42 @@
+<h1 id="title">最新消息</h1>
+
+<script>
+    let getParam = new URL(window.location.href).searchParams;
+    if(getParam.has('id')){
+        loadPublicNewsById(getParam.get('id')).then((json_data) => {
+            /*
+                json_data.text : html data
+                json_data.json : original data from db (but some data are modified)
+            */
+            console.log(json_data);
+            $("#article-parent").html(json_data.text);
+            $("h1#title").text(json_data.json.Title);
+        }).catch((reason) => {
+            console.log(reason);
+            $("#article-parent").html(reason.status + " error");
+        });
+    }else{
+        let lnfw = new loadNewsForWhat('brief', 'public', 0, 19);
+        lnfw.load().then((html_data) => {
+            $("#article-parent").html(html_data);
+        }).catch((reason) => {
+            console.log(reason);
+            $("#article-parent").html("Error " + reason.status);
+        });
+        window.lnfw = lnfw;
+    }
+
+    function loadNext(obj){
+        window.lnfw.next().then((data) => {
+            $("#article-parent").append(data);
+            obj.remove();
+        }).catch((reason) => {
+            console.log(reason);
+            notice("Error " + reason.status);
+        })
+    }
+</script>
+
+<div id="article-parent">
+Loading...
+</div>

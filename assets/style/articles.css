@@ -1,0 +1,50 @@
+.article{
+    border-left: 3px solid rgb(58, 112, 135);
+    box-sizing: border-box;
+    padding: 10px 10px;
+    margin: 0px auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.article .title{
+    margin: 0px;
+}
+
+.article:hover{
+    border-color: rgb(0, 178, 255);
+    transition-duration: 1000ms;
+    transition-property: border-color;
+}
+
+.article .header{
+    margin: 10px 0px rgb(0, 178, 255);
+    color: rgb(129, 129, 129);
+}
+.article .header p{
+    margin: 3px 5px 3px 0px;
+    display: inline-block;
+}
+
+.article .content{
+    font-size: inherit;
+    line-height: 30px;
+}
+
+.article h1{
+    font-size: 28px!important;
+    color: rgb(39, 129, 189)!important;
+    border-bottom: 0px!important;
+}
+
+.article .draftIcon{
+    background-color: rgb(254, 108, 108);
+    border-radius: 3px;
+    color: #fff;
+    display: inline-block;
+    font-size: 0.8em;
+    height: fit-content;
+    margin-right: 5px;
+    padding: 3px 10px;
+    vertical-align: text-bottom;
+}

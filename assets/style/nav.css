@@ -1,0 +1,190 @@
+/*-----------------------------------------------nav------------------------------------------------*/
+/*
+    PC: >900px
+    _____________________________________________
+    |                                           |
+    |                                           |
+    |<---------------- 1200 px ---------------->|
+    |                                           |
+    |                                           |
+    |                                           |
+    |                                           |
+
+    Medium: 450~900px
+    __________________________________
+    |                                |
+    |                                |
+    |<----------- 900 px ----------->|
+    |                                |
+    |                                |
+    |                                |
+    |                                |
+
+    Mobile: <450px
+    __________________
+    |                |
+    |<--- 450 px --->|
+    |                |
+    |                |
+    |                |
+    |                |
+    |                |
+*/
+nav{
+    background-color: rgba(255, 255, 255, .95);
+    height: 80px;
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    z-index: 10;
+}
+
+nav #logo{
+    box-sizing: border-box;
+    display: inline-block;
+    height: 80px;
+    padding: 10px 0px 10px 10px;
+    z-index: 11;
+}
+
+nav #logo img{
+    height: 100%;
+    z-index: 12;
+}
+
+nav #fix-1200{
+    margin: 0px auto;
+    max-width: 1200px;
+    padding-top: 5px;
+    width: 100%;
+    z-index: 11;
+}
+
+nav #button-over-900px, nav #button-less-900px{
+    box-sizing: border-box;
+    float: right;
+    height: 80px;
+    padding: 20px 10px 20px 0px;
+    z-index: 12;
+}
+
+nav #button-over-900px > a{
+    text-decoration: none;
+    border: 2px solid #4e4e4e;
+    border-radius: 5px;
+    color: #4e4e4e;
+    display: inline-block;
+    font-size: 15px;
+    height: 30px;
+    line-height: 30px;
+    margin: 0px 5px;
+    vertical-align: middle;
+    padding: 0px 10px;
+    width: auto;
+    z-index: 13;
+}
+
+nav #button-less-900px{
+    display: none;
+}
+
+nav #button-less-900px > a{
+    border: 2px solid transparent;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+    height: 30px;
+    margin: 0px 5px;
+    padding: 5px 5px;
+    vertical-align: middle;
+    width: auto;
+    z-index: 13;
+}
+
+nav #button-less-900px a img{
+    height: 100%;
+}
+
+nav #button-less-900px > a:hover{
+    border-color: #4e4e4e;
+    transition: border-color 500ms;
+}
+
+nav #button-over-900px > a:hover{
+    background-color: #4e4e4e;
+    color: #fff;
+    transition: background-color 500ms, color 500ms;
+}
+
+@media screen and (min-width: 450px) and (max-width:  900px){
+
+}
+
+@media screen and (max-width:  900px){
+    nav #button-over-900px{
+        display: none;
+        height: auto;
+        margin: 0px;
+        padding: 0px;
+        position: fixed;
+        top: 80px;
+        width: 100%;
+    }
+
+    nav #button-over-900px a{
+        background-color: rgba(255, 255, 255, .95);
+        border: 0px;
+        border-radius: 0px;
+        display: block;
+        height: 50px;
+        margin: 0px;
+        padding: 10px 0px 10px 20px;
+        width: 100%;
+    }
+
+    nav #button-less-900px{
+        display: block;
+    }
+}
+
+@media screen and (max-width:  450px){
+    body{
+        padding-top: 50px
+    }
+
+    nav{
+        height: 50px;
+    }
+
+    nav #fix-1200{
+        height: 50px;
+    }
+
+    nav #logo{
+        box-sizing: border-box;
+        margin: 0px auto;
+        height: 50px;
+        /*padding: 0px;*/
+        /*width: 100%;*/
+    }
+
+    nav #logo img{
+        box-sizing: border-box;
+        height: auto;
+        margin: 0px auto;
+        /*width: 100%;*/
+    }
+
+    nav #button-over-900px{
+        top: 50px;
+    }
+    nav #button-less-900px{
+        height: 40px;
+        margin-right: 10px;
+        padding: 0px;
+    }
+
+    nav #button-less-900px a{
+        padding: 2px;
+    }
+}

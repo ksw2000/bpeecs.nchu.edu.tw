@@ -1,0 +1,72 @@
+#main-for-index{
+    box-sizing: border-box;
+    margin: 0px auto;
+    max-width: 1200px;
+    padding: 10px;
+    width: 100%;
+}
+
+#main-for-index table{
+    margin: 0px auto;
+    margin-top: 15px;
+    max-width: 1200px;
+    width: 100%;
+}
+
+#main-for-index table td{
+    display: #main-for-index table-cell;
+    padding: 20px 15px;
+    width: 50%;
+}
+
+#main-for-index table td img{
+    max-width: 250px;
+    width: 100%;
+}
+
+#main-for-index table td p, li{
+    box-sizing: border-box;
+    color: #7F7F7F;
+    font-size: 16px;
+    line-height: 40px;
+    margin: 0px auto;
+    padding: 0px 10px;
+    text-align: justify;
+    width: 100%;
+}
+
+#main-for-index table td p::before{
+    content:"　　";
+}
+
+#main-for-index table td p a{
+    color: #039191;
+}
+
+#main-for-index table td p a:hover{
+    color: #7F7F7F;
+}
+
+@media screen and (max-width: 800px){
+    #main-for-index table tr{
+        display: block;
+        width: 100%;
+    }
+
+    #main-for-index table td{
+        box-sizing: border-box;
+        width: 100%;
+        display: block;
+        margin: 0px;
+        padding: 0px 10px;
+    }
+
+    #main-for-index table td: last-child{
+        margin-bottom: 15px;
+    }
+
+    #main-for-index table td p{
+        font-size: 17px;
+        line-height: 30px;
+    }
+}

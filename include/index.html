@@ -1,0 +1,61 @@
+<style>
+.article{
+    display: flex;
+    border-left: 0px;
+    border-bottom: 1px solid rgb(157, 157, 157);
+    flex-direction: row;
+    padding-top: 0px;
+}
+
+.article .header{
+    align-self: center;
+    background-color: rgb(8, 167, 226);
+    border-radius: 3px;
+    color: #fff;
+    display: inline-flex;
+    height: fit-content;
+    flex-shrink: 0;
+    font-size: inherit;
+    margin-right: 5px;
+    padding: 5px 10px;
+}
+
+.article .title{
+    display: inline-flex;
+    font-size: inherit;
+    padding: 0px;
+}
+
+.article:hover>.title{
+    color: rgb(23, 145, 227);
+    transition: color 500ms;
+}
+</style>
+
+<script>
+loadNewsOnlyTitle('public').then((data) => {
+    $("#article-parent").html(data);
+}).catch((reason) => {
+    console.log(reason);
+    $("#article-parent").html(reason.status + " error");
+});
+</script>
+
+<table>
+    <tr>
+        <td style="vertical-align: top;">
+            <h2>最新消息</h2>
+            <div id="article-parent">Loading...</div>
+        </td>
+        <td><p>本學士班之宗旨為整合電機、資訊、通訊、網路等領域，培育具備理論基礎、實際操作、自我挑戰、終身學習能力及跨領育能力之全方位人才，本班學生採院進院出，不分科系，自109年度起正式招生</p>
+            <p>本學士班教學將以智慧系統的設計與研發為主軸，規劃智慧物聯網(AloT)專長領域。課程規劃劃分為三層架構，前後連貫、循序漸進，三層架分別為：</p>
+                <ol>
+                    <li>電機資訊共同必修</li>
+                    <li>專業核心必選修</li>
+                    <li>跨領域選修</li>
+                </ol>
+        </td>
+    </tr>
+</table>
+
+<h1>特色</h1>

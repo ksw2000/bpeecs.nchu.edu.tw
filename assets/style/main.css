@@ -1,0 +1,171 @@
+/*
+    Hadname Online Techonology
+
+    RWD support
+
+    PC:
+    _____________________________________________
+    |                                           |
+    |                                           |
+    |<---------------- 1200 px ---------------->|
+    |                                           |
+    |                                           |
+    |                                           |
+    |                                           |
+
+    Mobile: 450px
+    __________________
+    |                |
+    |<--- 450 px --->|
+    |                |
+    |                |
+    |                |
+    |                |
+    |                |
+*/
+
+@font-face{
+    font-family: 'NotoSans';
+    font-style: normal;
+    font-weight: normal;
+    src: url('/font/NotoSans-Regular.otf');
+}
+
+*{
+    font-family: 'NotoSans', 'Open Sans' ,sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+body{
+    background-color: rgb(240, 240, 240);
+    box-sizing: border-box;
+    padding: 0px;
+    padding-top: 80px;
+    margin: 0px;
+    color: #5a5a5a;
+}
+
+.err{
+    color: rgb(255, 78, 78);
+    font-size: 1.2em;
+}
+
+#notice{
+    background-color: #000;
+    border: 1px #fff solid;
+    border-radius: 5px;
+    bottom: 10px;
+    color: #fff;
+    display: none;
+    font: 15px;
+    left: 10px;
+    line-height: 30px;
+    padding: 5px 10px;
+    position: fixed;
+    width: auto;
+    z-index: 13;
+}
+
+/*----------------------------------------------banner----------------------------------------------*/
+#banner{
+    background-color: green;
+    height: 450px;
+    margin: 0px auto;
+    max-width: 1200px;
+    width: 100%;
+}
+
+/*-----------------------------------------------main-----------------------------------------------*/
+#main{
+    box-sizing: border-box;
+    margin: 0px auto;
+    max-width: 1200px;
+    padding: 10px;
+    width: 100%;
+}
+
+h1{
+    font-size: 30px;
+    color: rgb(39, 129, 189);
+    border-bottom: 1px solid rgb(39, 129, 189);
+}
+
+h2{
+    font-size: 23px;
+    color: rgb(11, 71, 111);
+}
+
+h3{
+    font-size: 20px;
+    color: rgb(93, 99, 125);
+}
+
+#main a{
+    text-decoration: none;
+    color: rgb(24, 113, 196);
+}
+
+#main a:hover{
+    color: rgb(36, 193, 193);
+    transition: color 500ms;
+}
+
+/*----------------------------------------------footer----------------------------------------------*/
+footer{
+    background-color: rgb(65, 65, 65);
+    color: #fff;
+    display: block;
+    margin: 0px auto;
+    margin-top: 15px;
+    padding: 25px 0px 15px 0px;
+    text-align: center;
+}
+
+footer a{
+    line-height: 40px;
+    text-decoration: none;
+    color: rgb(64, 220, 255);
+}
+
+footer a:hover{
+    color: rgb(176, 223, 246);
+    transition-duration: 500ms;
+    transition-property: color;
+}
+
+footer li{
+    color: inherit;
+    display: block;
+    font-size: 15px;
+    line-height: 20px;
+    list-style-type: none;
+    margin: 0px;
+    text-align: left;
+    padding: 3px 0px;
+}
+
+footer table{
+    margin: 0px auto;
+    max-width: 900px;
+    width: 100%;
+}
+
+footer table td{
+    display: table-cell;
+    padding: 20px 15px;
+    text-align: left;
+    vertical-align: super;
+    width: 50%;
+}
+
+footer table td img{
+    max-width: 250px;
+    width: 100%;
+}
+
+@media screen and (max-width:  450px){
+    footer li, footer p{
+        font-size: 13px;
+    }
+}
