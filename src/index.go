@@ -97,7 +97,7 @@ func basicWeb(w http.ResponseWriter, r *http.Request){
         }
     case "/about":
         data = PageData{
-            Title : "本系簡介",
+            Title : "關於本系",
         }
     case "/course":
         data = PageData{
