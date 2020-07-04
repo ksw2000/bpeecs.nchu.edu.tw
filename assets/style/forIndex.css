@@ -70,3 +70,65 @@
         line-height: 30px;
     }
 }
+
+/*----------------------------------------------banner----------------------------------------------*/
+#banner{
+    background-attachment: fixed;
+    background-image: linear-gradient(120deg, #155799, #159957);
+    background-position: center top;
+    box-sizing: border-box;
+    flex-direction: row;
+    height: auto;
+    margin: 0px auto;
+    padding: 100px 0px;
+    width: 100%;
+}
+
+#banner h1{
+    margin: 0px auto;
+    text-align: center;
+    color: #fff;
+    border: 0px;
+    font-size: 33px;
+}
+
+#banner h2{
+    margin: 0px auto;
+    text-align: center;
+    color: #d6d3d3;
+    border: 0px;
+    font-szie: 18px;
+}
+
+#banner #flex-parent{
+    align-items: stretch;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    max-width: 900px;
+    margin: 0px auto;
+    margin-top: 50px;
+    text-align: center;
+    width: 100%;
+}
+
+#banner #flex-parent .flex{
+    border: 1px #fff solid;
+    border-radius: 10px;
+    display: inline-flex;
+    flex-basis: 20%;
+    padding: 20px;
+    text-align: center;
+    width: auto;
+}
+
+#banner #flex-parent p{
+    color: #fff;
+    display: block;
+    line-height: 30px;
+    font-size: 16px;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    text-align: center;
+}
