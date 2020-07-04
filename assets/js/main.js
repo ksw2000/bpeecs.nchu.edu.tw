@@ -17,6 +17,15 @@ function stripHtml(html){
    return tmp.textContent || tmp.innerText || "";
 }
 
+function hash(str){
+    let h = 0;
+    for(let i = 0; i < str.length; i++) {
+        h  = ((h << 5) - h) + str.charCodeAt(i);
+        h |= 0;
+    }
+    return h;
+}
+
 function loadNews(type, from, to){
     if(from === undefined){
         from = '';
@@ -117,12 +126,12 @@ function loadNewsForWhat(what, type, from, to){
                      style="${draftColor}">
                     <h2 class="title">${draftIcon}${data[i].Title}</h2>
                     <div class="header">
-                        <p>創立時間：${data[i].Create_time}</p>
-                        <p>修改時間：${data[i].Last_modified}</p>
+                        <p>Create at：${data[i].Create_time}</p>
+                        <p>Last modified：${data[i].Last_modified}</p>
                 `
                 if(!isDraft){
                     ret+=`
-                            <p>發佈時間：${data[i].Publish_time}</p>
+                            <p>First publish：${data[i].Publish_time}</p>
                     `
                 }
 
@@ -131,7 +140,7 @@ function loadNewsForWhat(what, type, from, to){
                     <div class="content">
                         ${newContent}
                     </div>
-                    <div class="buttonarea" style="text-align: right;">
+                    <div class="buttonArea" style="text-align: right;">
                         <button id="attachment" onclick="javascript:delete_news(this, ${data[i].Id})" class="red">Delete</button>
                         <button id="publish" onclick="javascript:edit_news(${data[i].Id})" class="blue">Edit</button>
                         <button id="attachment" onclick="window.location='/news?id=${data[i].Id}'">Read</button>
@@ -164,8 +173,9 @@ function loadNewsForWhat(what, type, from, to){
                         ${newContent}
                     </div>
                     <p></p>
-                    <div class="buttonarea" style="text-align: right;">
-                        <button id="attachment" onclick="window.location='/news?id=${data[i].Id}'">閱讀全文</button>
+                    <div class="buttonArea" style="text-align: right;">
+                        <button id="attachment" onclick="window.location='/news?id=${data[i].Id}'"
+                                style="display: inline-block;">閱讀全文</button>
                     </div>
                 </div>
                 `;

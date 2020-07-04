@@ -1,5 +1,9 @@
 <style>
-#newArticleArea #title{
+#new-article-area{
+    display: none;
+}
+
+.editor-area #title{
     border-width: 0px 0px 2px 0px;
     border-radius: 0px;
     background-color: transparent;
@@ -12,7 +16,7 @@
     width: 100%;
 }
 
-#newArticleArea #title:focus{
+.editor-area #title:focus{
     outline: none;
     border-width: 0px 0px 2px 0px;
     border-color: rgb(7, 126, 224);
@@ -21,7 +25,7 @@
     transition-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
 }
 
-.buttonarea button{
+.buttonArea button{
     display: inline-block;
     margin: 3px 5px;
 }
@@ -29,28 +33,70 @@
 
 <h1>Manage</h1>
 
-<div class="buttonarea">
+<div class="buttonArea">
     <button onclick="javascript:newArticle()" id="btn-add">Add</button>
     <button onclick="javascript:goToAll()" id="btn-all">All</button>
     <button onclick="javascript:goToDraft()" id="btn-draft">Draft</button>
     <button onclick="javascript:goToPublished()" id="btn-published">Published</button>
 </div>
 
-<div class="article" id="newArticleArea" style="display:none">
-    <div class="title"><input id="title" placeholder="Title" autocomplete="off"/></div>
-    <div class="content">
-        <textarea id="main-md-editor"></textarea>
+<srcion id="top-editor-area">
+    <div class="article editor-area" id="new-article-area">
+        <div class="title"><input id="title" placeholder="Title" autocomplete="off"/></div>
+        <div class="content">
+            <textarea></textarea>
+        </div>
+        <!--
+            注意：
+            根據消息狀態不同應載入不同按鈕
+            比如尚在草稿的文章
+            - Attachment
+            - Save
+            - Publish
+
+            但已經發佈的文章
+            - Attachment
+            - Save
+            - Delete
+        -->
+        <div class="buttonArea" style="text-align: right;"></div>
     </div>
-    <div class="buttonarea" style="text-align: right;">
-        <button id="attachment" onclick="javascript:attach()">Attachment</button>
-        <button id="save" onclick="javascript:save()">Save (Draft)</button>
-        <button id="publish" onclick="javascript:publish()" class="blue">Publish</button>
-    </div>
-</div>
+</section>
 
 <script type="text/javascript">
+window.hashEditContent = 0;
+window.directlyLeave = false;
+window.onbeforeunload = function(){
+    if(!leave_editing()){
+        return 'Changes you made may not be saved.';
+    }
+    return;
+};
+
+function leave_editing(){
+    if(window.directlyLeave === true) return true;
+    let now_content = $("#new-article-area #title").val() + editor.value();
+    if(hash(now_content) != window.hashEditContent){
+        return confirm('Changes you made may not be saved.');
+    }
+    // default is 'leave'
+    return true;
+}
+
+const btnAreaForDraft = `
+<button id="attachment" onclick="javascript:attach()">Attachment</button>
+<button id="save" onclick="javascript:save()">Save (Draft)</button>
+<button id="publish" onclick="javascript:publish()" class="blue">Publish</button>
+`;
+
+const btnAreaForPublished = `
+<button id="attachment" onclick="javascript:attach()">Attachment</button>
+<button id="save" onclick="javascript:save()" class="blue">Republish</button>
+<button id="publish" onclick="javascript:delete_news(this)" class="red">Delete</button>
+`
+
 function newArticle(){
-    if($("#newArticleArea").css("display")==="none"){
+    if($("#new-article-area").css("display") === "none"){
         if(window.serial === undefined){
             $.post('/function/add_news',{}
             ,function(data){
@@ -61,31 +107,40 @@ function newArticle(){
                     }
                     notice(data['msg'])
                 }else{
-                    window.serial = Number(data['msg'])
-                    toggleNewArticleArea();
+                    $("#new-article-area .buttonArea").html(btnAreaForDraft);
+                    window.serial = Number(data['msg']);
+                    openNewArticleArea();
                 }
             },'json');
         }else{
-            toggleNewArticleArea();
+            openNewArticleArea();
         }
     }else{
-        toggleNewArticleArea();
+        closeNewArticleArea();
     }
 }
 
-function toggleNewArticleArea(){
-    if($("#newArticleArea").css("display")==="none"){
-        $("#newArticleArea").slideDown('fast');
-        $("#btn-add").text('Close Editor');
-    }else{
-        $("#newArticleArea").slideUp('fast');
-        $("#btn-add").text('Add');
-    }
+function openNewArticleArea(callback){
+    $("#new-article-area").slideDown('fast', () => {
+        if(typeof callback === 'function'){
+            callback();
+        }
+    });
+    $("#btn-add").text('Close');
+}
+
+function closeNewArticleArea(callback){
+    $("#new-article-area").slideUp('fast', ()=>{
+        if(typeof callback === 'function'){
+            callback();
+        }
+    });
+    $("#btn-add").text('Continue');
 }
 
 var editor = new SimpleMDE({
     placeholder: "Type here...",
-    element: document.getElementById("main-md-editor"),
+    element: $("#new-article-area textarea")[0],
     spellChecker: false
 });
 
@@ -103,7 +158,7 @@ function attach(){
 function save(){
     $.post('/function/save_news',{
         serial: window.serial,
-        title: $("#newArticleArea #title").val(),
+        title: $("#new-article-area #title").val(),
         content: editor.value()
     },function(data){
         console.log(data)
@@ -113,12 +168,10 @@ function save(){
             }
             notice(data['msg'])
         }else{
-            // clear editor
-            editor.value("");
-            // close editor
-            toggleNewArticleArea();
+            // update editor hash
+            window.hashEditContent = hash($("#new-article-area #title").val() + editor.value());
             // refresh
-            notice("Done!");
+            notice("Saved!");
             // goto draft
             goToDraft();
         }
@@ -128,7 +181,7 @@ function save(){
 function publish(){
     $.post('/function/publish_news',{
         serial: window.serial,
-        title: $("#newArticleArea #title").val(),
+        title: $("#new-article-area #title").val(),
         content: editor.value()
     }
     ,function(data){
@@ -139,18 +192,18 @@ function publish(){
             }
             notice(data['msg'])
         }else{
-            // clear editor
-            editor.value("");
-            // close editor
-            toggleNewArticleArea();
+            // too complex to deal with
             // refresh
-            notice("Done!")
-            loadAllNews();
+            window.directlyLeave = true;
+            location.reload();
         }
     },'json');
 }
 
 function delete_news(obj, num){
+    if(num === undefined){
+        num = window.serial;
+    }
     obj = $(obj);
     obj.fadeOut('fast', ()=>{
         obj.text("SURE ?");
@@ -167,17 +220,34 @@ function delete_news(obj, num){
     });
 }
 
-function real_delete_news(num){
+function real_delete_news(data_id){
+    /*
+        If user delete the news which is editing
+        Refresh website instead of .slideUp()
+    */
+
     $.ajax({
         url: '/function/del_news',
         data: {
-            'serial' : num
+            'serial' : data_id
         },
         type: 'POST',
         success: function(data){
-            // close news area
-            $('.article[data-id="' + num + '"]').slideUp('slow');
-            notice('Deleted!');
+            if(data['err']){
+                if(data['code'] === 1){
+                    window.location = '/?notlogin';
+                }
+                notice(data['msg']);
+            }else{
+                if(data_id === window.serial){
+                    window.directlyLeave = true;
+                    location.reload();
+                }else{
+                    $('.article[data-id="' + data_id + '"]').slideUp('slow');
+                    // close news area
+                    notice('Deleted!');
+                }
+            }
         },
         error: function(err) {
             console.log(err);
@@ -187,8 +257,64 @@ function real_delete_news(num){
     });
 }
 
-function edit_news(){
+function edit_news(data_id){
+    if(leave_editing()){
+        // 將原來收起來的區域展開
+        if($('.article[data-id="' + window.serial + '"]').length){
+            $('.article[data-id="' + window.serial + '"]').slideDown();
+        }
 
+        $.ajax({
+            url: '/function/get_news',
+            data: {
+                'id' : data_id
+            },
+            type: 'GET',
+            success: function(data){
+                console.log(data)
+                if(data['err']){
+                    if(data['code'] === 1){
+                        window.location = '/?notlogin';
+                    }
+                    notice(data['msg']);
+                }else{
+                    // closeNewArticleArea();
+                    // Step1: update value
+                    $("#new-article-area #title").val(data.Title);
+                    editor.value(data.Content);
+                    window.hashEditContent = hash(data.Title + data.Content);
+                    window.serial = data_id;
+
+                    // Step2: slideUp news area
+                    $('.article[data-id="' + data_id + '"]').slideUp('fast',()=>{
+                        // Step3: Move editor after news area
+                        $('#new-article-area').insertAfter($('.article[data-id="' + data_id + '"]'));
+
+                        // Step4: Rebuild buttonArea
+                        if(data.Publish_time === 0){
+                            $('#new-article-area .buttonArea').html(btnAreaForDraft);
+                        }else{
+                            $('#new-article-area .buttonArea').html(btnAreaForPublished);
+                        }
+
+                        // Step5: SlideDown editor and jump to there
+                        openNewArticleArea(function(){
+                            window.scrollTo({
+                                top : $("#new-article-area")[0].offsetTop - $("nav")[0].clientHeight,
+                                behavior: 'smooth'
+                            })
+                        });
+                    });
+                }
+            },
+            error: function(err) {
+                console.log(err);
+                notice('Error' + err.status);
+            },
+            dataType: 'json'
+        });
+    }
+    // DO NOTHING
 }
 
 function loadNext(obj){
@@ -202,7 +328,6 @@ function loadNext(obj){
 }
 
 function reload_news(type){
-    $("#article-parent").animate({width: 'toggle'});
     // Reload news
     let lnfw = new loadNewsForWhat('management', type, 0, 5);
     lnfw.load().then((data) => {
@@ -213,7 +338,6 @@ function reload_news(type){
     });
 
     window.lnfw = lnfw;
-    $("#article-parent").animate({width: 'toggle'});
 }
 
 function resetBtnColor(id){
