@@ -119,12 +119,13 @@ function loadNewsForWhat(what, type, from, to){
                     }
 
                 let draftIcon = (isDraft)? '<div class="draftIcon">draft</div>' : '';
-                let draftColor = (isDraft)? 'border-color:rgb(254, 108, 108);':'';
+                let draftColor = (isDraft)? 'border-color:#fe6c6c;' : 'border-color:#14a1ff;';
 
                 ret += `
                 <div class="article" data-id="${data[i].Id}"
                      style="${draftColor}">
-                    <h2 class="title">${draftIcon}${data[i].Title}</h2>
+                    <h2 class="title" style="cursor: pointer"
+                        onclick="window.location='/news?id=${data[i].Id}'">${draftIcon}${data[i].Title}</h2>
                     <div class="header">
                         <p>Create at：${data[i].Create_time}</p>
                         <p>Last modified：${data[i].Last_modified}</p>
@@ -137,13 +138,13 @@ function loadNewsForWhat(what, type, from, to){
 
                 ret+=`
                     </div>
-                    <div class="content">
+                    <div class="content" style="cursor: pointer"
+                         onclick="window.location='/news?id=${data[i].Id}'">
                         ${newContent}
                     </div>
                     <div class="buttonArea" style="text-align: right;">
                         <button id="attachment" onclick="javascript:delete_news(this, ${data[i].Id})" class="red">Delete</button>
                         <button id="publish" onclick="javascript:edit_news(${data[i].Id})" class="blue">Edit</button>
-                        <button id="attachment" onclick="window.location='/news?id=${data[i].Id}'">Read</button>
                     </div>
                 </div>
                 `;
