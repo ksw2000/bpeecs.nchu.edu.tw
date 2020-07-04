@@ -329,7 +329,7 @@ function loadNext(obj){
 
 function reload_news(type){
     // Reload news
-    let lnfw = new loadNewsForWhat('management', type, 0, 5);
+    let lnfw = new loadNewsForWhat('management', type, 0, 19);
     lnfw.load().then((data) => {
         $("#article-parent").html(data);
     }).catch((reason) => {
