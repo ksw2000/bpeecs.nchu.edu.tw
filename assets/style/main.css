@@ -28,11 +28,20 @@
     font-family: 'NotoSans';
     font-style: normal;
     font-weight: normal;
-    src: url('/font/NotoSans-Regular.otf');
+    src: local("NotoSans")，
+         url('/assets/fonts/NotoSans-Regular') format("woff"),
+}
+
+@font-face{
+    font-family: 'Noto Sans CJK TC';
+    font-style: normal;
+    font-weight: normal;
+    src: local("Noto Sans CJK TC")，
+         url('/assets/fonts/NotoSansTC-Regular') format("woff"),
 }
 
 *{
-    font-family: 'NotoSans', 'Open Sans' ,sans-serif;
+    font-family: 'NotoSans', 'Noto Sans CJK TC', '微軟正黑體', 'Open Sans' ,sans-serif;
     font-weight: 500;
     font-size: 16px;
 }
@@ -67,13 +76,13 @@ body{
     z-index: 13;
 }
 
-/*----------------------------------------------banner----------------------------------------------*/
-#banner{
-    background-color: green;
-    height: 450px;
+blockquote{
+    border-left: 3px solid #03e019;
+    box-sizing: border-box;
+    padding: 5px 10px;
     margin: 0px auto;
-    max-width: 1200px;
-    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 /*-----------------------------------------------main-----------------------------------------------*/
@@ -123,7 +132,6 @@ footer{
 }
 
 footer a{
-    line-height: 40px;
     text-decoration: none;
     color: rgb(64, 220, 255);
 }
