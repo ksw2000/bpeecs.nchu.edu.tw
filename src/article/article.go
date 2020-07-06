@@ -1,4 +1,4 @@
-package function
+package article
 import(
     "database/sql"
     "fmt"

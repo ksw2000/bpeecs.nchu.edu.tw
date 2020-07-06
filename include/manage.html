@@ -29,6 +29,23 @@
     display: inline-block;
     margin: 3px 5px;
 }
+
+#attachment{
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+}
+
+#attachment input{
+    border: 0px;
+    bottom: 0px;
+    cursor: pointer;
+    height: 100px;
+    margin: 0px;
+    position: absolute;
+    right: 0px;
+    width: 500px;
+}
 </style>
 
 <h1>Manage</h1>
@@ -40,7 +57,7 @@
     <button onclick="javascript:goToPublished()" id="btn-published">Published</button>
 </div>
 
-<srcion id="top-editor-area">
+<secion id="top-editor-area">
     <div class="article editor-area" id="new-article-area">
         <div class="title"><input id="title" placeholder="Title" autocomplete="off"/></div>
         <div class="content">
@@ -84,13 +101,17 @@ function leave_editing(){
 }
 
 const btnAreaForDraft = `
-<button id="attachment" onclick="javascript:attach()">Attachment</button>
+<button id="attachment" onchange="javascript:attach(event)">Attachment
+    <form enctype="multipart/form-data">
+        <input type="file" multiple/>
+    </form>
+</button>
 <button id="save" onclick="javascript:save()">Save (Draft)</button>
 <button id="publish" onclick="javascript:publish()" class="blue">Publish</button>
 `;
 
 const btnAreaForPublished = `
-<button id="attachment" onclick="javascript:attach()">Attachment</button>
+<button id="attachment" onchange="javascript:attach(event)">Attachment<input type="file" multiple/></button>
 <button id="save" onclick="javascript:save()" class="blue">Republish</button>
 <button id="publish" onclick="javascript:delete_news(this)" class="red">Delete</button>
 `
@@ -151,8 +172,35 @@ editor.prototype.toggleSideBySide = function(){
 }
 */
 
-function attach(){
-    notice("creating");
+function attach(e){
+    let form = new FormData();
+    for(let i=0; i<e.target.files.length; i++){
+        form.append("files", e.target.files[i]);
+    }
+
+    $.ajax({
+        url: '/function/upload',
+        processData: false,
+        contentType: false,
+        mimeType: 'multipart/form-data',
+        data: form,
+        type: 'POST',
+        success: function(data){
+            if(data['err']){
+                if(data['code'] === 1){
+                    window.location = '/?notlogin';
+                }
+                notice(data['msg']);
+            }else{
+                console.log(data);
+                console.log("成功");
+            }
+        },
+        beforeSend:function(){
+            notice("Uploading...");
+        },
+        dataType: 'json'
+    });
 }
 
 function save(){
