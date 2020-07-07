@@ -77,12 +77,26 @@ body{
 }
 
 blockquote{
-    border-left: 3px solid #03e019;
+    border-left: 3px solid #0391e0;
     box-sizing: border-box;
     padding: 5px 10px;
     margin: 0px auto;
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+.loader {
+  border: 16px solid #f3f3f3;
+  border-top: 16px solid #3498db;
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /*-----------------------------------------------main-----------------------------------------------*/
@@ -112,11 +126,11 @@ h3{
 
 #main a{
     text-decoration: none;
-    color: rgb(24, 113, 196);
+    color: rgb(20, 86, 173);
 }
 
 #main a:hover{
-    color: rgb(36, 193, 193);
+    color: rgb(32, 142, 149);
     transition: color 500ms;
 }
 
