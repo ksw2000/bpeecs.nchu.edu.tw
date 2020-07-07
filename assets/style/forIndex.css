@@ -26,7 +26,7 @@
 
 #main-for-index table td p, li{
     box-sizing: border-box;
-    color: #7F7F7F;
+    color: #3F3F6F;
     font-size: 16px;
     line-height: 40px;
     margin: 0px auto;
@@ -74,7 +74,7 @@
 /*----------------------------------------------banner----------------------------------------------*/
 #banner{
     background-attachment: fixed;
-    background-image: linear-gradient(120deg, #155799, #159957);
+    background-image: linear-gradient(108deg, #0088a7, #a92486);
     background-position: center top;
     box-sizing: border-box;
     flex-direction: row;
@@ -90,14 +90,18 @@
     color: #fff;
     border: 0px;
     font-size: 33px;
+    -webkit-filter: drop-shadow(8px 8px 5px #303050);
+    filter: drop-shadow(8px 8px 5px #303050);
 }
 
 #banner h2{
     margin: 0px auto;
     text-align: center;
-    color: #d6d3d3;
+    color: #d7d8e9;
     border: 0px;
     font-szie: 18px;
+    -webkit-filter: drop-shadow(8px 8px 5px #303050);
+    filter: drop-shadow(8px 8px 5px #303050);
 }
 
 #banner #flex-parent{
@@ -114,12 +118,14 @@
 
 #banner #flex-parent .flex{
     border: 1px #fff solid;
-    border-radius: 10px;
+    border-radius: 15px;
     display: inline-flex;
     flex-basis: 20%;
     padding: 20px;
     text-align: center;
     width: auto;
+    -webkit-filter: drop-shadow(8px 8px 5px #303050);
+    filter: drop-shadow(8px 8px 5px #303050);
 }
 
 #banner #flex-parent p{
@@ -131,4 +137,74 @@
     padding: 0px;
     width: 100%;
     text-align: center;
+}
+
+#banner #flex-parent img{
+    display: block;
+    width: 50%;
+    margin: 0px auto;
+    margin-bottom: 15px;
+}
+
+.banner-less-900px, .banner-less-450px{
+    display: none;
+}
+
+@media screen and (max-width: 900px){
+    #banner #flex-parent p{
+        font-size: 15px;
+    }
+
+    #banner h1{
+        font-size: 30px;
+    }
+
+    #banner h2{
+        font-size: 18px;
+    }
+
+    #banner #flex-parent .flex{
+        padding: 10px 5px;
+        flex-basis: 30%;
+    }
+
+    #banner #flex-parent img{
+        max-width: 90px;
+    }
+}
+
+@media screen and (max-width: 600px){
+    .banner-over-900px{
+        display: none;
+    }
+
+    .banner-less-900px{
+        display: block;
+    }
+
+    #banner{
+        padding: 50px 0px;
+    }
+
+    #banner #flex-parent{
+        margin-top: 20px;
+    }
+
+    #banner #flex-parent .flex{
+        border-width: 0px;
+    }
+
+    #banner #flex-parent img{
+        max-width: 50px;
+    }
+}
+
+@media screen and (max-width: 450px){
+    .banner-less-450px{
+        display: block;
+    }
+
+    #banner h2{
+        display: none;
+    }
 }
