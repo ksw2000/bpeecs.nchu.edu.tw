@@ -95,7 +95,7 @@
 </div>
 
 <script type="text/javascript">
-window.hashEditContent = 0;
+
 window.directlyLeave = false;
 window.onbeforeunload = function(){
     if(!leave_editing()){
@@ -104,10 +104,31 @@ window.onbeforeunload = function(){
     return;
 };
 
+var Editor = new (function(){
+    this.editor = new SimpleMDE({
+        placeholder: "Type here...",
+        element: $("#new-article-area textarea")[0],
+        spellChecker: false
+    });
+    this.serial = -1;
+
+    this.defaultAttahmentVal = () =>{
+        return {
+            client_name: [],
+            server_name: [],
+            path :[]
+        };
+    }
+    this.attachment = this.defaultAttahmentVal();
+
+    // this.hash is not zero because of attachment json string.
+    this.hash = hash(JSON.stringify(this.attachment));
+})();
+
 function leave_editing(){
     if(window.directlyLeave === true) return true;
-    let now_content = $("#new-article-area #title").val() + editor.value();
-    if(hash(now_content) != window.hashEditContent){
+    let now_content = $("#new-article-area #title").val() + Editor.editor.value() + JSON.stringify(Editor.attachment);
+    if(hash(now_content) != Editor.hash){
         return confirm('Changes you made may not be saved.');
     }
     // default is 'leave'
@@ -120,19 +141,19 @@ const btnAreaForDraft = `
         <input type="file" multiple/>
     </form>
 </button>
-<button id="save" onclick="javascript:save()">Save (Draft)</button>
+<button id="save" onclick="javascript:save(true)">Save (Draft)</button>
 <button id="publish" onclick="javascript:publish()" class="blue">Publish</button>
 `;
 
 const btnAreaForPublished = `
 <button id="attachment" onchange="javascript:attach(event)">Attachment<input type="file" multiple/></button>
-<button id="save" onclick="javascript:save()" class="blue">Republish</button>
+<button id="save" onclick="javascript:save(false)" class="blue">Republish</button>
 <button id="publish" onclick="javascript:delete_news(this)" class="red">Delete</button>
 `
 
 function newArticle(){
     if($("#new-article-area").css("display") === "none"){
-        if(window.serial === undefined){
+        if(Editor.serial === -1){
             $.post('/function/add_news',{}
             ,function(data){
                 console.log(data)
@@ -143,7 +164,7 @@ function newArticle(){
                     notice(data['msg'])
                 }else{
                     $("#new-article-area .buttonArea").html(btnAreaForDraft);
-                    window.serial = Number(data['msg']);
+                    Editor.serial = Number(data['msg']);
                     openNewArticleArea();
                 }
             },'json');
@@ -173,19 +194,6 @@ function closeNewArticleArea(callback){
     $("#btn-add").text('Continue');
 }
 
-var editor = new SimpleMDE({
-    placeholder: "Type here...",
-    element: $("#new-article-area textarea")[0],
-    spellChecker: false
-});
-
-/*
-editor.prototype.toggleSideBySide = function(){
-    console.log("不支援");
-    return;
-}
-*/
-
 function attach(e){
     let form = new FormData();
     console.log(e.target.files);
@@ -214,6 +222,10 @@ function attach(e){
                     console.log("成功");
 
                     for(let i=0; i<e.target.files.length; i++){
+                        Editor.attachment.client_name.push(e.target.files[i].name);
+                        Editor.attachment.server_name.push(data.Filename[i]);
+                        Editor.attachment.path.push(data.Filepath[i]);
+
                         $("#new-article-area #attachmentArea ul").append(
                             `<li>
                                 <a href="${data.Filepath[i]}">${e.target.files[i].name}</a>
@@ -221,24 +233,21 @@ function attach(e){
                             </li>`
                         );
                     }
-
+                    console.log(Editor);
                     $("#new-article-area #attachmentArea div.loader").css('display', 'none');
                 }
-            },
-            beforeSend: function(){
-
             },
             dataType: 'json'
         });
     }, 500);
-
 }
 
-function save(){
+function save(isGotoDraft){
     $.post('/function/save_news',{
-        serial: window.serial,
+        serial: Editor.serial,
         title: $("#new-article-area #title").val(),
-        content: editor.value()
+        content: Editor.editor.value(),
+        attachment: JSON.stringify(Editor.attachment)
     },function(data){
         console.log(data)
         if(data['err']){
@@ -248,20 +257,27 @@ function save(){
             notice(data['msg'])
         }else{
             // update editor hash
-            window.hashEditContent = hash($("#new-article-area #title").val() + editor.value());
+            Editor.hash = hash($("#new-article-area #title").val() + Editor.editor.value() + JSON.stringify(Editor.attachment));
             // refresh
             notice("Saved!");
-            // goto draft
-            goToDraft();
+            if(isGotoDraft){
+                // goto draft (for news which is private, i.e. not published)
+                goToDraft();
+            }else{
+                // goto news page (for news which have published already)
+                window.directlyLeave = true;
+                window.location = `/news?id=${Editor.serial}`;
+            }
         }
     },'json');
 }
 
 function publish(){
     $.post('/function/publish_news',{
-        serial: window.serial,
+        serial: Editor.serial,
         title: $("#new-article-area #title").val(),
-        content: editor.value()
+        content: Editor.editor.value(),
+        attachment: JSON.stringify(Editor.attachment)
     }
     ,function(data){
         console.log(data)
@@ -269,19 +285,18 @@ function publish(){
             if(data['code'] === 1){
                 window.location = "/?notlogin"
             }
-            notice(data['msg'])
+            notice(data['msg']);
         }else{
-            // too complex to deal with
-            // refresh
+            // directly go to news page
             window.directlyLeave = true;
-            location.reload();
+            window.location = `/news?id=${Editor.serial}`;
         }
     },'json');
 }
 
 function delete_news(obj, num){
     if(num === undefined){
-        num = window.serial;
+        num = Editor.serial;
     }
     obj = $(obj);
     obj.fadeOut('fast', ()=>{
@@ -318,7 +333,7 @@ function real_delete_news(data_id){
                 }
                 notice(data['msg']);
             }else{
-                if(data_id === window.serial){
+                if(data_id === Editor.serial){
                     window.directlyLeave = true;
                     location.reload();
                 }else{
@@ -339,8 +354,8 @@ function real_delete_news(data_id){
 function edit_news(data_id){
     if(leave_editing()){
         // 將原來收起來的區域展開
-        if($('.article[data-id="' + window.serial + '"]').length){
-            $('.article[data-id="' + window.serial + '"]').slideDown();
+        if($('.article[data-id="' + Editor.serial + '"]').length){
+            $('.article[data-id="' + Editor.serial + '"]').slideDown();
         }
 
         $.ajax({
@@ -358,11 +373,28 @@ function edit_news(data_id){
                     notice(data['msg']);
                 }else{
                     // closeNewArticleArea();
-                    // Step1: update value
+                    // Step1: update value (title, content, attachment)
                     $("#new-article-area #title").val(data.Title);
-                    editor.value(data.Content);
-                    window.hashEditContent = hash(data.Title + data.Content);
-                    window.serial = data_id;
+                    Editor.editor.value(data.Content);
+                    // Use default value (hash problem)
+                    Editor.attachment = Editor.defaultAttahmentVal();
+                    try{
+                        Editor.attachment = JSON.parse(data.Attachment);
+                        let parse = Editor.attachment;
+                        let len = parse.client_name.length;
+                        let attachment = "";
+                        for(let i=0; i<len; i++){
+                            attachment += `
+                                <li>
+                                    <a href="${parse.path[i]}">${parse.client_name[i]}</a>
+                                    <button class="red" onclick="delete_attachment('${parse.server_name[i]}')">delete</button>
+                                </li>
+                            `;
+                        }
+                        $("#new-article-area #attachmentArea ul").html(attachment);
+                    }catch(e){console.log(e)}
+                    Editor.hash = hash(data.Title + data.Content + data.Attachment);
+                    Editor.serial = data_id;
 
                     // Step2: slideUp news area
                     $('.article[data-id="' + data_id + '"]').slideUp('fast',()=>{

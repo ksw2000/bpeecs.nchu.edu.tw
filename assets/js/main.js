@@ -26,6 +26,28 @@ function hash(str){
     return h;
 }
 
+// input: string(json)
+// output: string(html code)
+function loadAttchment(str){
+    // load attachment
+    if(str === ""){
+        return ""
+    }
+
+    try{
+        let attachment = "";
+        let parse = JSON.parse(str);
+        let len = parse.client_name.length;
+        for(let i=0; i<len; i++){
+            attachment += '<li><a href="'+ parse.path[i] + '">' +
+                           parse.client_name[i] + '</a></li>';
+        }
+        return attachment;
+    }catch(e){
+        return "";
+    }
+}
+
 function loadNews(type, from, to){
     if(from === undefined){
         from = '';
@@ -113,11 +135,11 @@ function loadNewsForWhat(what, type, from, to){
                 data[i].Last_modified = (data[i].Last_modified === 0)? '-' : $.format.date(new Date(data[i].Last_modified * 1000), "yyyy-MM-dd HH : mm");
                 data[i].Publish_time  = (data[i].Publish_time === 0)?  '-' : $.format.date(new Date(data[i].Publish_time * 1000), "yyyy-MM-dd HH : mm");
                 let newContent = stripHtml(marked(data[i].Content));
-                    if(newContent.length > 50){
-                        newContent = newContent.slice(0, 80);
-                        newContent += `<a href="/news?id=${data[i].Id}">...More</a><p></p>`;
-                    }
-
+                if(newContent.length > 50){
+                    newContent = newContent.slice(0, 80);
+                    newContent += `<a href="/news?id=${data[i].Id}">...More</a><p></p>`;
+                }
+                let attachment = loadAttchment(data[i].Attachment);
                 let draftIcon = (isDraft)? '<div class="draftIcon">draft</div>' : '';
                 let draftColor = (isDraft)? 'border-color:#fe6c6c;' : 'border-color:#14a1ff;';
 
@@ -138,9 +160,11 @@ function loadNewsForWhat(what, type, from, to){
 
                 ret+=`
                     </div>
-                    <div class="content" style="cursor: pointer"
-                         onclick="window.location='/news?id=${data[i].Id}'">
+                    <div class="content">
                         ${newContent}
+                    </div>
+                    <div id="attachmentArea">
+                        <ul>${attachment}</ul>
                     </div>
                     <div class="buttonArea" style="text-align: right;">
                         <button id="attachment" onclick="javascript:delete_news(this, ${data[i].Id})" class="red">Delete</button>
@@ -159,11 +183,11 @@ function loadNewsForWhat(what, type, from, to){
             for(let i=0; i<len; i++){
                 data[i].Publish_time = $.format.date(new Date(data[i].Publish_time * 1000), "yyyy-MM-dd HH : mm");
                 let newContent = stripHtml(marked(data[i].Content));
-                    if(newContent.length>30){
-                        newContent = newContent.slice(0, 50);
-                        newContent += `...<a href="/news?id=${data[i].Id}">略</a>`;
-                    }
-
+                if(newContent.length>30){
+                    newContent = newContent.slice(0, 80);
+                    newContent += `...<a href="/news?id=${data[i].Id}">略</a>`;
+                }
+                let attachment = loadAttchment(data[i].Attachment);
                 ret += `
                 <div class="article" data-id="${data[i].Id}">
                     <h2 class="title">${data[i].Title}</h2>
@@ -172,6 +196,9 @@ function loadNewsForWhat(what, type, from, to){
                     </div>
                     <div class="content">
                         ${newContent}
+                    </div>
+                    <div id="attachmentArea">
+                        <ul>${attachment}</ul>
                     </div>
                     <p></p>
                     <div class="buttonArea" style="text-align: right;">
@@ -219,6 +246,7 @@ function loadPublicNewsById(id){
             data.Publish_time  = $.format.date(new Date(data.Publish_time * 1000), "yyyy-MM-dd HH : mm");
             data.Content       = marked(data.Content);
 
+            let attachment = loadAttchment(data.Attachment);
             ret.text += `
             <div class="article" data-id="${data.Id}" style="border:0px;">
                 <div class="header">
@@ -227,6 +255,9 @@ function loadPublicNewsById(id){
                 </div>
                 <div class="content">
                     ${data.Content}
+                </div>
+                <div id="attachmentArea">
+                    <ul>${attachment}</ul>
                 </div>
             </div>
             `;

@@ -20,6 +20,7 @@ type Article_Format struct{
     Last_modified uint64
     Title string
     Content string
+    Attachment string
 }
 
 type ArticleCtrl interface{
@@ -28,13 +29,13 @@ type ArticleCtrl interface{
     // Create a new article and return seq_num
     NewArticle(user string) uint32
     // Store an article
-    SaveArticle(serial uint32, user string, title string, content string)
+    Save(serial uint32, user string, title string, content string, attachment string)
     // Publish an article
-    PublishArticle(serial uint32, user string, title string, content string)
+    Publish(serial uint32, user string, title string, content string, attachment string)
     // Delete an article
-    DelArticle(serial uint32, user string)
+    Del(serial uint32, user string)
     // Get the latest article
-    GetLatestArticle(whatType string, user string, from int32, to int32) []Article_Format
+    GetLatest(whatType string, user string, from int32, to int32) []Article_Format
     // Get article by serial number
     GetArticleBySerial(serial uint32, user string) *Article_Format
     // Get private variables
@@ -72,48 +73,54 @@ func (a *Article) Connect(path string) *sql.DB{
 }
 
 func (a *Article) NewArticle(user string) uint32{
-    stmt, err := a.db.Prepare("INSERT INTO article(id, user, create_time, publish_time, last_modified, title, content) values(?, ?, ?, ?, ?, ?, ?)")
+    stmt, err := a.db.Prepare("INSERT INTO article(id, user, create_time, publish_time, last_modified, title, content, attachment) values(?, ?, ?, ?, ?, ?, ?, ?)")
     a.errProcess(err)
     now := time.Now().Unix()
     serial_num := a.serialNumber(user);
-    stmt.Exec(serial_num, user, now, 0, 0, "", "")
+    stmt.Exec(serial_num, user, now, 0, 0, "", "", "")
 
     return serial_num
 }
 
-func (a *Article) SaveArticle(id uint32, user string, title string, content string){
-    stmt, err := a.db.Prepare("UPDATE article SET title=?, content=?, last_modified=?  WHERE id=?")
+func (a *Article) Save(id uint32, user string, title string, content string, attachment string){
+    stmt, err := a.db.Prepare("UPDATE article SET title=?, content=?, last_modified=?, attachment=?  WHERE id=?")
     a.errProcess(err)
     now := time.Now().Unix()
-    _, err = stmt.Exec(title, content, now, id)
+    _, err = stmt.Exec(title, content, now, attachment, id)
     a.errProcess(err)
 }
 
-func (a *Article) PublishArticle(id uint32, user string, title string, content string){
-    stmt, err := a.db.Prepare("UPDATE article SET title=?, content=?, publish_time=?, last_modified=?  WHERE id=?")
+func (a *Article) Publish(id uint32, user string, title string, content string, attachment string){
+    stmt, err := a.db.Prepare("UPDATE article SET title=?, content=?, publish_time=?, last_modified=? , attachment=?  WHERE id=?")
     a.errProcess(err)
     now := time.Now().Unix()
-    _, err = stmt.Exec(title, content, now, now, id)
+    _, err = stmt.Exec(title, content, now, now, attachment, id)
     a.errProcess(err)
 }
 
-func (a *Article) DelArticle(serial uint32, user string){
+func (a *Article) Del(serial uint32, user string){
     stmt, err := a.db.Prepare("DELETE from article WHERE id=? and user=?")
     a.errProcess(err)
     _, err = stmt.Exec(serial, user)
     a.errProcess(err)
 }
 
-func (a *Article) GetLatestArticle(whatType string, user string, from int32, to int32) (list []Article_Format, hasNext bool){
+func (a *Article) GetLatest(whatType string, user string, from int32, to int32) (list []Article_Format, hasNext bool){
     var db_query_str string
 
     switch whatType {
     case "all":
-        db_query_str = "SELECT * FROM article WHERE publish_time <> 0 or user = ? ORDER BY `last_modified` DESC, `create_time` DESC, `publish_time` DESC"
+        db_query_str =  "SELECT `id`, `user`, `create_time`, `publish_time`, `last_modified`, `title`, `content`, `attachment` "
+        db_query_str += "FROM article WHERE publish_time <> 0 or user = ? "
+        db_query_str += "ORDER BY `last_modified` DESC, `create_time` DESC, `publish_time` DESC"
     case "draft":
-        db_query_str = "SELECT * FROM article WHERE publish_time = 0 and user = ? ORDER BY `last_modified` DESC, `create_time` DESC"
+        db_query_str =  "SELECT `id`, `user`, `create_time`, `publish_time`, `last_modified`, `title`, `content`, `attachment` "
+        db_query_str += "FROM article WHERE publish_time = 0 and user = ? "
+        db_query_str += "ORDER BY `last_modified` DESC, `create_time` DESC"
     case "public":
-        db_query_str = "SELECT * FROM article WHERE publish_time <> 0 ORDER BY `publish_time` DESC"
+        db_query_str =  "SELECT `id`, `user`, `create_time`, `publish_time`, `last_modified`, `title`, `content`, `attachment` "
+        db_query_str += "FROM article WHERE publish_time <> 0 "
+        db_query_str += "ORDER BY `publish_time` DESC"
     default:
         return nil, false
     }
@@ -133,7 +140,7 @@ func (a *Article) GetLatestArticle(whatType string, user string, from int32, to 
     defer rows.Close()
     for i:= int32(0); rows.Next()  ; i++ {
         var r Article_Format
-        err = rows.Scan(&r.Id, &r.User, &r.Create_time, &r.Publish_time, &r.Last_modified, &r.Title, &r.Content)
+        err = rows.Scan(&r.Id, &r.User, &r.Create_time, &r.Publish_time, &r.Last_modified, &r.Title, &r.Content, &r.Attachment)
         a.errProcess(err)
         if i == to-from+1 {
             hasNext = true;
@@ -148,10 +155,10 @@ func (a *Article) GetLatestArticle(whatType string, user string, from int32, to 
 }
 
 func (a *Article) GetArticleBySerial(serial uint32, user string) *Article_Format{
-    row := a.db.QueryRow("SELECT * FROM article WHERE `id` = ?", serial)
+    row := a.db.QueryRow("SELECT `id`, `user`, `create_time`, `publish_time`, `last_modified`, `title`, `content`, `attachment` FROM article WHERE `id` = ?", serial)
 
     r := new(Article_Format)
-    err := row.Scan(&r.Id, &r.User, &r.Create_time, &r.Publish_time, &r.Last_modified, &r.Title, &r.Content)
+    err := row.Scan(&r.Id, &r.User, &r.Create_time, &r.Publish_time, &r.Last_modified, &r.Title, &r.Content, &r.Attachment)
 
     if err == sql.ErrNoRows{
         return nil
@@ -170,15 +177,15 @@ func (a *Article) GetArticleBySerial(serial uint32, user string) *Article_Format
 }
 
 func (a *Article) serialNumber(user string) uint32{
-    rows := a.db.QueryRow("SELECT `id`, `title`, `content` FROM article WHERE `user` = ? ORDER BY `id` DESC", user)
+    rows := a.db.QueryRow("SELECT `id`, `title`, `content`, `attachment` FROM article WHERE `user` = ? ORDER BY `id` DESC", user)
 
     var num uint32
-    var title, content string
-    err := rows.Scan(&num, &title, &content)
+    var title, content, attachment string
+    err := rows.Scan(&num, &title, &content, &attachment)
     a.errProcess(err)
 
     /* 如果流水號最大的那個消息是空消息則刪除該消息，並回傳該消息序號 */
-    if title == "" && content == "" {
+    if title == "" && content == "" && attachment == ""{
         stmt, err := a.db.Prepare("DELETE FROM article WHERE `id` = ?")
         a.errProcess(err)
         _, err = stmt.Exec(num)

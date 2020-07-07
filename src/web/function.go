@@ -5,25 +5,14 @@ import(
     "fmt"
     "encoding/json"
     "github.com/go-session/session"
-    "io"
     "net/http"
-    "os"
-    "path/filepath"
     "strconv"
-    "strings"
     //-------------
     "article"
     "login"
     "function"
+    "files"
 )
-
-func fileExists(filename string) bool {
-    info, err := os.Stat(filename)
-    if os.IsNotExist(err) {
-        return false
-    }
-    return !info.IsDir()
-}
 
 func FunctionWeb(w http.ResponseWriter, r *http.Request){
     r.ParseForm()
@@ -55,6 +44,23 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
 
             fmt.Fprint(w, `{"err" : false}`)
         }
+    }else if path == "/function/logout" {
+        //Session srart
+        store, err := session.Start(context.Background(), w, r)
+        if err != nil {
+            fmt.Fprint(w, err)
+            return
+        }
+
+        store.Set("isLogin", "false")
+        store.Set("loginID", "")
+        err = store.Save()
+        if err != nil {
+            fmt.Fprint(w, err)
+            return
+        }
+
+        fmt.Fprint(w, `{"err" : false}`)
     }else if path == "/function/add_news" {
         // is login？
         if login.CheckLogin(w, r) == nil{
@@ -98,6 +104,7 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         user := "root"
         title := function.GET("title", r)
         content := function.GET("content", r)
+        attachment := function.GET("attachment", r)    //string, already convert to string in front-end
 
         // step2: connect to database
         art := new(article.Article)
@@ -107,13 +114,13 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
             return
         }
 
-        // step3: call SaveArticle() or PublishArticle()
+        // step3: call Save() or Publish()
         if path == "/function/save_news" {
-            art.SaveArticle(serial, user, title, content)
+            art.Save(serial, user, title, content, attachment)
         }else if path == "/function/publish_news" {
-            art.PublishArticle(serial, user, title, content)
+            art.Publish(serial, user, title, content, attachment)
         }else if path == "/function/del_news" {
-            art.DelArticle(serial, user)
+            art.Del(serial, user)
         }
 
         if err := art.GetErr(); err != nil{
@@ -167,14 +174,14 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
             return
         }
 
-        // step4: call GetLatestArticle(whatType, from, to)
+        // step4: call GetLatest(whatType, from, to)
         if t!=""{
             ret := new(struct{
                 NewsList []article.Article_Format
                 HasNext bool
                 Err error
             })
-            ret.NewsList, ret.HasNext = art.GetLatestArticle(t, user, int32(from), int32(to))
+            ret.NewsList, ret.HasNext = art.GetLatest(t, user, int32(from), int32(to))
             ret.Err = nil;
 
             // step5: encode to json
@@ -196,6 +203,7 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
 
         r.ParseMultipartForm(32 << 20) // 32MB is the default used by FormFile
         fhs := r.MultipartForm.File["files"]
+
         ret := new(struct{
             Err bool
             Filename []string
@@ -203,29 +211,19 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         })
 
         for _, fh := range fhs {
-            f, _ := fh.Open()
-            defer f.Close()
-
-            filePath := "../assets/upload/"
-            fileExt  := filepath.Ext(fh.Filename)
-            fileName := strings.TrimRight(fh.Filename, fileExt)
-            for fileExists(filePath + fileName + fileExt){
-                fileName = function.RandomString(10)
+            f := new(files.Files)
+            f.Connect("./sql/files.db")
+            if err := f.GetErr(); err != nil{
+                fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結失敗", "code": 2}`)
+                return
             }
-            newFile, err := os.OpenFile(filePath + string(fileName) + fileExt, os.O_WRONLY | os.O_CREATE, 0666)
-            if err != nil{
-                fmt.Fprint(w, `{"Err" : true , "Msg" : "檔案處理錯誤(新建失敗)", "Code" : 4}`)
-                return;
+            f = f.NewFile(fh)
+            if err := f.GetErr(); err != nil{
+                fmt.Fprint(w, `{"err" : true , "msg" : "新增檔案失敗", "code": 4}`)
+                return
             }
-            _, err = io.Copy(newFile, f)
-            if err != nil{
-                fmt.Fprint(w, `{"Err" : true , "Msg" : "檔案處理錯誤(移動失敗)", "Code" : 4}`)
-                return;
-            }else{
-                clientFilepath := "/assets/upload/" + fileName + fileExt
-                ret.Filename = append(ret.Filepath, fileName)
-                ret.Filepath = append(ret.Filepath, clientFilepath)
-            }
+            ret.Filename = append(ret.Filepath, f.Server_name)
+            ret.Filepath = append(ret.Filepath, f.Path)
         }
         ret.Err = false
         json.NewEncoder(w).Encode(ret)
