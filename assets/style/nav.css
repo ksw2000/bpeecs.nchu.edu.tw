@@ -178,6 +178,7 @@ nav #button-over-900px > a:hover{
     nav #button-over-900px{
         top: 50px;
     }
+
     nav #button-less-900px{
         height: 40px;
         margin-right: 10px;
@@ -186,5 +187,19 @@ nav #button-over-900px > a:hover{
 
     nav #button-less-900px a{
         padding: 2px;
+    }
+}
+
+@media screen and (max-height: 600px){
+    nav #button-over-900px a{
+        height: 30px;
+    }
+}
+
+@media screen and (max-height:  350px){
+    nav #button-over-900px a{
+        height: 30px;
+        padding-top: 0px;
+        padding-bottom: 0px;
     }
 }
