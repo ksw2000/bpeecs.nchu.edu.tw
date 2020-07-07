@@ -3,6 +3,8 @@ package function
 import(
     "math/rand"
     "time"
+    "net/http"
+    "strings"
 )
 
 func RandomString(length int) string {
@@ -13,4 +15,8 @@ func RandomString(length int) string {
             b[i] = charset[seededRand.Intn(len(charset))]
         }
     return string(b)
+}
+
+func GET(key string, r *http.Request) string{
+    return strings.Join(r.Form[key], "")
 }

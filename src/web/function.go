@@ -1,52 +1,21 @@
-package functionWeb
+package web
 
 import(
+    "context"
+    "fmt"
+    "encoding/json"
+    "github.com/go-session/session"
+    "io"
+    "net/http"
+    "os"
+    "path/filepath"
     "strconv"
     "strings"
+    //-------------
     "article"
-    "net/http"
-    "fmt"
-    "github.com/go-session/session"
-    "context"
-    "path/filepath"
-    "io"
-    "os"
-    "encoding/json"
+    "login"
     "function"
 )
-
-type Login struct{
-    IsLogin bool
-    UserID string
-    UserName string
-}
-
-func GET(key string, r *http.Request) string{
-    return strings.Join(r.Form[key], "")
-}
-
-func checkLogin(w http.ResponseWriter, r *http.Request) *Login{
-    store, err := session.Start(context.Background(), w, r)
-    if err != nil {
-        fmt.Fprint(w, err)
-        return nil
-    }
-
-    _, ok := store.Get("isLogin")
-    if !ok {
-        return nil
-    }
-
-    ret := new(Login)
-    ret.IsLogin = true
-    userID, ok := store.Get("loginID")
-    if !ok{
-        return nil
-    }
-    ret.UserID = userID.(string)
-    ret.UserName = "無名氏"
-    return ret
-}
 
 func fileExists(filename string) bool {
     info, err := os.Stat(filename)
@@ -61,10 +30,10 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
     path := r.URL.Path
 
     if path == "/function/login" {
-        if GET("id", r) != "root"{
+        if function.GET("id", r) != "root"{
             fmt.Fprint(w, `{"err" : true , "msg" : "無此帳號"}`)
             return;
-        }else if GET("pwd", r) != "00000000"{
+        }else if function.GET("pwd", r) != "00000000"{
             fmt.Fprint(w, `{"err" : true , "msg" : "密碼錯誤"}`)
             return
         }else{
@@ -88,7 +57,7 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         }
     }else if path == "/function/add_news" {
         // is login？
-        if checkLogin(w, r) == nil{
+        if login.CheckLogin(w, r) == nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "尚未登入", "code" : 1}`)
             return
         }
@@ -113,22 +82,22 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         fmt.Fprint(w, ret)
     }else if path == "/function/save_news" || path == "/function/publish_news" || path == "/function/del_news" {
         // is login？
-        if checkLogin(w, r) == nil{
+        if login.CheckLogin(w, r) == nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "尚未登入", "code" : 1}`)
             return
         }
 
         // write to database
         // step1: fetch http POST
-        num, err := strconv.Atoi(GET("serial", r))
+        num, err := strconv.Atoi(function.GET("serial", r))
         if err != nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "文章代碼錯誤 (POST參數錯誤)", "code": 3}`)
             return
         }
         serial := uint32(num)
         user := "root"
-        title := GET("title", r)
-        content := GET("content", r)
+        title := function.GET("title", r)
+        content := function.GET("content", r)
 
         // step2: connect to database
         art := new(article.Article)
@@ -155,8 +124,8 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
     }else if path == "/function/get_news"{
         // read news from database
         // step1: read GET
-        t := GET("type", r)
-        n := GET("id", r)
+        t := function.GET("type", r)
+        n := function.GET("id", r)
         var serial uint32
         from, to := 0, 19   // Default from = 0, to = 19
 
@@ -173,7 +142,7 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
                 serial = uint32(num)
             }
         }else{
-            if f, t := GET("from", r), GET("to", r); f != "" && t != ""{
+            if f, t := function.GET("from", r), function.GET("to", r); f != "" && t != ""{
                 var err error
                 from, err = strconv.Atoi(f)
                 to, err = strconv.Atoi(t)
@@ -186,7 +155,7 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
 
         // step2: some request need user id
         user := ""
-        if loginInfo := checkLogin(w, r); loginInfo != nil{
+        if loginInfo := login.CheckLogin(w, r); loginInfo != nil{
             user = loginInfo.UserID
         }
 
@@ -220,8 +189,8 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         }
     }else if path == "/function/upload"{
         // is login？
-        if checkLogin(w, r) == nil{
-            fmt.Fprint(w, `{"err" : true , "msg" : "尚未登入", "code" : 1}`)
+        if login.CheckLogin(w, r) == nil{
+            fmt.Fprint(w, `{"Err" : true , "Msg" : "尚未登入", "Code" : 1}`)
             return
         }
 
@@ -245,16 +214,17 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
             }
             newFile, err := os.OpenFile(filePath + string(fileName) + fileExt, os.O_WRONLY | os.O_CREATE, 0666)
             if err != nil{
-                fmt.Fprint(w, `{"err" : true , "msg" : "檔案處理錯誤(新建失敗)", "code" : 4}`)
+                fmt.Fprint(w, `{"Err" : true , "Msg" : "檔案處理錯誤(新建失敗)", "Code" : 4}`)
                 return;
             }
             _, err = io.Copy(newFile, f)
             if err != nil{
-                fmt.Fprint(w, `{"err" : true , "msg" : "檔案處理錯誤(移動失敗)", "code" : 4}`)
+                fmt.Fprint(w, `{"Err" : true , "Msg" : "檔案處理錯誤(移動失敗)", "Code" : 4}`)
                 return;
             }else{
-                ret.Filename = append(ret.Filename, fileName)
-                ret.Filepath = append(ret.Filepath, filePath)
+                clientFilepath := "/assets/upload/" + fileName + fileExt
+                ret.Filename = append(ret.Filepath, fileName)
+                ret.Filepath = append(ret.Filepath, clientFilepath)
             }
         }
         ret.Err = false
