@@ -6,7 +6,6 @@ import(
     "io"
     "mime/multipart"
     "os"
-    "strings"
     "time"
     "path/filepath"
     _"github.com/mattn/go-sqlite3"
@@ -27,6 +26,7 @@ type Files struct{
 type IFiles interface{
     Connect(path string) *sql.DB
     NewFile(fh *multipart.FileHeader) *Files
+    Del(client_name string)
 }
 
 func (f *Files) errProcess(err error){
@@ -48,10 +48,33 @@ func (f *Files) Connect(path string) *sql.DB{
     return f.db
 }
 
+func (f *Files) Del(server_name string){
+    // SELECT from database (to get real path)
+    row := f.db.QueryRow("SELECT `path` FROM files WHERE server_name = ?", server_name)
+
+    var filePath string
+    err := row.Scan(&filePath)
+    if err == sql.ErrNoRows{
+        f.errProcess(err)
+        return
+    }
+
+    // Delete from database
+    stmt, err := f.db.Prepare("DELETE from files WHERE server_name = ?")
+    f.errProcess(err)
+    _, err = stmt.Exec(server_name)
+    f.errProcess(err)
+
+    // Delete from os
+    os.Remove(".." + filePath)
+}
+
 func (f *Files) NewFile(fh *multipart.FileHeader) *Files{
     filePath := "../assets/upload/"
     fileExt  := filepath.Ext(fh.Filename)
-    fileName := strings.TrimRight(fh.Filename, fileExt)
+
+    //Generate new file name on server (do not use client name)
+    fileName := function.RandomString(10)
     for fileExists(filePath + fileName + fileExt){
         fileName = function.RandomString(10)
     }

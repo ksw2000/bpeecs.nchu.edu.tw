@@ -227,5 +227,45 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         }
         ret.Err = false
         json.NewEncoder(w).Encode(ret)
+    }else if path == "/function/del_attachment"{
+        // is login？
+        if login.CheckLogin(w, r) == nil{
+            fmt.Fprint(w, `{"Err" : true , "Msg" : "尚未登入", "Code" : 1}`)
+            return
+        }
+
+        server_name    := function.GET("server_name", r)
+        serial_num     := function.GET("serial_num", r)
+        num, err := strconv.Atoi(serial_num)
+        if err != nil{
+            fmt.Fprint(w, `{"err" : true , "msg" : "文章代碼錯誤 (GET 參數錯誤)", "code": 3}`)
+            return
+        }
+        new_attachment := function.GET("new_attachment", r)
+
+        // Delete file record in database and delete file in system
+        f := new(files.Files)
+        f.Connect("./sql/files.db")
+        f.Del(server_name)
+        if err := f.GetErr(); err != nil{
+            fmt.Fprint(w, `{"err" : true , "msg" : "檔案資料庫連結失敗或檔案刪除失敗", "code": 2}`)
+            return
+        }
+
+        // Update databse article (prevent user from not storing the article)
+        art := new(article.Article)
+        art.Connect("./sql/article.db")
+        art.UpdateAttachment(uint32(num), new_attachment);
+        if err := f.GetErr(); err != nil{
+            fmt.Fprint(w, `{"err" : true , "msg" : "article資料庫更新失敗", "code": 2}`)
+            return
+        }
+
+        fmt.Fprint(w, `{"err" : false}`)
+
+    }else{
+        fmt.Println("未預期的路徑")
+        fmt.Println(path)
+        http.Redirect(w, r, "/error/404", 302)
     }
 }

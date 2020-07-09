@@ -1,4 +1,3 @@
-
 window.directlyLeave = false;
 window.onbeforeunload = function(){
     if(!leave_editing()){
@@ -51,7 +50,7 @@ const btnAreaForDraft = `
 const btnAreaForPublished = `
 <button id="attachment" onchange="javascript:attach(event)">Attachment<input type="file" multiple/></button>
 <button id="save" onclick="javascript:save(false)" class="blue">Republish</button>
-<button id="publish" onclick="javascript:delete_news(this)" class="red">Delete</button>
+<button id="publish" onclick="javascript:delete_what(this, 'news')" class="red">Delete</button>
 `
 
 function newArticle(){
@@ -130,9 +129,9 @@ function attach(e){
                         Editor.attachment.path.push(data.Filepath[i]);
 
                         $("#new-article-area #attachmentArea ul").append(
-                            `<li>
+                            `<li data-file-name="${data.Filename[i]}">
                                 <a href="${data.Filepath[i]}">${e.target.files[i].name}</a>
-                                <button class="red" onclick="delete_attachment('${data.Filename[i]}')">delete</button>
+                                <button class="red" onclick="delete_what(this, 'attachment', '${data.Filename[i]}')">delete</button>
                             </li>`
                         );
                     }
@@ -197,23 +196,78 @@ function publish(){
     },'json');
 }
 
-function delete_news(obj, num){
+function delete_what(obj, what, num){
     if(num === undefined){
         num = Editor.serial;
     }
     obj = $(obj);
     obj.fadeOut('fast', ()=>{
         obj.text("SURE ?");
-        obj.attr('onclick', 'javascript:real_delete_news('+num+')');
+        if(typeof num === 'string'){
+            obj.attr('onclick', `real_delete_${what}('${num}')`);
+        }else{
+            obj.attr('onclick', `real_delete_${what}(${num})`);
+        }
         obj.fadeIn('slow', ()=>{
             setTimeout(()=>{
                 obj.fadeOut('fast',()=>{
                     obj.text("Delete");
-                    obj.attr('onclick', 'javascript:delete_news(this, '+num+')');
+                    if(typeof num === 'string'){
+                        obj.attr('onclick', `delete_what(this, '${what}', '${num}')`);
+                    }else{
+                        obj.attr('onclick', `delete_what(this, '${what}', ${num})`);
+                    }
+
                     obj.fadeIn('slow');
                 });
             }, 3000);
         }, )
+    });
+}
+
+function real_delete_attachment(filename){
+    let target = -1;
+    // Generate new attachment JSON
+    // Find index of this file in Edirot.attachment.client_name(server_name, path)
+    for(let i=0; i<Editor.attachment.server_name.length; i++){
+        if(Editor.attachment.server_name[i] === filename){
+            target = i;
+            break;
+        }
+    }
+    if(target < 0){
+        notice('Error, the file you want to delete is not in the attachment list.');
+        return;
+    }
+
+    Editor.attachment.server_name.splice(target, 1);
+    Editor.attachment.client_name.splice(target, 1);
+    Editor.attachment.path.splice(target, 1);
+
+    $.ajax({
+        url: '/function/del_attachment',
+        data: {
+            'server_name' : filename,
+            'serial_num': Editor.serial,
+            'new_attachment': JSON.stringify(Editor.attachment)
+        },
+        type: 'POST',
+        success: function(data){
+            if(data['err']){
+                if(data['code'] === 1){
+                    window.location = '/?notlogin';
+                }
+                notice(data['msg']);
+            }else{
+                $('#new-article-area #attachmentArea ul li[data-file-name="' + filename + '"]').slideUp('slow');
+
+            }
+        },
+        error: function(err) {
+            console.log(err);
+            notice('Error');
+        },
+        dataType: 'json'
     });
 }
 
@@ -248,7 +302,7 @@ function real_delete_news(data_id){
         },
         error: function(err) {
             console.log(err);
-            notice('Error' + err.status);
+            notice('Error');
         },
         dataType: 'json'
     });
@@ -276,7 +330,7 @@ function edit_news(data_id){
                     notice(data['msg']);
                 }else{
                     // closeNewArticleArea();
-                    // Step1: update value (title, content, attachment)
+                    // Step1: update value title, content, attachment and hash, serial
                     $("#new-article-area #title").val(data.Title);
                     Editor.editor.value(data.Content);
                     // Use default value (hash problem)
@@ -288,15 +342,15 @@ function edit_news(data_id){
                         let attachment = "";
                         for(let i=0; i<len; i++){
                             attachment += `
-                                <li>
+                                <li data-file-name="${parse.server_name[i]}">
                                     <a href="${parse.path[i]}">${parse.client_name[i]}</a>
-                                    <button class="red" onclick="delete_attachment('${parse.server_name[i]}')">delete</button>
+                                    <button class="red" onclick="delete_what(this, 'attachment', '${parse.server_name[i]}')">delete</button>
                                 </li>
                             `;
                         }
                         $("#new-article-area #attachmentArea ul").html(attachment);
                     }catch(e){console.log(e)}
-                    Editor.hash = hash(data.Title + data.Content + data.Attachment);
+                    Editor.hash = hash(data.Title + data.Content + Editor.attachment);
                     Editor.serial = data_id;
 
                     // Step2: slideUp news area
@@ -323,7 +377,7 @@ function edit_news(data_id){
             },
             error: function(err) {
                 console.log(err);
-                notice('Error' + err.status);
+                notice('Error');
             },
             dataType: 'json'
         });

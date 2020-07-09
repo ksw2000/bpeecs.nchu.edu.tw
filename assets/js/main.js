@@ -167,7 +167,7 @@ function loadNewsForWhat(what, type, from, to){
                         <ul>${attachment}</ul>
                     </div>
                     <div class="buttonArea" style="text-align: right;">
-                        <button id="attachment" onclick="javascript:delete_news(this, ${data[i].Id})" class="red">Delete</button>
+                        <button id="attachment" onclick="javascript:delete_what(this, 'news', ${data[i].Id})" class="red">Delete</button>
                         <button id="publish" onclick="javascript:edit_news(${data[i].Id})" class="blue">Edit</button>
                     </div>
                 </div>

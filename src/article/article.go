@@ -28,8 +28,10 @@ type ArticleCtrl interface{
     Connect(path string) *sql.DB
     // Create a new article and return seq_num
     NewArticle(user string) uint32
-    // Store an article
+    // Save an article
     Save(serial uint32, user string, title string, content string, attachment string)
+    // Save an article only the part of attachment
+    UpdateAttachment(id uint32, attachment string)
     // Publish an article
     Publish(serial uint32, user string, title string, content string, attachment string)
     // Delete an article
@@ -87,6 +89,14 @@ func (a *Article) Save(id uint32, user string, title string, content string, att
     a.errProcess(err)
     now := time.Now().Unix()
     _, err = stmt.Exec(title, content, now, attachment, id)
+    a.errProcess(err)
+}
+
+func (a *Article) UpdateAttachment(id uint32, attachment string){
+    stmt, err := a.db.Prepare("UPDATE article SET last_modified=?, attachment=?  WHERE id=?")
+    a.errProcess(err)
+    now := time.Now().Unix()
+    _, err = stmt.Exec(now, attachment, id)
     a.errProcess(err)
 }
 
