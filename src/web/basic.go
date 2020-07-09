@@ -70,10 +70,6 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
         data = PageData{
             Title : "系上成員",
         }
-    case "/recruit":
-        data = PageData{
-            Title : "招生資訊",
-        }
     case "/login":
         if login.CheckLogin(w, r) != nil{
             http.Redirect(w, r, "/manage", 302)
