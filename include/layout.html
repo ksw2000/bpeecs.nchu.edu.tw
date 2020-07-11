@@ -28,7 +28,7 @@
         <div id="notice"></div>
         <nav>
             <div id="fix-1200">
-                <div id="logo"><a href="./"><img src="./assets/img/logo.svg" style="height:100%;"></a></div>
+                <div id="logo"><a href="/"><img src="/assets/img/logo.svg" style="height:100%;"></a></div>
                 <div id="button-less-900px">
                     <a href="javascript:void(0);"
                        onclick="slideToggole('button-over-900px')">
@@ -81,9 +81,13 @@
             </div>
         {{end}}
 
-        <div id="{{.MAIN_ID}}">
+        {{if .Isindex}}
+            <div id="main-for-index">
+        {{else}}
+            <div id="main">
+        {{end}}
             {{.Main}}
-        </div>
+            </div>
 
         <footer>
             <div>

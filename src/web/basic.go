@@ -15,7 +15,6 @@ import(
 type PageData struct{
     Title string
     Isindex bool
-    MAIN_ID string
     Main interface{}
     Time int64
 }
@@ -51,7 +50,6 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
         data = PageData{
             Title : "國立中興大學電機資訊學院學士班",
             Isindex : true,
-            MAIN_ID : "main-for-index",
             Main :getContent("/index"),
         }
     case "/news":
@@ -100,10 +98,9 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
         data.Title += " | 國立中興大學電機資訊學院學士班"
         data.Isindex = false
         data.Main = getContent(path)
-        data.MAIN_ID = "main"
     }
 
-    data.Time = time.Now().Unix();
+    data.Time = time.Now().Unix()
 
-    t.Execute(w, data);
+    t.Execute(w, data)
 }
