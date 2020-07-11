@@ -6,8 +6,108 @@ window.onbeforeunload = function(){
     return;
 };
 
+SimpleMDE.prototype.drawImage=()=>{
+    console.log("插入");
+}
+
 var Editor = new (function(){
     this.editor = new SimpleMDE({
+        toolbar: [{
+            name: "bold",
+            action: SimpleMDE.toggleBold,
+            className: "fa fa-bold",
+            title: "Bold",
+        },{
+            name: "italic",
+            action: SimpleMDE.toggleItalic,
+            className: "fa fa-italic",
+            title: "Italic"
+        },{
+            name: "heading-1",
+            action: SimpleMDE.toggleHeading1,
+            title: "Big Heading",
+            className: "fa fa-header fa-header-x fa-header-1"
+        },{
+            name: "heading-2",
+            action: SimpleMDE.toggleHeading2,
+            title: "Medium Heading",
+            className: "fa fa-header fa-header-x fa-header-2"
+        },{
+            name: "heading-3",
+            action: SimpleMDE.toggleHeading3,
+            title: "Small Heading",
+            className: "fa fa-header fa-header-x fa-header-3"
+        },"|",{
+            name: "quote",
+            action: SimpleMDE.toggleBlockquote,
+            title: "Quote",
+            className: "fa fa-quote-left"
+        },{
+            name: "unordered-list",
+            action:  SimpleMDE.toggleUnorderedList,
+            title: "Generic List",
+            className: "fa fa-list-ul"
+        },{
+            name: "ordered-list",
+            action:  SimpleMDE.toggleOrderedList,
+            title: "Numbered List",
+            className: "fa fa-list-ol"
+        },{
+            name: "link",
+            action:  SimpleMDE.drawLink,
+            title: "Create Link",
+            className: "fa fa-link"
+        },{
+            name: "horizontal-rule",
+            action:  SimpleMDE.drawHorizontalRule,
+            title: "Insert Horizontal Line",
+            className: "fa fa-minus"
+        },"|",{
+            name: "image",
+            action:  function insertImage(){
+                if($("#new-article-area #img-upload-area").length == 0){
+                    $("#new-article-area .content").append(`
+                        <div id="img-upload-area" style="display:none;">
+                            <button id="btnUploadPic" class="attachment" onchange="javascript:uploadPic(event)" style="display:inline-block;">
+                                Upload
+                                <form enctype="multipart/form-data"><input type="file" accept="image/*"></form>
+                            </button>
+                            <span style="margin: 0px 5px;"><b>or</b></span>
+                            <input type="text" placeholder="Input URL" style="display:inline-block;"/>
+                        </div>
+                        <div id="return-url" style="display:none;">
+                            <input type="text" onfocus="this.select()" style="display:block;
+                                border-width:0px; border-bottom-width:2px; border-radius:0px;
+                                max-width:none; width:100%;"/>
+                        </div>
+                    `);
+                    $("#new-article-area #img-upload-area").slideDown();
+                }else{
+                    $("#new-article-area #img-upload-area").slideToggle();
+                    $("#new-article-area #return-url").slideUp();
+                }
+            },
+            title: "Insert Image",
+            className: "fa fa-picture-o"
+        },{
+            name: "table",
+            action:  SimpleMDE.drawTable,
+            title: "Insert Table",
+            className: "fa fa-table"
+        },"|",{
+            name: "preview",
+            action:  SimpleMDE.togglePreview,
+            title: "Toggle Preview",
+            className: "fa fa-eye no-disable"
+        },{
+            name: "guide",
+            action:  function(){
+                console.log("guide")
+            },
+            title: "Markdown Guide",
+            className: "fa fa-question-circle"
+        }],
+
         placeholder: "Type here...",
         element: $("#new-article-area textarea")[0],
         spellChecker: false
@@ -142,6 +242,39 @@ function attach(e){
             dataType: 'json'
         });
     }, 500);
+}
+
+function uploadPic(e){
+    let form = new FormData();
+
+    for(let i=0; i<e.target.files.length; i++){
+        form.append("files", e.target.files[i]);
+    }
+
+    $.ajax({
+        url: '/function/upload',
+        processData: false,
+        contentType: false,
+        mimeType: 'multipart/form-data',
+        data: form,
+        type: 'POST',
+        success: function(data){
+            if(data['Err']){
+                if(data['Code'] === 1){
+                    window.location = '/?notlogin';
+                }
+                $("#new-article-area #attachmentArea").html('<span class="error">' + data['Msg'] + '</span>');
+                notice(data['Msg']);
+            }else{
+                let code = `![](${data.Filepath[0]})`;
+                console.log(code);
+                $("#new-article-area #return-url").slideDown();
+                $("#new-article-area #img-upload-area").slideUp();
+                $("#new-article-area #return-url input").val(code);
+            }
+        },
+        dataType: 'json'
+    });
 }
 
 function save(isGotoDraft){
@@ -350,7 +483,7 @@ function edit_news(data_id){
                         }
                         $("#new-article-area #attachmentArea ul").html(attachment);
                     }catch(e){console.log(e)}
-                    Editor.hash = hash(data.Title + data.Content + Editor.attachment);
+                    Editor.hash = hash(data.Title + data.Content + JSON.stringify(Editor.attachment));
                     Editor.serial = data_id;
 
                     // Step2: slideUp news area

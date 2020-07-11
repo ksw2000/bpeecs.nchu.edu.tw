@@ -42,7 +42,6 @@
 
 *{
     font-family: 'NotoSans', 'Noto Sans CJK TC', '微軟正黑體', 'Open Sans' ,sans-serif;
-    font-weight: 500;
     font-size: 16px;
 }
 
@@ -117,11 +116,13 @@ h1{
 h2{
     font-size: 23px;
     color: rgb(11, 71, 111);
+    font-weight: normal;
 }
 
 h3{
     font-size: 20px;
     color: rgb(93, 99, 125);
+    font-weight: normal;
 }
 
 #main a{

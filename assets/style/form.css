@@ -36,6 +36,10 @@ input[type="button"]{
     cursor: pointer;
 }
 
+button:focus, input:focus{
+    outline: none;
+}
+
 button{
     border: 1px solid #343434;
     border-radius: 8px;
