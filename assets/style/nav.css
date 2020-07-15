@@ -55,7 +55,6 @@ nav #logo img{
 nav #fix-1200{
     margin: 0px auto;
     max-width: 1200px;
-    padding-top: 5px;
     width: 100%;
     z-index: 11;
 }
@@ -64,8 +63,12 @@ nav #button-over-900px, nav #button-less-900px{
     box-sizing: border-box;
     float: right;
     height: 80px;
-    padding: 20px 10px 20px 0px;
+    padding: 25px 10px 25px 0px;
     z-index: 12;
+}
+
+nav #button-less-900px{
+    padding: 20px 10px 20px 0px;
 }
 
 nav #button-over-900px > a{
@@ -182,7 +185,7 @@ nav #button-over-900px > a:hover{
     nav #button-less-900px{
         height: 40px;
         margin-right: 10px;
-        padding: 0px;
+        padding-top: 5px;
     }
 
     nav #button-less-900px a{

@@ -188,7 +188,7 @@ footer table td img{
 }
 
 @media screen and (max-width:  450px){
-    footer li, footer p{
+    footer li, footer p, footer a{
         font-size: 13px;
     }
 }

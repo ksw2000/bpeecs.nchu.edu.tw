@@ -41,6 +41,7 @@ button:focus, input:focus{
 }
 
 button{
+    background-color: transparent;
     border: 1px solid #343434;
     border-radius: 8px;
     box-sizing: border-box;
