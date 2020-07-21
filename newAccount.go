@@ -1,6 +1,6 @@
 package main
 import(
-    "login"
+    "bpeecs.nchu.edu.tw/login"
 )
 
 func main(){

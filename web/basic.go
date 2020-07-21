@@ -7,9 +7,8 @@ import(
     "net/http"
     "os"
     "time"
-    //---------------
-    "function"
-    "login"
+    "bpeecs.nchu.edu.tw/function"
+    "bpeecs.nchu.edu.tw/login"
 )
 
 type PageData struct{
@@ -20,7 +19,7 @@ type PageData struct{
 }
 
 func getContent(fileName string) interface{}{
-    file, err := os.Open("../include" + fileName + ".html")
+    file, err := os.Open("./include" + fileName + ".html")
     if err != nil{
         log.Fatal(err)
     }
@@ -42,7 +41,7 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
         fmt.Println("val:", function.GET(k, r))
     }
 
-    t, _ := template.ParseFiles("../include/layout.html")
+    t, _ := template.ParseFiles("./include/layout.html")
 
     var data PageData
     switch path {

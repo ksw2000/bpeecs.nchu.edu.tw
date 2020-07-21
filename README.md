@@ -27,41 +27,45 @@ $ sqlite3 tableName
 ```
 
 ## Files
-
-+ .git/
-
-+ assests/  (static file)
-    + fonts/
-    + img/
-    + js/
-    + style/
-    + upload/ (client upload files)
-
-+ include/  (html files)
++ bin/ (golang bin)
 
 + pkg/ (golang package)
-    + linux_amd64
-        + github.com
-            + go-session (for session)
-            + mattn (for sqlite3)
-
-+ sql/ (store database)
 
 + src/ (golang source code)
-    + article/ (process article/(news) add, update, delte)
-    + files/ (manage the file which clients uploaded)
-    + function/ (some func that golang often use)
+
+    + beepcs.nchu.edu.tw/
+        + .git/
+
+        + assests/  (static file)
+            + fonts/
+            + img/
+            + js/
+            + style/
+            + upload/ (client upload files)
+
+        + include/  (html files)
+
+        + sql/ (store database)
+
+        + article/ (process article/(news) add, update, delte)
+        + files/ (manage the file which clients uploaded)
+
+        + function/ (some func that golang often use)
+
+        + login/ (process login)
+
+        + web/
+            + basic.go (process: ./xxx)
+            + error.go (process error url)
+            + function.go (process ./function/xxx)
+
+        + __index.go__ (main program)
+
+        + newAccount.go `private` (regist a new user)
+
     + github.com/
         + go-session (for session)
         + mattn (for sqlite3)
-    + login/ (process login)
-    + web/
-        + basic.go (process: ./xxx)
-        + error.go (process error url)
-        + function.go (process ./function/xxx)
-    + __index.go__ (main program)
-    + newAccount.go `private` (regist a new user)
-
 
 ## Database
 

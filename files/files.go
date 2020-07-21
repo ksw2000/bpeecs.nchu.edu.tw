@@ -9,8 +9,7 @@ import(
     "time"
     "path/filepath"
     _"github.com/mattn/go-sqlite3"
-    //--------------
-    "function"
+    "bpeecs.nchu.edu.tw/function"
 )
 
 type Files struct{
@@ -70,7 +69,7 @@ func (f *Files) Del(server_name string){
 }
 
 func (f *Files) NewFile(fh *multipart.FileHeader) *Files{
-    filePath := "../assets/upload/"
+    filePath := "./assets/upload/"
     fileExt  := filepath.Ext(fh.Filename)
 
     //Generate new file name on server (do not use client name)

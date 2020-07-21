@@ -8,8 +8,7 @@ import(
     "github.com/go-session/session"
     _"github.com/mattn/go-sqlite3"
     "net/http"
-    //--------------
-    "function"
+    "bpeecs.nchu.edu.tw/function"
 )
 
 type Login struct{

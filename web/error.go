@@ -13,6 +13,6 @@ func ErrorWeb(w http.ResponseWriter, r *http.Request){
     data.Isindex = false
     data.Main = getContent("/http404")
     data.Time = time.Now().Unix();
-    t, _ := template.ParseFiles("../include/layout.html")
+    t, _ := template.ParseFiles("./include/layout.html")
     t.Execute(w, data)
 }

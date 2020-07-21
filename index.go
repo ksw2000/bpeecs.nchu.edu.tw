@@ -3,12 +3,12 @@ package main
 import(
     "log"
     "net/http"
-    "web"
+    "bpeecs.nchu.edu.tw/web"
 )
 
 func main(){
     mux := http.NewServeMux()
-    fs := http.FileServer(http.Dir("../assets/"))
+    fs := http.FileServer(http.Dir("./assets/"))
     mux.Handle("/assets/", http.StripPrefix("/assets/", fs))
 
     mux.HandleFunc("/function/", web.FunctionWeb)
