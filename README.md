@@ -26,6 +26,16 @@ __SQlite3__
 $ sqlite3 tableName
 ```
 
+__Front-end js dependencies__
+
+All of the javascript dependencies are embedded by the online resource links. If these links are lost, replace a new one, or implemented it by yourself.
+
+1. jQuery (v3.5.1)
+
+2. Text editor: [simplemde](https://simplemde.com/)
+
+3. Date foramte (jQuery dependency): [jquery-dateFormat](https://github.com/phstc/jquery-dateFormat)
+
 ## Files
 + bin/ (golang bin)
 
@@ -70,7 +80,7 @@ $ sqlite3 tableName
 ## Database
 
 ### article.db
-```
+```sql
 CREATE TABLE article (
     id PRIMARY KEY UNIQUE,
     user,
@@ -84,7 +94,7 @@ CREATE TABLE article (
 ```
 
 ### files.db
-```
+```sql
 CREATE TABLE files (
     id INTEGER PRIMARY KEY UNIQUE,
     client_name TEXT,
@@ -95,7 +105,7 @@ CREATE TABLE files (
 ```
 
 ### user.db
-```
+```sql
 CREATE TABLE user (
     num INTEGER PRIMARY KEY UNIQUE,
     id TEXT UNIQUE,
@@ -106,6 +116,17 @@ CREATE TABLE user (
 ```
 
 ## Quick run
+
+1. create database
+
+2. implemented pwdHash() in `package login`
+```go
+func pwdHash(pwd string, salt string)
+```
+
+3. use `newAccount.go` to create a new account
+
+3. go run
 
 ```sh
 $ cd ./src
