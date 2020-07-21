@@ -1,10 +1,8 @@
 package web
 
 import(
-    "context"
     "fmt"
     "encoding/json"
-    "github.com/go-session/session"
     "net/http"
     "strconv"
     "bpeecs.nchu.edu.tw/article"
@@ -20,40 +18,23 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
     if path == "/function/login" {
         l := login.New()
         l.Connect("./sql/user.db")
-        err := l.Login(function.GET("id", r), function.GET("pwd", r))
-        if err != nil{
+
+        if err := l.Login(w, r); err != nil{
             fmt.Fprint(w, err.Error())
             return
         }
 
-        //Session srart
-        store, err := session.Start(context.Background(), w, r)
-        if err != nil {
-            fmt.Fprint(w, `{"err" : true , "msg" : "Session start error"}`)
-            return
-        }
-
-        store.Set("isLogin", "yes")
-        store.Set("userID", l.UserID)
-        store.Set("userName", l.UserName)
-        err = store.Save()
-        if  err != nil {
-            fmt.Fprint(w, `{"err" : true , "msg" : "Session store error"}`)
-            return
-        }
-
         fmt.Fprint(w, `{"err" : false}`)
-        return
-    }else if path == "/function/logout" {
 
+        return
     }else if path == "/function/add_news" {
         // is login？
-        if login.CheckLogin(w, r) == nil{
+        loginInfo := login.CheckLogin(w, r)
+        if loginInfo == nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "尚未登入", "code" : 1}`)
             return
         }
-
-        user := "root"
+        user := loginInfo.UserID
 
         // step1: connect to database
         art := new(article.Article)
@@ -73,7 +54,8 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         fmt.Fprint(w, ret)
     }else if path == "/function/save_news" || path == "/function/publish_news" || path == "/function/del_news" {
         // is login？
-        if login.CheckLogin(w, r) == nil{
+        loginInfo := login.CheckLogin(w, r)
+        if loginInfo == nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "尚未登入", "code" : 1}`)
             return
         }
@@ -86,7 +68,7 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
             return
         }
         serial := uint32(num)
-        user := "root"
+        user := loginInfo.UserID
         title := function.GET("title", r)
         content := function.GET("content", r)
         attachment := function.GET("attachment", r)    //string, already convert to string in front-end

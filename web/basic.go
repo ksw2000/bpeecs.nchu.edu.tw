@@ -14,6 +14,7 @@ import(
 type PageData struct{
     Title string
     Isindex bool
+    IsLogin bool
     Main interface{}
     Time int64
 }
@@ -31,8 +32,10 @@ func getContent(fileName string) interface{}{
 
 func BasicWeb(w http.ResponseWriter, r *http.Request){
     r.ParseForm()
-    fmt.Println(r.Form)
     path := r.URL.Path
+
+    // DEBUG
+    fmt.Println(r.Form)
     fmt.Println("path", r.URL.Path)
     fmt.Println("scheme", r.URL.Scheme)
     fmt.Println(r.Form["url_long"])
@@ -41,47 +44,50 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
         fmt.Println("val:", function.GET(k, r))
     }
 
+    // TEMPLATE
     t, _ := template.ParseFiles("./include/layout.html")
 
-    var data PageData
+    data := new(PageData)
+
+    // Is login?
+    if login.CheckLogin(w, r) != nil{
+        data.IsLogin = true
+    }else{
+        data.IsLogin = false
+    }
+
     switch path {
     case "/":
-        data = PageData{
-            Title : "國立中興大學電機資訊學院學士班",
-            Isindex : true,
-            Main :getContent("/index"),
-        }
+        data.Title = "國立中興大學電機資訊學院學士班"
+        data.Isindex = true
+        data.Main = getContent("/index")
     case "/news":
-        data = PageData{
-            Title : "最新消息",
-        }
+        data.Title = "最新消息"
     case "/about":
-        data = PageData{
-            Title : "關於本系",
-        }
+        data.Title = "關於本系"
     case "/course":
-        data = PageData{
-            Title : "課程內容",
-        }
+        data.Title = "課程內容"
     case "/member":
-        data = PageData{
-            Title : "系上成員",
-        }
+        data.Title = "系上成員"
     case "/login":
         if login.CheckLogin(w, r) != nil{
             http.Redirect(w, r, "/manage", 302)
             return
         }else{
-            data = PageData{
-                Title : "登入",
-            }
+            data.Title = "登入"
         }
-
+    case "/logout":
+        l := login.New()
+        l.Connect("./sql/user.db")
+        if err := l.Logout(w, r); err!=nil {
+            fmt.Fprint(w, `{"err" : true, "msg" : "登出失敗"}`)
+        }else{
+            http.Redirect(w, r, "/", 302)
+            return
+        }
     case "/manage":
-        if login.CheckLogin(w, r) != nil{
-            data = PageData{
-                Title : "管理模式",
-            }
+        if data.IsLogin{
+            data.Title = "管理模式"
         }else{
             http.Redirect(w, r, "/?notlogin", 302)
             return

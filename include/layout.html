@@ -105,8 +105,13 @@
                             <li>Department of Electrical Engineering</li>
                             <li><a target="_blank" href="http://www.twisc.nchu.edu.tw/twisc@nchu/">資通安全研究與教學中心</a></li>
                             <li>Taiwan Information Security Center @ NCHU</li>
+                        {{if .IsLogin}}
+                            <li><a href="/logout">登出</a> | <a href="/login">開發人員</a></li>
+                            <li>Log out | For developer</li>
+                        {{else}}
                             <li><a href="/login">開發人員</a></li>
                             <li>For developer</li>
+                        {{end}}
                         </td>
                     </tr>
                 </table>

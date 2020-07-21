@@ -28,7 +28,8 @@ func (l *Login) Connect(path string) (err error){
     return
 }
 
-func (l *Login) Login(id string, pwd string) (err error){
+func (l *Login) Login(w http.ResponseWriter, r *http.Request) (err error){
+    id, pwd := function.GET("id", r), function.GET("pwd", r)
     row := l.db.QueryRow("SELECT `password`, `name`, `salt` FROM user WHERE `id` = ?", id)
 
     var pwd_in_db, name, salt string
@@ -51,9 +52,36 @@ func (l *Login) Login(id string, pwd string) (err error){
     l.IsLogin = true
     l.UserID = id
     l.UserName = name
+
+    //Session srart
+    store, err := session.Start(context.Background(), w, r)
+    if err != nil {
+        err = errors.New(`{"err" : true , "msg" : "Session start error"}`)
+        return
+    }
+
+    store.Set("isLogin", "yes")
+    store.Set("userID", l.UserID)
+    store.Set("userName", l.UserName)
+    err = store.Save()
+    if  err != nil {
+        err = errors.New(`{"err" : true , "msg" : "Session store error"}`)
+        return
+    }
+
     err = nil
 
     return
+}
+
+func (l *Login) Logout(w http.ResponseWriter, r *http.Request) (err error){
+    store, err := session.Start(context.Background(), w, r)
+
+    store.Set("isLogin", "no")
+    store.Set("userID", "")
+    store.Set("userName", "")
+
+    return err
 }
 
 func (l *Login) NewAcount(id string, pwd string, name string) error{
