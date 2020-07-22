@@ -7,7 +7,7 @@ import(
     "net/http"
     "os"
     "time"
-    "bpeecs.nchu.edu.tw/function"
+    //DEBUG: "bpeecs.nchu.edu.tw/function"
     "bpeecs.nchu.edu.tw/login"
 )
 
@@ -35,14 +35,17 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
     path := r.URL.Path
 
     // DEBUG
+    /*
     fmt.Println(r.Form)
     fmt.Println("path", r.URL.Path)
     fmt.Println("scheme", r.URL.Scheme)
     fmt.Println(r.Form["url_long"])
+
     for k := range r.Form{
         fmt.Println("key:", k)
         fmt.Println("val:", function.GET(k, r))
     }
+    */
 
     // TEMPLATE
     t, _ := template.ParseFiles("./include/layout.html")
