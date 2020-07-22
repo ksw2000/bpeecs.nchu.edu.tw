@@ -105,6 +105,7 @@ var Editor = new (function(){
         }],
 
         placeholder: "Type here...",
+        forceSync: true,
         element: $("#new-article-area textarea")[0],
         spellChecker: false
     });
