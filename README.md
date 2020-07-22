@@ -12,7 +12,7 @@ $ go get -v github.com/go-session/session
 
 2. Install go-sqlite3
 ```sh
-$ go get github.com/mattn/go-sqlite3
+$ go get -v github.com/mattn/go-sqlite3
 ```
 
 __SQlite3__
