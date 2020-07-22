@@ -6,10 +6,6 @@ window.onbeforeunload = function(){
     return;
 };
 
-SimpleMDE.prototype.drawImage=()=>{
-    console.log("插入");
-}
-
 var Editor = new (function(){
     this.editor = new SimpleMDE({
         toolbar: [{
@@ -102,7 +98,7 @@ var Editor = new (function(){
         },{
             name: "guide",
             action:  function(){
-                console.log("guide")
+                window.open('https://simplemde.com/markdown-guide', '_blank');
             },
             title: "Markdown Guide",
             className: "fa fa-question-circle"
@@ -122,15 +118,17 @@ var Editor = new (function(){
         };
     }
     this.attachment = this.defaultAttahmentVal();
-
+    this.getTitle = function(){
+        return $("#new-article-area #title").val();
+    }
     // this.hash is not zero because of attachment json string.
     this.hash = hash(JSON.stringify(this.attachment));
 })();
 
 function leave_editing(){
     if(window.directlyLeave === true) return true;
-    let now_content = $("#new-article-area #title").val() + Editor.editor.value() + JSON.stringify(Editor.attachment);
-    if(hash(now_content) != Editor.hash){
+    let now_content = hash(Editor.getTitle() + Editor.editor.value() + JSON.stringify(Editor.attachment));
+    if(now_content != Editor.hash){
         return confirm('Changes you made may not be saved.');
     }
     // default is 'leave'
@@ -158,7 +156,6 @@ function newArticle(){
         if(Editor.serial === -1){
             $.post('/function/add_news',{}
             ,function(data){
-                console.log(data)
                 if(data['err']){
                     if(data['code'] === 1){
                         window.location = "/?notlogin"
@@ -220,9 +217,6 @@ function attach(e){
                     $("#new-article-area #attachmentArea").html('<span class="error">' + data['Msg'] + '</span>');
                     notice(data['Msg']);
                 }else{
-                    console.log(data);
-                    console.log("成功");
-
                     for(let i=0; i<e.target.files.length; i++){
                         Editor.attachment.client_name.push(e.target.files[i].name);
                         Editor.attachment.server_name.push(data.Filename[i]);
@@ -235,7 +229,6 @@ function attach(e){
                             </li>`
                         );
                     }
-                    console.log(Editor);
                     $("#new-article-area #attachmentArea div.loader").css('display', 'none');
                 }
             },
@@ -265,9 +258,9 @@ function uploadPic(e){
                 }
                 $("#new-article-area #attachmentArea").html('<span class="error">' + data['Msg'] + '</span>');
                 notice(data['Msg']);
+                console.log(data);
             }else{
                 let code = `![](${data.Filepath[0]})`;
-                console.log(code);
                 $("#new-article-area #return-url").slideDown();
                 $("#new-article-area #img-upload-area").slideUp();
                 $("#new-article-area #return-url input").val(code);
@@ -277,29 +270,24 @@ function uploadPic(e){
     });
 }
 
-function save(isGotoDraft){
+function save(isPrivate){
     $.post('/function/save_news',{
         serial: Editor.serial,
         title: $("#new-article-area #title").val(),
         content: Editor.editor.value(),
         attachment: JSON.stringify(Editor.attachment)
     },function(data){
-        console.log(data)
         if(data['err']){
             if(data['code'] === 1){
-                window.location = "/?notlogin"
+                window.location = "/?notlogin";
             }
-            notice(data['msg'])
+            notice(data['msg']);
         }else{
-            // update editor hash
-            Editor.hash = hash($("#new-article-area #title").val() + Editor.editor.value() + JSON.stringify(Editor.attachment));
-            // refresh
-            notice("Saved!");
-            if(isGotoDraft){
-                // goto draft (for news which is private, i.e. not published)
-                goToDraft();
+            if(isPrivate){
+                Editor.hash = hash(Editor.getTitle() + Editor.editor.value() + JSON.stringify(Editor.attachment));
+                notice("Saved!");
             }else{
-                // goto news page (for news which have published already)
+                // goto news page (for news which have been published already)
                 window.directlyLeave = true;
                 window.location = `/news?id=${Editor.serial}`;
             }
@@ -315,12 +303,12 @@ function publish(){
         attachment: JSON.stringify(Editor.attachment)
     }
     ,function(data){
-        console.log(data)
         if(data['err']){
             if(data['code'] === 1){
                 window.location = "/?notlogin"
             }
             notice(data['msg']);
+            console.log(data);
         }else{
             // directly go to news page
             window.directlyLeave = true;
@@ -455,12 +443,12 @@ function edit_news(data_id){
             },
             type: 'GET',
             success: function(data){
-                console.log(data)
                 if(data['err']){
                     if(data['code'] === 1){
                         window.location = '/?notlogin';
                     }
                     notice(data['msg']);
+                    console.log(data);
                 }else{
                     // closeNewArticleArea();
                     // Step1: update value title, content, attachment and hash, serial
@@ -482,7 +470,9 @@ function edit_news(data_id){
                             `;
                         }
                         $("#new-article-area #attachmentArea ul").html(attachment);
-                    }catch(e){console.log(e)}
+                    }catch(e){
+                        console.log(e);
+                    }
                     Editor.hash = hash(data.Title + data.Content + JSON.stringify(Editor.attachment));
                     Editor.serial = data_id;
 
