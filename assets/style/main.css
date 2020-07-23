@@ -128,6 +128,7 @@ h3{
 #main a{
     text-decoration: none;
     color: rgb(20, 86, 173);
+    word-break: break-all;
 }
 
 #main a:hover{
