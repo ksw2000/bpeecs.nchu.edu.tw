@@ -47,6 +47,10 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
     }
     */
 
+    if path == "/favicon.ico" {
+        http.Redirect(w, r, "/assets/img/favicon.ico", 301)
+        return
+    }
     // TEMPLATE
     t, _ := template.ParseFiles("./include/layout.html")
 
