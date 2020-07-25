@@ -3,9 +3,13 @@
 .article{
     display: flex;
     border-left: 0px;
-    border-bottom: 1px solid rgb(157, 157, 157);
+    border-bottom: 1px dashed rgb(208 208 208);
     flex-direction: row;
     padding-top: 0px;
+}
+
+.article:hover{
+    border-color: inherit;
 }
 
 .article .header{
@@ -31,6 +35,17 @@
 .article:hover>.title{
     color: rgb(23, 145, 227);
     transition: color 500ms;
+}
+
+@media screen and (max-width: 800px){
+    .article .header{
+        padding: 2px 10px;
+        font-size: 13px;
+    }
+
+    .article .title{
+        font-size: 15px;
+    }
 }
 </style>
 

@@ -109,8 +109,7 @@ nav #button-less-900px a img{
 }
 
 nav #button-less-900px > a:hover{
-    border-color: #4e4e4e;
-    transition: border-color 500ms;
+    filter: brightness(1.5);
 }
 
 nav #button-over-900px > a:hover{
@@ -139,7 +138,6 @@ nav #button-over-900px > a:hover{
         border: 0px;
         border-radius: 0px;
         display: block;
-        height: 50px;
         margin: 0px;
         padding: 10px 0px 10px 20px;
         width: 100%;
@@ -147,6 +145,12 @@ nav #button-over-900px > a:hover{
 
     nav #button-less-900px{
         display: block;
+    }
+
+    nav #button-over-900px > a:hover{
+        background-color: #4e4e4e;
+        color: #fff;
+        transition: background-color 100ms, color 100ms;
     }
 }
 

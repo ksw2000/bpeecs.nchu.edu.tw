@@ -141,6 +141,7 @@ footer{
     background-color: rgb(65, 65, 65);
     color: #fff;
     display: block;
+    font-size: 15px;
     margin: 0px auto;
     margin-top: 15px;
     padding: 25px 0px 15px 0px;
@@ -161,7 +162,7 @@ footer a:hover{
 footer li{
     color: inherit;
     display: block;
-    font-size: 15px;
+    font-size: 1em;
     line-height: 20px;
     list-style-type: none;
     margin: 0px;
