@@ -36,6 +36,8 @@ All of the javascript dependencies are embedded by the online resource links. If
 
 3. Date foramte (jQuery dependency): [jquery-dateFormat](https://github.com/phstc/jquery-dateFormat)
 
+4. Marked.js: [markdown to html](https://github.com/markedjs/marked)
+
 ## Files
 + bin/ (golang bin)
 
