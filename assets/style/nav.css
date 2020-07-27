@@ -32,6 +32,7 @@
 */
 nav{
     background-color: rgba(255, 255, 255, .95);
+    box-sizing: border-box;
     height: 80px;
     position: fixed;
     top: 0px;
@@ -64,27 +65,89 @@ nav #button-over-900px, nav #button-less-900px{
     float: right;
     height: 80px;
     padding: 25px 10px 25px 0px;
-    z-index: 12;
 }
 
 nav #button-less-900px{
     padding: 20px 10px 20px 0px;
 }
 
-nav #button-over-900px > a{
-    text-decoration: none;
-    border: 2px solid #4e4e4e;
-    border-radius: 5px;
-    color: #4e4e4e;
+nav #button-over-900px ul{
+    margin: 0px;
+    padding: 0px;
+}
+
+nav #button-over-900px ul li{       /*--1F & 2F--*/
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    vertical-align: middle;
+}
+
+nav #button-over-900px > ul > li{     /*--1F--*/
     display: inline-block;
+    list-style-type: none;
+    margin: 0px 5px;
+    position: relative;
+    width: auto;
+}
+
+nav #button-over-900px > ul > li > ul > li{ /*--2F--*/
+    background-color: rgba(255, 255, 255, 0.95);
+    marin: 0px;
+    display: block;
+    width: 100px;
+}
+
+nav #button-over-900px > ul li:hover ul{
+    animation-name: flyUp;
+    animation-duration: 300ms;
+    animation-timing-function: ease-out;
+    display: block;
+}
+
+nav #button-over-900px ul li ul{
+    display: none;
+    right: 0px;
+    position: absolute;
+    top: 100%;
+    width: auto;
+}
+
+nav #button-over-900px > ul > li > a{
+    box-sizing: border-box;
+    border-bottom: 2px solid #4e4e4e;
+    border-radius: 0px;
+    color: #4e4e4e;
+    display: block;
+    font-size: 15px;
+    height: 32px;
+    line-height: 30px;
+    padding: 0px 10px;
+    text-decoration: none;
+    width: auto;
+}
+
+nav #button-over-900px > ul > li > ul > li > a{
+    color: #4e4e4e;
+    display: block;
     font-size: 15px;
     height: 30px;
     line-height: 30px;
-    margin: 0px 5px;
-    vertical-align: middle;
-    padding: 0px 10px;
+    padding: 5px 10px;
+    text-decoration: none;
     width: auto;
-    z-index: 13;
+}
+
+nav #button-over-900px > ul > li > a:hover{
+    border-color: #00a6ff;
+    color: #00a6ff;
+    transition: border-color 500ms, color 500ms;
+}
+
+nav #button-over-900px > ul > li > ul > li > a:hover{
+    background-color: #4e4e4e;
+    color: #fff;
+    transition: background-color 500ms, color 500ms;
 }
 
 nav #button-less-900px{
@@ -101,7 +164,6 @@ nav #button-less-900px > a{
     padding: 5px 5px;
     vertical-align: middle;
     width: auto;
-    z-index: 13;
 }
 
 nav #button-less-900px a img{
@@ -112,45 +174,70 @@ nav #button-less-900px > a:hover{
     filter: brightness(1.5);
 }
 
-nav #button-over-900px > a:hover{
-    background-color: #4e4e4e;
-    color: #fff;
-    transition: background-color 500ms, color 500ms;
-}
-
-@media screen and (min-width: 450px) and (max-width:  900px){
-
-}
-
 @media screen and (max-width:  900px){
     nav #button-over-900px{
+        box-sizing: border-box;
         display: none;
-        height: auto;
+        height: 100%;
+        left: 0px;
         margin: 0px;
-        padding: 0px;
+        padding: 0px 0px 80px 0px;
         position: fixed;
         top: 80px;
         width: 100%;
+        max-width: 200px;
     }
 
-    nav #button-over-900px a{
+    nav #button-over-900px > ul{        /*--1F--*/
+        box-sizing: content-box;
         background-color: rgba(255, 255, 255, .95);
+        display: block;
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    nav #button-over-900px > ul li{
+        display: block;
+        margin: 0px 0px;
+    }
+
+    nav #button-over-900px > ul li ul{ /*--2F--*/
+        position: static;
+        display: block;
+        width: 100%;
+    }
+
+    nav #button-over-900px > ul li a{
+        box-sizing: border-box;
         border: 0px;
         border-radius: 0px;
         display: block;
+        height: auto;
         margin: 0px;
-        padding: 10px 0px 10px 20px;
+        padding: 10px 20px 10px 20px;
         width: 100%;
+    }
+
+    nav #button-over-900px > ul > li > ul > li{
+        background: transparent;
+        width: 100%;
+    }
+
+    nav #button-over-900px > ul > li > ul > li > a{
+        box-sizing: border-box;
+        height: auto;
+        margin: 0px;
+        padding: 10px 20px 10px 40px;    /*-- more right than 1F--*/
     }
 
     nav #button-less-900px{
         display: block;
     }
 
-    nav #button-over-900px > a:hover{
+    nav #button-over-900px a:hover, nav #button-over-900px > ul > li > ul > li > a:hover{
         background-color: #4e4e4e;
-        color: #fff;
-        transition: background-color 100ms, color 100ms;
+        color: #fff!important;
+        transition: unset!important;
     }
 }
 
@@ -184,11 +271,11 @@ nav #button-over-900px > a:hover{
 
     nav #button-over-900px{
         top: 50px;
+        padding: 0px 0px 50px 0px;
     }
 
     nav #button-less-900px{
         height: 40px;
-        margin-right: 10px;
         padding-top: 5px;
     }
 
@@ -209,4 +296,9 @@ nav #button-over-900px > a:hover{
         padding-top: 0px;
         padding-bottom: 0px;
     }
+}
+
+@keyframes flyUp{
+    0%   {top: 200%;}
+    100% {top: 100%;}
 }

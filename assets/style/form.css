@@ -32,8 +32,9 @@ input[type="text"], input[type="password"]{
 }
 
 input[type="button"]{
-    letter-spacing: 10px;
+    background-color: transparent;
     cursor: pointer;
+    letter-spacing: 10px;
 }
 
 button:focus, input:focus{
