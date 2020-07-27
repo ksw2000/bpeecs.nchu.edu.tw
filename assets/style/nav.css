@@ -92,10 +92,13 @@ nav #button-over-900px > ul > li{     /*--1F--*/
 }
 
 nav #button-over-900px > ul > li > ul > li{ /*--2F--*/
-    background-color: rgba(255, 255, 255, 0.95);
-    marin: 0px;
+    border-bottom: 1px dashed #b9b9b9;
     display: block;
+    marin: 0px;
     width: 100px;
+}
+nav #button-over-900px > ul > li > ul > li:last-child{
+    border: 0px;
 }
 
 nav #button-over-900px > ul li:hover ul{
@@ -106,6 +109,9 @@ nav #button-over-900px > ul li:hover ul{
 }
 
 nav #button-over-900px ul li ul{
+    border: 2px solid rgba(255, 255, 255, 0.95);
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 5px;
     display: none;
     right: 0px;
     position: absolute;
@@ -116,7 +122,6 @@ nav #button-over-900px ul li ul{
 nav #button-over-900px > ul > li > a{
     box-sizing: border-box;
     border-bottom: 2px solid #4e4e4e;
-    border-radius: 0px;
     color: #4e4e4e;
     display: block;
     font-size: 15px;
@@ -202,6 +207,8 @@ nav #button-less-900px > a:hover{
     }
 
     nav #button-over-900px > ul li ul{ /*--2F--*/
+        background: transparent;
+        border: 0px;
         position: static;
         display: block;
         width: 100%;
@@ -210,7 +217,6 @@ nav #button-less-900px > a:hover{
     nav #button-over-900px > ul li a{
         box-sizing: border-box;
         border: 0px;
-        border-radius: 0px;
         display: block;
         height: auto;
         margin: 0px;
@@ -219,6 +225,7 @@ nav #button-less-900px > a:hover{
     }
 
     nav #button-over-900px > ul > li > ul > li{
+        border: 0px;
         background: transparent;
         width: 100%;
     }
