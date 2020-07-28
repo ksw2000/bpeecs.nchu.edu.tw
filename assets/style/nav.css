@@ -152,6 +152,11 @@ nav #button-over-900px > ul > li > a:hover{
     transition: border-color 500ms, color 500ms;
 }
 
+nav #button-over-900px > ul > li > a:hover > .arrow-down{
+    border-color: #00a6ff transparent transparent transparent;
+    transition: border-color 500ms;
+}
+
 nav #button-over-900px > ul > li > ul > li > a:hover{
     color: #00a6ff;
     transition: color 500ms;
@@ -239,6 +244,10 @@ nav #button-less-900px > a:hover{
         padding: 10px 20px 10px 40px;    /*-- more right than 1F--*/
     }
 
+    nav #button-over-900px > ul > li > a > .arrow-down{
+        display: none;
+    }
+
     nav #button-less-900px{
         display: block;
     }
@@ -310,4 +319,14 @@ nav #button-less-900px > a:hover{
 @keyframes flyUp{
     0%   {top: 200%;}
     100% {top: 100%;}
+}
+
+.arrow-down{
+    border-color: #4e4e4e transparent transparent transparent;
+    border-style: solid;
+    border-width: 3px;
+    display: inline-block;
+    height: 0px;
+    margin-left: 5px;
+    width: 0px;
 }
