@@ -126,6 +126,24 @@
     filter: drop-shadow(8px 8px 5px #303050);
 }
 
+#banner #flex-parent .flex:hover{
+    animation-name: shake;
+    animation-duration: 500ms;
+    animation-timing-function: linear;
+}
+
+@keyframes shake{
+    0%   {transform: rotate(0deg);}
+    19%  {transform: rotate(15deg);}
+    37%  {transform: rotate(0deg);}
+    50%  {transform: rotate(-15deg);}
+    69%  {transform: rotate(0deg);}
+    77%  {transform: rotate(5deg);}
+    85%  {transform: rotate(0deg);}
+    93%  {transform: rotate(-5deg);}
+    100% {transform: rotate(0deg);}
+}
+
 #banner #flex-parent p{
     color: #fff;
     display: block;
