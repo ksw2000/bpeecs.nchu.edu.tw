@@ -91,12 +91,26 @@ nav #button-over-900px > ul > li{     /*--1F--*/
     width: auto;
 }
 
+nav #button-over-900px > ul > li > ul{
+    border: 2px solid rgba(255, 255, 255, 0.95);
+    box-sizing: border-box;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 5px;
+    display: none;
+    left: 0px;
+    position: absolute;
+    top: 100%;
+    width: 200px;
+}
+
 nav #button-over-900px > ul > li > ul > li{ /*--2F--*/
+    box-sizing: border-box;
     border-bottom: 1px dashed #b9b9b9;
     display: block;
     marin: 0px;
-    width: 100px;
+    width: 100%;
 }
+
 nav #button-over-900px > ul > li > ul > li:last-child{
     border: 0px;
 }
@@ -106,17 +120,6 @@ nav #button-over-900px > ul li:hover ul{
     animation-duration: 300ms;
     animation-timing-function: ease-out;
     display: block;
-}
-
-nav #button-over-900px ul li ul{
-    border: 2px solid rgba(255, 255, 255, 0.95);
-    background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 5px;
-    display: none;
-    right: 0px;
-    position: absolute;
-    top: 100%;
-    width: auto;
 }
 
 nav #button-over-900px > ul > li > a{
@@ -135,7 +138,7 @@ nav #button-over-900px > ul > li > a{
 nav #button-over-900px > ul > li > ul > li > a{
     color: #4e4e4e;
     display: block;
-    font-size: 15px;
+    font-size: 13px;
     height: 30px;
     line-height: 30px;
     padding: 5px 10px;
@@ -150,9 +153,8 @@ nav #button-over-900px > ul > li > a:hover{
 }
 
 nav #button-over-900px > ul > li > ul > li > a:hover{
-    background-color: #4e4e4e;
-    color: #fff;
-    transition: background-color 500ms, color 500ms;
+    color: #00a6ff;
+    transition: color 500ms;
 }
 
 nav #button-less-900px{
@@ -206,7 +208,7 @@ nav #button-less-900px > a:hover{
         margin: 0px 0px;
     }
 
-    nav #button-over-900px > ul li ul{ /*--2F--*/
+    nav #button-over-900px > ul > li > ul{ /*--2F--*/
         background: transparent;
         border: 0px;
         position: static;
