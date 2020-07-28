@@ -1,0 +1,79 @@
+.card{
+    animation-name: rainbow;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-direction: alternate;
+    border: 0px;
+    border-radius: 5px;
+    box-shadow: 2px 2px 3px #393950;
+    margin: 0px;
+    margin-bottom: 20px;
+    max-width: 500px;
+    width: 100%;
+    padding: 15px;
+}
+
+@keyframes rainbow{
+    0%   {background-color: #e5edee;}
+    25%  {background-image: #eceded;}
+    50%  {background-image: #dfdfd4;}
+    100% {background-image: #dad4df;}
+}
+
+.card #name{
+    margin: 10px 0px;
+}
+
+.card #name b{
+    font-size: 1.5em;
+}
+
+.card #name span{
+    font-size: 1.2em;
+}
+
+.card #separate{
+    background-color: #ff9600;
+    height: 2px;
+    float: right;
+    margin: 10px 0px;
+    width: 68%;
+}
+
+.card ul, .card li{
+    list-style-type: none;
+}
+
+.card ul{
+    clear: right;
+    margin: 10px 0px;
+    padding: 0px;
+}
+
+.card li{
+    align-items: baseline;
+    display: flex;
+    line-height: 28px;
+    margin-left: 5px;
+    vertical-align: baseline;
+}
+
+.card .icon{
+    height: 20px;
+    margin-right: 10px;
+    vertical-align: sub;
+}
+
+.card .profile{
+    align-items: flex-start;
+    display: flex;
+}
+
+.card .profile img{
+    border-radius: 50%;
+    box-sizing: border-box;
+    margin-right: 20px;
+    width: 80px;
+    height: auto;
+}
