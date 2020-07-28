@@ -109,9 +109,22 @@ blockquote{
 }
 
 h1{
-    font-size: 30px;
     color: rgb(39, 129, 189);
-    border-bottom: 1px solid rgb(39, 129, 189);
+    font-size: 30px;
+    width: fit-content;
+}
+
+#main h1:after{
+    border-bottom: 2px solid rgb(23,76,111);
+    content: "";
+    display: block;
+    padding-top: 10px;
+    width: 62%;
+}
+
+#main h1:hover:after{
+    width: 100%;
+    transition: width 700ms;
 }
 
 h2{
