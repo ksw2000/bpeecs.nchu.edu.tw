@@ -194,4 +194,20 @@ footer table td img{
     footer li, footer p, footer a{
         font-size: 13px;
     }
+
+    h1{
+        font-size: 25px;
+    }
+
+    h2{
+        font-size: 20px;
+    }
+
+    h3{
+        font-size: 18px;
+    }
+
+    *{
+        font-size: 14px;
+    }
 }

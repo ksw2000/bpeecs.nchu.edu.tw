@@ -65,10 +65,16 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
 
     var simpleWeb = map[string]string{
         "/news" : "最新消息",
-        "/about" : "關於本系",
+        "/about/contact" : "聯絡方式",
         "/about/education-goal-and-core-ability" : "教育目標及核心能力",
+        "/about/enrollment" : "招生方式",
+        "/about/feature" : "特色",
+        "/about/future-development-direction" : "學生未來發展方向",
+        "/about/why-establish" : "創系緣由",
         "/course" : "課程內容",
-        "/member" : "系上成員",
+        "/member/admin-staff" : "行政人員",
+        "/member/faculty" : "師資陣容",
+        "/member/class-teacher" : "班主任",
     }
 
     title, ok := simpleWeb[path]
