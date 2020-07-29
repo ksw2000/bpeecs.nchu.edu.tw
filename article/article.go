@@ -23,34 +23,6 @@ type Article_Format struct{
     Attachment string
 }
 
-type ArticleCtrl interface{
-    // connect to detabase
-    Connect(path string) *sql.DB
-    // Create a new article and return seq_num
-    NewArticle(user string) uint32
-    // Save an article
-    Save(serial uint32, user string, title string, content string, attachment string)
-    // Save an article only the part of attachment
-    UpdateAttachment(id uint32, attachment string)
-    // Publish an article
-    Publish(serial uint32, user string, title string, content string, attachment string)
-    // Delete an article
-    Del(serial uint32, user string)
-    // Get the latest article
-    GetLatest(whatType string, user string, from int32, to int32) []Article_Format
-    // Get article by serial number
-    GetArticleBySerial(serial uint32, user string) *Article_Format
-    // Get private variables
-    GetErr() error
-    GetArtList() []Article_Format
-
-    // Generate serial number
-    serialNumber(user string) uint32
-
-    // Error process
-    errProcess(err error)
-}
-
 func (a *Article) GetErr() error{
     return a.err
 }
@@ -85,26 +57,26 @@ func (a *Article) NewArticle(user string) uint32{
 }
 
 func (a *Article) Save(id uint32, user string, title string, content string, attachment string){
-    stmt, err := a.db.Prepare("UPDATE article SET title=?, content=?, last_modified=?, attachment=?  WHERE id=?")
+    stmt, err := a.db.Prepare("UPDATE article SET title=?, content=?, last_modified=?, attachment=?  WHERE id=? and user=?")
     a.errProcess(err)
     now := time.Now().Unix()
-    _, err = stmt.Exec(title, content, now, attachment, id)
+    _, err = stmt.Exec(title, content, now, attachment, id, user)
     a.errProcess(err)
 }
 
-func (a *Article) UpdateAttachment(id uint32, attachment string){
-    stmt, err := a.db.Prepare("UPDATE article SET last_modified=?, attachment=?  WHERE id=?")
+func (a *Article) UpdateAttachment(id uint32, user string, attachment string){
+    stmt, err := a.db.Prepare("UPDATE article SET last_modified=?, attachment=?  WHERE id=? and user=?")
     a.errProcess(err)
     now := time.Now().Unix()
-    _, err = stmt.Exec(now, attachment, id)
+    _, err = stmt.Exec(now, attachment, id, user)
     a.errProcess(err)
 }
 
 func (a *Article) Publish(id uint32, user string, title string, content string, attachment string){
-    stmt, err := a.db.Prepare("UPDATE article SET title=?, content=?, publish_time=?, last_modified=? , attachment=?  WHERE id=?")
+    stmt, err := a.db.Prepare("UPDATE article SET title=?, content=?, publish_time=?, last_modified=? , attachment=?  WHERE id=? and user=?")
     a.errProcess(err)
     now := time.Now().Unix()
-    _, err = stmt.Exec(title, content, now, now, attachment, id)
+    _, err = stmt.Exec(title, content, now, now, attachment, id, user)
     a.errProcess(err)
 }
 
@@ -187,15 +159,18 @@ func (a *Article) GetArticleBySerial(serial uint32, user string) *Article_Format
 }
 
 func (a *Article) serialNumber(user string) uint32{
-    rows := a.db.QueryRow("SELECT `id`, `title`, `content`, `attachment` FROM article WHERE `user` = ? ORDER BY `id` DESC", user)
+    rows := a.db.QueryRow("SELECT `user`, `id`, `title`, `content`, `attachment` FROM article WHERE `user` = ? ORDER BY `id` DESC")
 
     var num uint32
-    var title, content, attachment string
-    err := rows.Scan(&num, &title, &content, &attachment)
+    var title, content, attachment, user_in_db string
+    err := rows.Scan(&user_in_db, &num, &title, &content, &attachment)
+    if err == sql.ErrNoRows{
+        return 1
+    }
     a.errProcess(err)
 
-    /* 如果流水號最大的那個消息是空消息則刪除該消息，並回傳該消息序號 */
-    if title == "" && content == "" && attachment == ""{
+    /* 如果流水號最大的那個消息是空消息且該消息屬於你自己則刪除該消息，並回傳該消息序號 */
+    if title == "" && content == "" && attachment == "" && user_in_db == user{
         stmt, err := a.db.Prepare("DELETE FROM article WHERE `id` = ?")
         a.errProcess(err)
         _, err = stmt.Exec(num)

@@ -196,10 +196,12 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         json.NewEncoder(w).Encode(ret)
     }else if path == "/function/del_attachment"{
         // is login？
-        if login.CheckLogin(w, r) == nil{
-            fmt.Fprint(w, `{"Err" : true , "Msg" : "尚未登入", "Code" : 1}`)
+        loginInfo := login.CheckLogin(w, r)
+        if loginInfo == nil{
+            fmt.Fprint(w, `{"err" : true , "msg" : "尚未登入", "code" : 1}`)
             return
         }
+        user := loginInfo.UserID
 
         server_name    := function.GET("server_name", r)
         serial_num     := function.GET("serial_num", r)
@@ -222,7 +224,7 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         // Update databse article (prevent user from not storing the article)
         art := new(article.Article)
         art.Connect("./sql/article.db")
-        art.UpdateAttachment(uint32(num), new_attachment);
+        art.UpdateAttachment(uint32(num), user, new_attachment);
         if err := f.GetErr(); err != nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "article資料庫更新失敗", "code": 2}`)
             return
