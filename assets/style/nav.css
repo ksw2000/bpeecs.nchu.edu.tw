@@ -103,6 +103,11 @@ nav #button-over-900px > ul > li > ul{
     width: 200px;
 }
 
+nav #button-over-900px > ul > li:last-child > ul{
+    left: unset;
+    right: 0px;
+}
+
 nav #button-over-900px > ul > li > ul > li{ /*--2F--*/
     box-sizing: border-box;
     border-bottom: 1px dashed #b9b9b9;

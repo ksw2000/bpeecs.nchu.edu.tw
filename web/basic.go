@@ -7,7 +7,6 @@ import(
     "net/http"
     "os"
     "time"
-    //DEBUG: "bpeecs.nchu.edu.tw/function"
     "bpeecs.nchu.edu.tw/login"
 )
 
@@ -34,19 +33,6 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
     r.ParseForm()
     path := r.URL.Path
 
-    // DEBUG
-    /*
-    fmt.Println(r.Form)
-    fmt.Println("path", r.URL.Path)
-    fmt.Println("scheme", r.URL.Scheme)
-    fmt.Println(r.Form["url_long"])
-
-    for k := range r.Form{
-        fmt.Println("key:", k)
-        fmt.Println("val:", function.GET(k, r))
-    }
-    */
-
     if path == "/favicon.ico" {
         http.Redirect(w, r, "/assets/img/favicon.ico", 301)
         return
@@ -65,13 +51,13 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
 
     var simpleWeb = map[string]string{
         "/news" : "最新消息",
-        "/about/contact" : "聯絡方式",
         "/about/education-goal-and-core-ability" : "教育目標及核心能力",
         "/about/enrollment" : "招生方式",
         "/about/feature" : "特色",
         "/about/future-development-direction" : "學生未來發展方向",
         "/about/why-establish" : "創系緣由",
         "/course" : "課程內容",
+        "/course/graduation-conditions" : "畢業條件",
         "/member/admin-staff" : "行政人員",
         "/member/faculty" : "師資陣容",
         "/member/class-teacher" : "班主任",

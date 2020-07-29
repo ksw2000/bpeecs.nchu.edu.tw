@@ -15,7 +15,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js" type="text/javascript"></script>
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-dateFormat/1.0/jquery.dateFormat.min.js" type="text/javascript"></script>
-        <script src="/assets/js/main.js?2020072716" type="text/javascript"></script>
+        <script src="/assets/js/main.js?{{.Time}}" type="text/javascript"></script>
     </head>
     <body>
         <div id="notice"></div>
@@ -30,7 +30,15 @@
                 </div>
                 <div id="button-over-900px">
                     <ul>
-                        <li><a href="/news">最新消息</a></li>
+                        <li><a href="javascript:void(0);">公告<span class="arrow-down"></span></a>
+                            <ul>
+                                <li><a href="/news">一般</a></li>
+                                <li><a href="/news?type=activity">演講。活動</a></li>
+                                <li><a href="/news?type=course">課程。招生</a></li>
+                                <li><a href="/news?type=scholarships">獎學金</a></li>
+                                <li><a href="/news?type=recruit">徵才</a></li>
+                            </ul>
+                        </li>
                         <li><a href="javascript:void(0);">關於本系<span class="arrow-down"></span></a>
                             <ul>
                                 <li><a href="/about/feature">特色</a></li>
@@ -47,7 +55,12 @@
                                 <li><a href="/member/admin-staff">行政人員</a></li>
                             </ul>
                         </li>
-                        <li><a href="/course">課程內容</a></li>
+                        <li><a href="javascript:void(0);">課程內容<span class="arrow-down"></span></a>
+                            <ul>
+                                <li><a href="/course">課程介紹</a></li>
+                                <li><a href="/course/graduation-conditions">畢業條件</a></li>
+                            </ul>
+                        </li>
                         {{if .IsLogin}}
                             <li><a href="/manage">管理</a></li>
                             <li><a href="/logout">登出</a></li>
