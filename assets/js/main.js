@@ -48,6 +48,17 @@ function loadAttchment(str){
     }
 }
 
+function articleTypeDecoder(key){
+    let dict = {
+        "normal" : "一般消息",
+        "activity" : "演講 & 活動",
+        "course" : "課程 & 招生",
+        "scholarships" : "獎學金",
+        "recruit" : "徵才資訊"
+    }
+    return dict[key];
+}
+
 function loadNews(scope, type, from, to){
     if(type === undefined){
         type = 'normal';
@@ -92,7 +103,8 @@ function loadNewsOnlyTitle(scope){
                 ret += `
                 <div class="article" data-id="${data[i].Id}" style="cursor: pointer"
                     onclick="window.location='/news?id=${data[i].Id}'">
-                    <div class="header">${data[i].Publish_time}</div>
+
+                    <div class="candy-header"><span class="single">${data[i].Publish_time}</span></div>
                     <h2 class="title">${data[i].Title}</h2>
                 </div>
                 `;
@@ -147,19 +159,16 @@ function loadNewsForWhat(what, scope, type, from, to){
                 let draftIcon = (isDraft)? '<div class="draftIcon">draft</div>' : '';
                 let draftColor = (isDraft)? 'border-color:#fe6c6c;' : 'border-color:#14a1ff;';
 
-                ret += `
-                <div class="article" data-id="${data[i].Id}"
-                     style="${draftColor}">
-                    <h2 class="title" style="cursor: pointer"
-                        onclick="window.location='/news?id=${data[i].Id}'">${draftIcon}${data[i].Title}</h2>
+                ret += `<div class="article" data-id="${data[i].Id}" style="${draftColor}">
+                    <h2 class="title">${draftIcon}${data[i].Title}</h2>
                     <div class="header">
-                        <p>Create at：${data[i].Create_time}</p>
-                        <p>Last modified：${data[i].Last_modified}</p>
-                `
+                    <div class="candy-header"><span>Type</span><span>${data[i].Type}</span></div>`;
                 if(!isDraft){
-                    ret+=`
-                            <p>First publish：${data[i].Publish_time}</p>
-                    `
+                    ret+=`<div class="candy-header hide-less-500px"><span>First publish</span><span class="green">${data[i].Publish_time}</span></div>`;
+                    ret+=`<div class="candy-header"><span>Last modified</span><span class="orange">${data[i].Last_modified}</span></div>`;
+                }else{
+                    ret+=`<div class="candy-header hide-less-500px"><span>Create</span><span class="green">${data[i].Create_time}</span></div>`;
+                    ret+=`<div class="candy-header"><span>Last modified</span><span class="orange">${data[i].Last_modified}</span></div>`;
                 }
 
                 ret+=`
@@ -171,7 +180,8 @@ function loadNewsForWhat(what, scope, type, from, to){
                         <ul>${attachment}</ul>
                     </div>
                     <div class="buttonArea" style="text-align: right;">
-                        <button id="attachment" onclick="javascript:delete_what(this, 'news', ${data[i].Id})" class="red">Delete</button>
+                        <button id="read" onclick="onclick="window.location='/news?id=${data[i].Id}'"" class="border">Read</button>
+                        <button id="delete" onclick="javascript:delete_what(this, 'news', ${data[i].Id})" class="red">Delete</button>
                         <button id="publish" onclick="javascript:edit_news(${data[i].Id})" class="blue">Edit</button>
                     </div>
                 </div>
@@ -196,7 +206,7 @@ function loadNewsForWhat(what, scope, type, from, to){
                 <div class="article" data-id="${data[i].Id}">
                     <h2 class="title">${data[i].Title}</h2>
                     <div class="header">
-                        <p>發佈時間：${data[i].Publish_time}</p>
+                        <div class="candy-header"><span>發佈時間</span><span>${data[i].Publish_time}</span></div>
                     </div>
                     <div class="content">
                         ${newContent}
@@ -254,8 +264,9 @@ function loadPublicNewsById(id){
             ret.text += `
             <div class="article" data-id="${data.Id}" style="border:0px;">
                 <div class="header">
-                    <p>修改時間：${data.Last_modified}</p>
-                    <p>發佈時間：${data.Publish_time}</p>
+                    <div class="candy-header"><span>分類</span><span>${articleTypeDecoder(data.Type)}</span></div>
+                    <div class="candy-header"><span>發佈時間</span><span class="green">${data.Publish_time}</span></div>
+                    <div class="candy-header"><span>修改時間</span><span class="cyan">${data.Last_modified}</span></div>
                 </div>
                 <div class="content">
                     ${data.Content}

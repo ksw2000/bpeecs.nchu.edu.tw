@@ -100,7 +100,7 @@ nav #button-over-900px > ul > li > ul{
     left: 0px;
     position: absolute;
     top: 100%;
-    width: 200px;
+    width: 165px;
 }
 
 nav #button-over-900px > ul > li:last-child > ul{
@@ -122,7 +122,7 @@ nav #button-over-900px > ul > li > ul > li:last-child{
 
 nav #button-over-900px > ul li:hover ul{
     animation-name: flyUp;
-    animation-duration: 300ms;
+    animation-duration: 100ms;
     animation-timing-function: ease-out;
     display: block;
 }

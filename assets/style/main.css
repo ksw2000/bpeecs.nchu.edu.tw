@@ -109,7 +109,8 @@ blockquote{
 }
 
 h1{
-    color: rgb(39, 129, 189);
+    color: #0391e0;
+    margin: 10px 0px;
     font-size: 30px;
     width: fit-content;
 }

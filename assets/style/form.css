@@ -43,7 +43,7 @@ button:focus, input:focus, select:focus{
 
 select{
     background-color: transparent;
-    border-width: 0px 0px 1px;
+    border-width: 0px 0px 2px;
     border-color: transparent transparent #343434;
     border-radius: 0px;
     box-sizing: border-box;
@@ -70,6 +70,16 @@ button{
     line-height: 30px;
     max-width: 100px;
     width: 100%;
+}
+
+button.border{
+    border-color: #343434;
+    background-color: transparent;
+    color: #343434;
+}
+
+button.border:hover{
+    background-color: #343434;
 }
 
 button.blue{

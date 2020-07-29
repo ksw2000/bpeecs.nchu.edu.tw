@@ -6,68 +6,32 @@
     width: 100%;
 }
 
-#main-for-index table{
-    margin: 0px auto;
-    margin-top: 15px;
-    max-width: 1200px;
+#main-for-index .double-side-parent{
+    box-sizing: border-box;
+    display: flex;
     width: 100%;
 }
 
-#main-for-index table td{
-    padding: 20px 15px;
+#main-for-index .double-side{
+    box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
     width: 50%;
 }
 
-#main-for-index table td img{
-    max-width: 250px;
-    width: 100%;
-}
-
-#main-for-index table td p, li{
-    box-sizing: border-box;
-    color: #5A5A5A;
-    font-size: 16px;
-    line-height: 40px;
-    margin: 0px auto;
-    padding: 0px 10px;
-    text-align: justify;
-    width: 100%;
-}
-
-#main-for-index table td p::before{
+#main-for-index p::before{
     content:"　　";
 }
 
-#main-for-index table td p a{
-    color: #039191;
-}
-
-#main-for-index table td p a:hover{
-    color: #7F7F7F;
-}
-
-@media screen and (max-width: 800px){
-    #main-for-index table tr{
-        display: block;
+@media screen and (max-width:  600px){
+    #main-for-index .double-side-parent{
+        flex-wrap: wrap;
+    }
+    #main-for-index .double-side{
         width: 100%;
     }
-
-    #main-for-index table td{
-        box-sizing: border-box;
-        width: 100%;
-        display: block;
-        margin: 0px;
-        padding: 0px 10px;
-    }
-
-    #main-for-index table td: last-child{
-        margin-bottom: 15px;
-    }
-    #main-for-index table td p, #main-for-index table td li{
-        font-size: 15px!important;
-        line-height: 30px;
-    }
 }
+
 
 /*----------------------------------------------banner----------------------------------------------*/
 #banner{
@@ -222,5 +186,59 @@
 
     #banner h2{
         display: none;
+    }
+}
+
+/*------------------------------------------middle-banner----------------------------------------*/
+#middle-banner{
+    height: 800px;
+    width: 100%;
+    position: relative;
+}
+
+#middle-banner::before{
+    background-attachment: fixed;
+    background-color: transparent;
+    background-image: url("/assets/img/middle-banner.jpg");
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-size: 1920px 1080px;
+    content: "";
+    filter: blur(2px) grayscale(20%);
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+}
+
+#middle-banner p{
+    color: #fff;
+    filter: drop-shadow(4px 4px 4px #013691);
+    font-size: 120px;
+    margin: 0px auto;
+    margin-top: -60px;
+    position: absolute;
+    top: 50%;
+    text-align: center;
+    width: 100%;
+}
+
+@media screen and (max-width: 650px){
+    #middle-banner p{
+        font-size: 80px;
+        margin-top: -40px;
+    }
+}
+
+
+@media screen and (max-width: 440px){
+    #middle-banner{
+        height: 600px;
+    }
+
+    #middle-banner p{
+        font-size: 40px;
+        margin-top: -20px;
     }
 }

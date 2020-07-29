@@ -32,14 +32,14 @@
                     <ul>
                         <li><a href="javascript:void(0);">公告<span class="arrow-down"></span></a>
                             <ul>
-                                <li><a href="/news">一般</a></li>
-                                <li><a href="/news?type=activity">演講。活動</a></li>
-                                <li><a href="/news?type=course">課程。招生</a></li>
+                                <li><a href="/news">一般消息</a></li>
+                                <li><a href="/news?type=activity">演講 & 活動</a></li>
+                                <li><a href="/news?type=course">課程 & 招生</a></li>
                                 <li><a href="/news?type=scholarships">獎學金</a></li>
-                                <li><a href="/news?type=recruit">徵才</a></li>
+                                <li><a href="/news?type=recruit">徵才資訊</a></li>
                             </ul>
                         </li>
-                        <li><a href="javascript:void(0);">關於本系<span class="arrow-down"></span></a>
+                        <li><a href="javascript:void(0);">關於<span class="arrow-down"></span></a>
                             <ul>
                                 <li><a href="/about/feature">特色</a></li>
                                 <li><a href="/about/why-establish">創系緣由</a></li>
@@ -48,14 +48,14 @@
                                 <li><a href="/about/education-goal-and-core-ability">教育目標及核心能力</a></li>
                             </ul>
                         </li>
-                        <li><a href="javascript:void(0);">系上成員<span class="arrow-down"></span></a>
+                        <li><a href="javascript:void(0);">成員<span class="arrow-down"></span></a>
                             <ul>
                                 <li><a href="/member/class-teacher">班主任</a></li>
                                 <li><a href="/member/faculty">師資陣容</a></li>
                                 <li><a href="/member/admin-staff">行政人員</a></li>
                             </ul>
                         </li>
-                        <li><a href="javascript:void(0);">課程內容<span class="arrow-down"></span></a>
+                        <li><a href="javascript:void(0);">課程<span class="arrow-down"></span></a>
                             <ul>
                                 <li><a href="/course">課程介紹</a></li>
                                 <li><a href="/course/graduation-conditions">畢業條件</a></li>
@@ -115,6 +115,12 @@
             {{.Main}}
             </div>
 
+        {{if .Isindex}}
+        <div id="middle-banner">
+            <p>解放電資魂</p>
+        </div>
+        {{end}}
+        
         <footer>
             <div>
                 <table>

@@ -1,10 +1,8 @@
 .article{
     border-left: 3px solid rgb(58, 112, 135);
     box-sizing: border-box;
-    padding: 10px 10px;
-    margin: 0px auto;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    padding: 8px 10px;
+    margin: 8px 0px 16px 0px;
 }
 
 .article .title{
@@ -12,18 +10,65 @@
 }
 
 .article:hover{
-    border-color: rgb(0, 178, 255);
+    border-color: #0695d2;
     transition-duration: 1000ms;
     transition-property: border-color;
 }
 
 .article .header{
-    margin: 10px 0px rgb(0, 178, 255);
-    color: rgb(129, 129, 129);
+    margin: 10px 0px;
 }
+
 .article .header p{
     margin: 3px 5px 3px 0px;
+    color: rgb(129, 129, 129);
     display: inline-block;
+}
+
+.article .candy-header{
+    align-self: center;
+    color: #fff;
+    display: inline-flex;
+    height: fit-content;
+    flex-shrink: 0;
+    margin: 5px 3px;
+    padding: 0px;
+}
+
+.article .candy-header span{
+    display: inline-block;
+    font-size: 12px!important;
+    padding: 3px 7px;
+}
+
+.article .candy-header span:nth-child(1){
+    background-color: #626262;
+    border-radius: 5px 0px 0px 5px;
+}
+
+.article .candy-header span.single{
+    border-radius: 5px 5px 5px 5px;
+}
+
+.article .candy-header span:nth-child(2){
+    background-color: #0391e0;
+    border-radius: 0px 5px 5px 0px;
+}
+
+.article .candy-header span.orange{
+    background-color: #ff7a00;
+}
+
+.article .candy-header span.red{
+    background-color: #c92d2d;
+}
+
+.article .candy-header span.green{
+    background-color: #36b349;
+}
+
+.article .candy-header span.cyan{
+    background-color: #02b79e;
 }
 
 .article .content{
@@ -33,23 +78,34 @@
 
 .article h1{
     font-size: 28px!important;
-    color: rgb(39, 129, 189)!important;
+    color: #0391e0!important;
     border-bottom: 0px!important;
 }
 
 .article .draftIcon{
-    background-color: rgb(254, 108, 108);
-    border-radius: 3px;
-    color: #fff;
+    background-color: transparent;
+    border: 2px solid #fb3e3e;
+    border-radius: 5px;
+    color: #fb3e3e;
     display: inline-block;
     font-size: 0.8em;
     height: fit-content;
     margin-right: 5px;
-    padding: 3px 10px;
+    padding: 3px 8px;
     vertical-align: text-bottom;
 }
 
 #article-parent .content img{
     max-width: 500px;
     width: 100%;
+}
+
+@media screen and (max-width: 700px){
+    .article .candy-header span{
+        font-size: 11px!important;
+        padding: 3px 5px;
+    }
+    .article .candy-header{
+        margin: 2px 2px;
+    }
 }
