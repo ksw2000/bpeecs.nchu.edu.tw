@@ -28,7 +28,7 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
 
         return
     }else if path == "/function/add_news" {
-        // is login？
+        // is login?
         loginInfo := login.CheckLogin(w, r)
         if loginInfo == nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "尚未登入", "code" : 1}`)
@@ -37,7 +37,7 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         user := loginInfo.UserID
 
         // step1: connect to database
-        art := new(article.Article)
+        art := article.New();
         art.Connect("./sql/article.db")
         if err := art.GetErr(); err != nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結失敗", "code": 2}`)
@@ -69,23 +69,36 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         }
         serial := uint32(num)
         user := loginInfo.UserID
+        artType := function.GET("type", r)
         title := function.GET("title", r)
         content := function.GET("content", r)
         attachment := function.GET("attachment", r)    //string, already convert to string in front-end
 
         // step2: connect to database
-        art := new(article.Article)
+        art := article.New();
         art.Connect("./sql/article.db")
         if err := art.GetErr(); err != nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結失敗", "code": 2}`)
             return
         }
 
+        artFormat := article.Article_Format{
+            Id : serial,
+            User : user,
+            Type : artType,
+            //Create_time uint64
+            //Publish_time uint64
+            //Last_modified uint64
+            Title : title,
+            Content : content,
+            Attachment : attachment,
+        }
+
         // step3: call Save() or Publish()
         if path == "/function/save_news" {
-            art.Save(serial, user, title, content, attachment)
+            art.Save(artFormat)
         }else if path == "/function/publish_news" {
-            art.Publish(serial, user, title, content, attachment)
+            art.Publish(artFormat)
         }else if path == "/function/del_news" {
             art.Del(serial, user)
         }
@@ -98,12 +111,22 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
     }else if path == "/function/get_news"{
         // read news from database
         // step1: read GET
-        t := function.GET("type", r)
+        scope := function.GET("scope", r)
+        artType := function.GET("type", r)
         n := function.GET("id", r)
         var serial uint32
         from, to := 0, 19   // Default from = 0, to = 19
 
-        if t != "public" && t != "all" && t != "draft"{
+        scopes := [...]string{"all", "draft", "published", "public", "public-with-type"}
+        check_valid_scope := false
+        for _, v := range scopes{
+            if v == scope{
+                check_valid_scope = true
+                break
+            }
+        }
+
+        if !check_valid_scope{
             if n == ""{
                 fmt.Fprint(w, `{"err" : true , "msg" : "錯誤的請求 (GET 參數錯誤)", "code": 3}`)
                 return;
@@ -116,10 +139,10 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
                 serial = uint32(num)
             }
         }else{
-            if f, t := function.GET("from", r), function.GET("to", r); f != "" && t != ""{
+            if f, scope := function.GET("from", r), function.GET("to", r); f != "" && scope != ""{
                 var err error
                 from, err = strconv.Atoi(f)
-                to, err = strconv.Atoi(t)
+                to, err = strconv.Atoi(scope)
                 if err != nil{
                     fmt.Fprint(w, `{"err" : true , "msg" : "from to 代碼錯誤 (GET 參數錯誤)", "code": 3}`)
                     return
@@ -134,27 +157,27 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         }
 
         // step3: connect to database
-        art := new(article.Article)
+        art := article.New();
         art.Connect("./sql/article.db")
         if err := art.GetErr(); err != nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結失敗", "code": 2}`)
             return
         }
 
-        // step4: call GetLatest(whatType, from, to)
-        if t!=""{
+        // step4: call GetLatest(scope, from, to)
+        if scope != ""{
             ret := new(struct{
                 NewsList []article.Article_Format
                 HasNext bool
                 Err error
             })
-            ret.NewsList, ret.HasNext = art.GetLatest(t, user, int32(from), int32(to))
+            ret.NewsList, ret.HasNext = art.GetLatest(scope, artType, user, int32(from), int32(to))
             ret.Err = nil;
 
             // step5: encode to json
             // art.GetArtList()
             json.NewEncoder(w).Encode(ret)
-        }else if n!=""{
+        }else if n != ""{
             if ret := art.GetArticleBySerial(serial, user); ret != nil{
                 json.NewEncoder(w).Encode(ret)
             }else{
@@ -222,7 +245,7 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         }
 
         // Update databse article (prevent user from not storing the article)
-        art := new(article.Article)
+        art := article.New();
         art.Connect("./sql/article.db")
         art.UpdateAttachment(uint32(num), user, new_attachment);
         if err := f.GetErr(); err != nil{

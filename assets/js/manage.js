@@ -7,6 +7,7 @@ window.onbeforeunload = function(){
 };
 
 var Editor = new (function(){
+    let self = this;
     this.editor = new SimpleMDE({
         toolbar: [{
             name: "bold",
@@ -119,17 +120,24 @@ var Editor = new (function(){
         };
     }
     this.attachment = this.defaultAttahmentVal();
-    this.getTitle = function(){
+    this.getType = () => {
+        return $("#new-article-area #type").val();
+    }
+    this.getTitle = () =>{
         return $("#new-article-area #title").val();
     }
     // this.hash is not zero because of attachment json string.
-    this.hash = hash(JSON.stringify(this.attachment));
+    this.preHash = hash(this.getType() + JSON.stringify(this.attachment));
+
+    this.calcCurrentHash = () =>{
+        return hash(self.getTitle() + self.getType() + self.editor.value() + JSON.stringify(self.attachment));
+    }
 })();
 
 function leave_editing(){
     if(window.directlyLeave === true) return true;
-    let now_content = hash(Editor.getTitle() + Editor.editor.value() + JSON.stringify(Editor.attachment));
-    if(now_content != Editor.hash){
+
+    if(Editor.calcCurrentHash() != Editor.preHash){
         return confirm('Changes you made may not be saved.');
     }
     // default is 'leave'
@@ -274,7 +282,8 @@ function uploadPic(e){
 function save(isPrivate){
     $.post('/function/save_news',{
         serial: Editor.serial,
-        title: $("#new-article-area #title").val(),
+        title: Editor.getTitle(),
+        type: Editor.getType(),
         content: Editor.editor.value(),
         attachment: JSON.stringify(Editor.attachment)
     },function(data){
@@ -285,7 +294,7 @@ function save(isPrivate){
             notice(data['msg']);
         }else{
             if(isPrivate){
-                Editor.hash = hash(Editor.getTitle() + Editor.editor.value() + JSON.stringify(Editor.attachment));
+                Editor.preHash = Editor.calcCurrentHash();
                 notice("Saved!");
             }else{
                 // goto news page (for news which have been published already)
@@ -299,7 +308,8 @@ function save(isPrivate){
 function publish(){
     $.post('/function/publish_news',{
         serial: Editor.serial,
-        title: $("#new-article-area #title").val(),
+        title: Editor.getTitle(),
+        type: Editor.getType(),
         content: Editor.editor.value(),
         attachment: JSON.stringify(Editor.attachment)
     }
@@ -350,7 +360,7 @@ function delete_what(obj, what, num){
 function real_delete_attachment(filename){
     let target = -1;
     // Generate new attachment JSON
-    // Find index of this file in Edirot.attachment.client_name(server_name, path)
+    // Find index of this file in Editor.attachment.client_name(server_name, path)
     for(let i=0; i<Editor.attachment.server_name.length; i++){
         if(Editor.attachment.server_name[i] === filename){
             target = i;
@@ -451,9 +461,13 @@ function edit_news(data_id){
                     notice(data['msg']);
                     console.log(data);
                 }else{
-                    // closeNewArticleArea();
-                    // Step1: update value title, content, attachment and hash, serial
+                    // Step1: update value title, type, content, attachment and hash, serial
                     $("#new-article-area #title").val(data.Title);
+                    for(let i=0; i<$("#new-article-area #type option").length; i++){
+                        $("#new-article-area #type option").eq(i).removeAttr('selected');
+                    }
+                    $("#new-article-area #type option[value = '" + data.Type + "']").attr('selected', 'selected');
+
                     Editor.editor.value(data.Content);
                     // Use default value (hash problem)
                     Editor.attachment = Editor.defaultAttahmentVal();
@@ -474,7 +488,7 @@ function edit_news(data_id){
                     }catch(e){
                         console.log(e);
                     }
-                    Editor.hash = hash(data.Title + data.Content + JSON.stringify(Editor.attachment));
+                    Editor.preHash = Editor.calcCurrentHash();
                     Editor.serial = data_id;
 
                     // Step2: slideUp news area
@@ -519,9 +533,9 @@ function loadNext(obj){
     })
 }
 
-function reload_news(type){
+function reload_news(scope){
     // Reload news
-    let lnfw = new loadNewsForWhat('management', type, 0, 19);
+    let lnfw = new loadNewsForWhat('management', scope, 'normal', 0, 19);
     lnfw.load().then((data) => {
         $("#article-parent").html(data);
     }).catch((reason) => {
@@ -551,7 +565,7 @@ function goToDraft(){
 
 function goToPublished(){
     resetBtnColor('published');
-    reload_news('public');
+    reload_news('published');
 }
 
 goToAll();

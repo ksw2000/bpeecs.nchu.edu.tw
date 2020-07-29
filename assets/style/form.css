@@ -37,8 +37,25 @@ input[type="button"]{
     letter-spacing: 10px;
 }
 
-button:focus, input:focus{
+button:focus, input:focus, select:focus{
     outline: none;
+}
+
+select{
+    background-color: transparent;
+    border-width: 0px 0px 1px;
+    border-color: transparent transparent #343434;
+    border-radius: 0px;
+    box-sizing: border-box;
+    color: inherit;
+    display: block;
+    font-size: 15px;
+    height: 40px;
+    line-height: 40px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    max-width: 300px;
+    width: 100%;
 }
 
 button{

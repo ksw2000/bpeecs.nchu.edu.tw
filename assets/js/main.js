@@ -48,7 +48,10 @@ function loadAttchment(str){
     }
 }
 
-function loadNews(type, from, to){
+function loadNews(scope, type, from, to){
+    if(type === undefined){
+        type = 'normal';
+    }
     if(from === undefined){
         from = '';
     }
@@ -60,6 +63,7 @@ function loadNews(type, from, to){
         $.ajax({
             url: '/function/get_news',
             data: {
+                'scope' : scope,
                 'type' : type,
                 'from' : from,
                 'to' : to
@@ -76,9 +80,9 @@ function loadNews(type, from, to){
     });
 }
 
-function loadNewsOnlyTitle(type){
+function loadNewsOnlyTitle(scope){
     return new Promise((resolve, reject) => {
-        loadNews(type).then((data) => {
+        loadNews(scope, 'normal').then((data) => {
             data = data.NewsList;
             let len = data.length;
             let ret = "";
@@ -100,7 +104,7 @@ function loadNewsOnlyTitle(type){
     });
 }
 
-function loadNewsForWhat(what, type, from, to){
+function loadNewsForWhat(what, scope, type, from, to){
     var self = this;
 
     this.from = from;
@@ -109,7 +113,7 @@ function loadNewsForWhat(what, type, from, to){
 
     this.load = () => {
         return new Promise((resolve, reject) => {
-            loadNews(type, self.from, self.to).then((data) => {
+            loadNews(scope, type, self.from, self.to).then((data) => {
                 let ret = self.render(data.NewsList);
                 if(data.HasNext){
                     ret += `<div>

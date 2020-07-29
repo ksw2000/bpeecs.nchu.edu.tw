@@ -16,7 +16,12 @@
             $("#article-parent").html(reason.status + " error");
         });
     }else{
-        let lnfw = new loadNewsForWhat('brief', 'public', 0, 19);
+        let type = getParam.get('type');
+        if(type === undefined){
+            type = 'normal';
+        }
+
+        let lnfw = new loadNewsForWhat('brief', 'public-with-type', type, 0, 19);
         lnfw.load().then((html_data) => {
             $("#article-parent").html(html_data);
         }).catch((reason) => {

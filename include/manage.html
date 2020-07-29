@@ -23,13 +23,11 @@
     width: 100%;
 }
 
-.editor-area #title:focus{
+.editor-area #title:focus, select:focus{
     outline: none;
-    border-width: 0px 0px 2px 0px;
     border-color: rgb(7, 126, 224);
-    transition-duration: 1s;
-    transition-property: color;
-    transition-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+    transition: border 1s ;
+    /*scubic-bezier(0.455, 0.03, 0.515, 0.955)*/;
 }
 
 .buttonArea button{
@@ -90,6 +88,13 @@
 <div id="top-editor-area">
     <div class="article editor-area" id="new-article-area">
         <div class="title"><input id="title" placeholder="Title" autocomplete="off"/></div>
+        <select id="type">
+            <option value="normal">Normal</option>
+            <option value="activity">Activity</option>
+            <option value="course">Course</option>
+            <option value="scholarships">Scholarships</option>
+            <option value="recruit">Recruit</option>
+        </select>
         <div class="content">
             <textarea></textarea>
         </div>
@@ -101,7 +106,7 @@
     </div>
 </div>
 
-<script src="/assets/js/manage.js?10" type="text/javascript"></script>
+<script src="/assets/js/manage.js?202007291604" type="text/javascript"></script>
 
 <div id="article-parent">
     Loading...
