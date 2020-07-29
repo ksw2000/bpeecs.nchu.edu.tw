@@ -48,3 +48,8 @@
     padding: 3px 10px;
     vertical-align: text-bottom;
 }
+
+#article-parent .content img{
+    max-width: 500px;
+    width: 100%;
+}
