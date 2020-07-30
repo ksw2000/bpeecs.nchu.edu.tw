@@ -1,0 +1,37 @@
+<h1>註冊新用戶</h1>
+<section id="reg">
+    <input autocomplete="off" type="text" placeholder="帳號 6 ~ 30" id="id" onkeydown="key_enter(this)" autofocus/>
+    <input autocomplete="off" type="text" placeholder="暱稱" id="name" onkeydown="key_enter(this)"/>
+    <input autocomplete="off" type="password" placeholder="密碼 8 ~ 30" id="pwd" onkeydown="key_enter(this)"/>
+    <input autocomplete="off" type="password" placeholder="確認密碼" id="re-pwd" onkeydown="key_enter(this)"/>
+    <input type="button" value="註冊" onclick="javascript: register()"/>
+    <p id="error" class="err"></p>
+</section>
+
+<script>
+    function register(){
+        var id  = $("#reg #id").val();
+        var name = $("#reg #name").val();
+        var pwd = $("#reg #pwd").val();
+        var re_pwd = $("#reg #re-pwd").val();
+
+        $.post('/function/reg',{
+            id: id,
+            pwd: pwd,
+            re_pwd: re_pwd,
+            name: name
+        },function(data){
+            console.log(data)
+            if(data["err"]){
+                $("#reg #error").text(data["msg"]);
+            }else{
+                window.location.href = "/manage/reg-done";
+            }
+        },'json');
+    }
+
+    function key_enter(e){
+        let keycode = (window.event)? window.event.keyCode : e.which;
+        if(keycode === 13) register();
+    }
+</script>

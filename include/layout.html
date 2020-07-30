@@ -31,7 +31,7 @@
                 <div id="button-over-900px">
                     <ul>
                         <li><a href="javascript:void(0);">公告<span class="arrow-down"></span></a>
-                            <ul>
+                            <ul style="width: 100px;">
                                 <li><a href="/news">一般消息</a></li>
                                 <li><a href="/news?type=activity">演講 & 活動</a></li>
                                 <li><a href="/news?type=course">課程 & 招生</a></li>
@@ -49,20 +49,26 @@
                             </ul>
                         </li>
                         <li><a href="javascript:void(0);">成員<span class="arrow-down"></span></a>
-                            <ul>
+                            <ul style="width: 100px;">
                                 <li><a href="/member/class-teacher">班主任</a></li>
                                 <li><a href="/member/faculty">師資陣容</a></li>
                                 <li><a href="/member/admin-staff">行政人員</a></li>
                             </ul>
                         </li>
                         <li><a href="javascript:void(0);">課程<span class="arrow-down"></span></a>
-                            <ul>
+                            <ul style="width: 100px;">
                                 <li><a href="/course">課程介紹</a></li>
                                 <li><a href="/course/graduation-conditions">畢業條件</a></li>
                             </ul>
                         </li>
                         {{if .IsLogin}}
-                            <li><a href="/manage">管理</a></li>
+                            <li><a href="javascript:void(0);">管理<span class="arrow-down"></span></a>
+                                <ul style="width: 100px;">
+                                    <li><a href="/manage">歡迎</a></li>
+                                    <li><a href="/manage/article">文章管理</a></li>
+                                    <li><a href="/manage/reg">註冊新用戶</a></li>
+                                </ul>
+                            </li>
                             <li><a href="/logout">登出</a></li>
                         {{end}}
                     </ul>
@@ -120,7 +126,7 @@
             <p>解放電資魂</p>
         </div>
         {{end}}
-        
+
         <footer>
             <div>
                 <table>

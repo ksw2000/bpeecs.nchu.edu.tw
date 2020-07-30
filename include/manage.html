@@ -1,113 +1,47 @@
-<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css"/>
 <style>
-.CodeMirror{
-    background-color: rgb(240, 240, 240)!important;
-    color: #5a5a5a;
-}
+    #profile{
+        box-sizing: border-box;
+        margin: 0px auto;
+        max-width: 350px;
+        padding: 10px;
+        text-align: center;
+        width: 100%;
+    }
 
-#new-article-area{
-    display: none;
-}
+    #profile #profile-photo{
+        border-radius: 50%;
+        margin: 0px auto;
+        width: 120px;
+    }
 
-.editor-area #title{
-    border-width: 0px 0px 2px 0px;
-    border-radius: 0px;
-    background-color: transparent;
-    height: 50px;
-    font-size: 25px;
-    line-height: 50px;
-    margin-top: 0px;
-    max-width: 1200px!important;
-    padding: 0px 10px;
-    width: 100%;
-}
+    #profile #userID{
+        margin-bottom: 10px 0px 20px;
+    }
 
-.editor-area #title:focus, select:focus{
-    outline: none;
-    border-color: rgb(7, 126, 224);
-    transition: border 1s ;
-    /*scubic-bezier(0.455, 0.03, 0.515, 0.955)*/;
-}
+    #profile a.button{
+        border: 2px solid #3e3e3e;
+        border-radius: 5px;
+        color: #3e3e3e;
+        display: block;
+        line-height: 30px;
+        margin: 5px 0px;
+    }
 
-.buttonArea button{
-    display: inline-block;
-    margin: 3px 5px;
-}
+    #profile a.button:hover{
+        background-color: #3e3e3e;
+        color: #fff;
+        transition: background-color 500ms, color 500ms;
+    }
 
-#attachment, .attachment{
-    cursor: pointer;
-    overflow: hidden;
-    position: relative;
-}
-
-#attachment input, .attachment input{
-    border: 0px;
-    bottom: 0px;
-    cursor: pointer;
-    height: 100px;
-    margin: 0px;
-    position: absolute;
-    right: 0px;
-    width: 500px;
-}
-
-#new-article-area #attachmentArea li{
-    margin: 15px 0px;
-}
-
-#new-article-area #attachmentArea button{
-    display: inline-block;
-    font-size: 0.85em;
-    height: inherit;
-    line-height: inherit;
-    margin-left: 10px;
-    padding: 2px 10px;
-    width: auto;
-}
-
-#new-article-area #attachmentArea .loader {
-    border: 3px solid transparent;
-    border-top: 3px solid #3498db;
-    border-radius: 50%;
-    display: none;
-    width: 30px;
-    height: 30px;
-}
 </style>
+<h1>Welcome</h1>
 
-<h1>Manage</h1>
-
-<div class="buttonArea">
-    <button onclick="javascript:newArticle()" id="btn-add">Add</button>
-    <button onclick="javascript:goToAll()" id="btn-all">All</button>
-    <button onclick="javascript:goToDraft()" id="btn-draft">Draft</button>
-    <button onclick="javascript:goToPublished()" id="btn-published">Published</button>
-</div>
-
-<div id="top-editor-area">
-    <div class="article editor-area" id="new-article-area">
-        <div class="title"><input id="title" placeholder="Title" autocomplete="off"/></div>
-        <select id="type">
-            <option value="normal">Normal</option>
-            <option value="activity">Activity</option>
-            <option value="course">Course</option>
-            <option value="scholarships">Scholarships</option>
-            <option value="recruit">Recruit</option>
-        </select>
-        <div class="content">
-            <textarea></textarea>
-        </div>
-        <div id="attachmentArea">
-            <ul></ul>
-            <div class="loader"></div>
-        </div>
-        <div class="buttonArea" style="text-align: right;"></div>
+<div id="profile">
+    <div style="text-align: left;">
+    <h2>Hi!👋 {{.UserName}}</h2>
     </div>
-</div>
-
-<script src="/assets/js/manage.js?202007291604" type="text/javascript"></script>
-
-<div id="article-parent">
-    Loading...
+    <img src="/assets/img/profile.jpg" id="profile-photo">
+    <p id="userID">@{{.UserID}}</p>
+    <a href="/manage/article" class="button">文章管理系統</a>
+    <a href="/manage/reg" class="button">註冊新用戶</a>
 </div>

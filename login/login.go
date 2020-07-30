@@ -18,8 +18,11 @@ type Login struct{
     db *sql.DB
 }
 
+var ERROR_REAPEAT_ID error
+
 func New() (l *Login){
     l = new(Login)
+    ERROR_REAPEAT_ID = errors.New("ID-Repeat")
     return
 }
 
@@ -74,6 +77,36 @@ func (l *Login) Login(w http.ResponseWriter, r *http.Request) (err error){
     return
 }
 
+func (l *Login) NewAcount(id string, pwd string, name string) error{
+    // check if there are the same id in db
+    row := l.db.QueryRow("SELECT COUNT(*) FROM user WHERE `id` = ?", id)
+    defer l.db.Close()
+
+    count := 0
+    err := row.Scan(&count)
+    if err != nil {
+        fmt.Println(err)
+        return err
+    }
+
+    // Check account
+    if(count == 0){
+        salt := function.RandomString(64);
+        pwd = pwdHash(pwd, salt)
+
+        stmt, err := l.db.Prepare("INSERT INTO user(id, password, salt, name) values(?, ?, ?, ?)")
+        if err != nil{
+            return err
+        }
+
+        stmt.Exec(id, pwd, salt, name)
+
+        return nil
+    }else{
+        return ERROR_REAPEAT_ID
+    }
+}
+
 func (l *Login) Logout(w http.ResponseWriter, r *http.Request) (err error){
     store, err := session.Start(context.Background(), w, r)
 
@@ -82,19 +115,6 @@ func (l *Login) Logout(w http.ResponseWriter, r *http.Request) (err error){
     store.Set("userName", "")
 
     return err
-}
-
-func (l *Login) NewAcount(id string, pwd string, name string) error{
-    salt := function.RandomString(64);
-    pwd = pwdHash(pwd, salt)
-    stmt, err := l.db.Prepare("INSERT INTO user(id, password, salt, name) values(?, ?, ?, ?)")
-    if err != nil{
-        return err
-    }
-
-    stmt.Exec(id, pwd, salt, name)
-
-    return nil
 }
 
 func CheckLogin(w http.ResponseWriter, r *http.Request) *Login{

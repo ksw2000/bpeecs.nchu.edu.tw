@@ -4,6 +4,7 @@ import(
     "fmt"
     "encoding/json"
     "net/http"
+    "regexp"
     "strconv"
     "bpeecs.nchu.edu.tw/article"
     "bpeecs.nchu.edu.tw/login"
@@ -25,6 +26,68 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         }
 
         fmt.Fprint(w, `{"err" : false}`)
+
+        return
+    }else if path == "/function/reg" {
+        // only current accounts are allowed to register a new account
+        loginInfo := login.CheckLogin(w, r)
+        if loginInfo == nil{
+            fmt.Fprint(w, `{"err" : true , "msg" : "必需登入才能建立新帳戶(基於網路安全)"}`)
+            return
+        }
+
+        l := login.New()
+        l.Connect("./sql/user.db")
+
+        id := function.GET("id", r)
+        pwd := function.GET("pwd", r)
+        re_pwd := function.GET("re_pwd", r)
+        name := function.GET("name", r)
+
+        match, err := regexp.MatchString("^[a-zA-Z0-9_]{5,30}$", id)
+        if err!=nil || !match {
+            fmt.Fprint(w, `{"err" : true , "msg" : "帳號僅接受「英文字母、數字、-、_」且需介於 5 到 30 字元`)
+            return
+        }
+
+        if len(name) > 30 || len(name) < 1{
+            fmt.Fprint(w, `{"err" : true , "msg" : "暱稱需介於 1 到 30 字元"}`)
+            return
+        }
+
+        if pwd != re_pwd{
+            fmt.Fprint(w, `{"err" : true , "msg" : "密碼與確認密碼不一致"}`)
+            return
+        }
+
+        match, err = regexp.MatchString("^[a-zA-Z0-9_]{8,30}$", pwd)
+        if err != nil || !match {
+            fmt.Fprint(w, `{"err" : true , "msg" : "密碼僅接受「英文字母、數字、-、_」且需介於 8 到 30 字元"}`)
+            return
+        }
+
+        match, err = regexp.MatchString("^.*?\\d+.*?$", pwd)
+        if err!=nil || !match {
+            fmt.Fprint(w, `{"err" : true , "msg" : "密碼必需含有數字"}`)
+            return
+        }
+
+        match, err = regexp.MatchString("^.*?[a-zA-Z]+.*?$", pwd)
+        if err!=nil || !match {
+            fmt.Fprint(w, `{"err" : true , "msg" : "密碼必需含有英文字母"}`)
+            return
+        }
+
+        err = l.NewAcount(id, pwd, name)
+        if err == login.ERROR_REAPEAT_ID{
+            fmt.Fprint(w, `{"err" : true , "msg" : "所申請之 ID 重複"}`)
+            return
+        }else if err != nil{
+            fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結失敗", "code": 2}`)
+            return
+        }else{
+            fmt.Fprint(w, `{"err" : false}`)
+        }
 
         return
     }else if path == "/function/add_news" {

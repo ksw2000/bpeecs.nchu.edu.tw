@@ -1,5 +1,6 @@
 package web
 import(
+    "bytes"
     "fmt"
     "html/template"
     "io/ioutil"
@@ -7,15 +8,16 @@ import(
     "net/http"
     "os"
     "time"
+    "bpeecs.nchu.edu.tw/function"
     "bpeecs.nchu.edu.tw/login"
 )
 
 type PageData struct{
-    Title string
+    Title   string
     Isindex bool
     IsLogin bool
-    Main interface{}
-    Time int64
+    Main    interface{}
+    Time    int64
 }
 
 func getContent(fileName string) interface{}{
@@ -41,16 +43,9 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
     t, _ := template.ParseFiles("./include/layout.html")
 
     data := new(PageData)
-
-    // Is login?
-    if login.CheckLogin(w, r) != nil{
-        data.IsLogin = true
-    }else{
-        data.IsLogin = false
-    }
+    data.Isindex = false    // default value
 
     var simpleWeb = map[string]string{
-        "/news" : "最新消息",
         "/about/education-goal-and-core-ability" : "教育目標及核心能力",
         "/about/enrollment" : "招生方式",
         "/about/feature" : "特色",
@@ -63,16 +58,66 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
         "/member/class-teacher" : "班主任",
     }
 
-    title, ok := simpleWeb[path]
-
-    if ok {
-        data.Title = title
+    // Is login?
+    loginInfo := login.CheckLogin(w, r)
+    if loginInfo != nil{
+        data.IsLogin = true
     }else{
+        data.IsLogin = false
+    }
+
+    var ok bool
+    data.Title, ok = simpleWeb[path]
+
+    if !ok {
+        var manageWeb = map[string]string{
+            "/manage" : "歡迎進入後台管理系統",
+            "/manage/article" : "文章管理",
+            "/manage/reg" : "註冊新用戶",
+            "/manage/reg-done" : "新用戶註冊成功",
+        }
+
+        data.Title, ok = manageWeb[path]
+        if ok{
+            if data.IsLogin{
+                manageTemplate, _ := template.ParseFiles("./include/manage.html")
+                var manageTemplateByte bytes.Buffer
+                manageTemplateData := struct{
+                    UserID      string
+                    UserName    string
+                }{
+                    UserID: loginInfo.UserID,
+                    UserName: loginInfo.UserName,
+                }
+                manageTemplate.Execute(&manageTemplateByte, manageTemplateData)
+                data.Main = template.HTML(manageTemplateByte.String())
+            }else{
+                http.Redirect(w, r, "/?notlogin", 302)
+                return
+            }
+        }
+    }
+
+    if !ok {
         switch path {
         case "/":
             data.Title = "國立中興大學電機資訊學院學士班"
             data.Isindex = true
             data.Main = getContent("/index")
+        case "/news":
+            data.Title = "最新消息"
+            artType := function.GET("type", r);
+            var dict = map[string]string{
+                "normal" : "一般消息",
+                "activity" : "演講 & 活動",
+                "course" : "課程 & 招生",
+                "scholarships" : "獎學金訊息",
+                "recruit" : "徵才資訊",
+            }
+            subtitle, ok := dict[artType]
+            if ok{
+                data.Title = subtitle +" | "+ data.Title;
+            }
         case "/login":
             if login.CheckLogin(w, r) != nil{
                 http.Redirect(w, r, "/manage", 302)
@@ -89,13 +134,7 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
                 http.Redirect(w, r, "/", 302)
                 return
             }
-        case "/manage":
-            if data.IsLogin{
-                data.Title = "管理模式"
-            }else{
-                http.Redirect(w, r, "/?notlogin", 302)
-                return
-            }
+
         default:
             fmt.Println("未預期的路徑")
             fmt.Println(path)
@@ -104,9 +143,11 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
         }
     }
 
-    if(path != "/"){
+    if(path == "/manage"){
         data.Title += " | 國立中興大學電機資訊學院學士班"
-        data.Isindex = false
+        // retain data.Main
+    }else if(path != "/"){
+        data.Title += " | 國立中興大學電機資訊學院學士班"
         data.Main = getContent(path)
     }
 

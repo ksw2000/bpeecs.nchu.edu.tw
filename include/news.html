@@ -1,4 +1,4 @@
-<h1 id="title">最新消息</h1>
+<h1 id="title"></h1>
 
 <script>
     let getParam = new URL(window.location.href).searchParams;
@@ -17,10 +17,10 @@
         });
     }else{
         let type = getParam.get('type');
-        if(type === undefined){
+        if(type === null){
             type = 'normal';
         }
-
+        $("h1#title").text(articleTypeDecoder(type) + " ／ 最新消息");
         let lnfw = new loadNewsForWhat('brief', 'public-with-type', type, 0, 19);
         lnfw.load().then((html_data) => {
             $("#article-parent").html(html_data);
