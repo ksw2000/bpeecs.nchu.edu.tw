@@ -83,37 +83,41 @@ All of the javascript dependencies are embedded by the online resource links. If
 
 ### article.db
 ```sql
-CREATE TABLE article (
-    id PRIMARY KEY UNIQUE,
-    user,
-    create_time,
-    publish_time,
-    last_modified,
-    title,
-    content,
-    attachment
+CREATE TABLE "article" (
+	"id"	INTEGER UNIQUE,
+	"user"	TEXT,
+	"type"	TEXT DEFAULT 'normal',
+	"create_time"	INTEGER,
+	"publish_time"	INTEGER,
+	"last_modified"	INTEGER,
+	"title"	TEXT,
+	"content"	INTEGER,
+	"attachment"	INTEGER,
+	PRIMARY KEY("id")
 );
 ```
 
 ### files.db
 ```sql
-CREATE TABLE files (
-    id INTEGER PRIMARY KEY UNIQUE,
-    client_name TEXT,
-    server_name TEXT,
-    path TEXT,
-    hash TEXT
+CREATE TABLE "files" (
+	"id"	INTEGER UNIQUE,
+	"client_name"	TEXT,
+	"server_name"	TEXT,
+	"path"	TEXT,
+	"hash"	TEXT,
+	PRIMARY KEY("id")
 );
 ```
 
 ### user.db
 ```sql
-CREATE TABLE user (
-    num INTEGER PRIMARY KEY UNIQUE,
-    id TEXT UNIQUE,
-    password TEXT,
-    salt TEXT,
-    name TEXT
+CREATE TABLE "user" (
+	"num"	INTEGER UNIQUE,
+	"id"	TEXT UNIQUE,
+	"password"	TEXT,
+	"salt"	TEXT,
+	"name"	TEXT,
+	PRIMARY KEY("num")
 );
 ```
 
