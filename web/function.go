@@ -264,7 +264,7 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         })
 
         for _, fh := range fhs {
-            f := new(files.Files)
+            f := files.New()
             f.Connect("./sql/files.db")
             if err := f.GetErr(); err != nil{
                 fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結失敗", "code": 2}`)

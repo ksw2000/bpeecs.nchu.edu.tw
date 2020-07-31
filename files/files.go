@@ -22,10 +22,8 @@ type Files struct{
     err error
 }
 
-type IFiles interface{
-    Connect(path string) *sql.DB
-    NewFile(fh *multipart.FileHeader) *Files
-    Del(client_name string)
+func New() *Files{
+    return new(Files)
 }
 
 func (f *Files) errProcess(err error){
