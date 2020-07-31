@@ -17,6 +17,7 @@
 
 .article .header{
     margin: 10px 0px;
+    position: relative;
 }
 
 .article .header p{
@@ -28,6 +29,7 @@
 .article .candy-header{
     align-self: center;
     color: #fff;
+    cursor: pointer;
     display: inline-flex;
     height: fit-content;
     flex-shrink: 0;

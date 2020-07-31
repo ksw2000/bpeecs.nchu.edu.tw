@@ -5,23 +5,25 @@
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
         <link rel="shortcut icon" href="/favicon.ico"/>
-        <link rel="stylesheet" type="text/css" href="/assets/style/main.css?{{.Time}}">
-        <link rel="stylesheet" type="text/css" href="/assets/style/nav.css?{{.Time}}">
-        <link rel="stylesheet" type="text/css" href="/assets/style/form.css?{{.Time}}">
-        <link rel="stylesheet" type="text/css" href="/assets/style/articles.css?{{.Time}}">
+        <link rel="stylesheet" href="/assets/style/main.css?{{.Time}}">
+        <link rel="stylesheet" href="/assets/style/nav.css?{{.Time}}">
+        <link rel="stylesheet" href="/assets/style/form.css?{{.Time}}">
+        <link rel="stylesheet" href="/assets/style/articles.css?{{.Time}}">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         {{if .Isindex}}
         <link rel="stylesheet" type="text/css" href="/assets/style/forIndex.css?{{.Time}}">
         {{end}}
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js" type="text/javascript"></script>
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-dateFormat/1.0/jquery.dateFormat.min.js" type="text/javascript"></script>
-        <script src="/assets/js/main.js?{{.Time}}" type="text/javascript"></script>
+        <script src="/assets/js/main.js?20200730" type="text/javascript"></script>
+        <script src="/assets/js/article.js?{{.Time}}" type="text/javascript"></script>
     </head>
     <body>
         <div id="notice"></div>
         <nav>
             <div id="fix-1200">
-                <div id="logo"><a href="/"><img src="/assets/img/logo.svg" style="height:100%;"></a></div>
+                <div id="logo"><a href="/"><img id="logo-over-450px" src="/assets/img/logo.svg" style="height:100%;"><img id="logo-less-450px" src="/assets/img/favicon.ico" style="height:100%;"></a></div>
                 <div id="button-less-900px">
                     <a href="javascript:void(0);"
                        onclick="slideToggole('button-over-900px')">
@@ -30,9 +32,9 @@
                 </div>
                 <div id="button-over-900px">
                     <ul>
-                        <li><a href="javascript:void(0);">公告<span class="arrow-down"></span></a>
-                            <ul style="width: 100px;">
-                                <li><a href="/news">一般消息</a></li>
+                        <li><a href="/news">公告<span class="arrow-down"></span></a>
+                            <ul>
+                                <li><a href="/news?type=normal">一般消息</a></li>
                                 <li><a href="/news?type=activity">演講 & 活動</a></li>
                                 <li><a href="/news?type=course">課程 & 招生</a></li>
                                 <li><a href="/news?type=scholarships">獎學金</a></li>
@@ -49,28 +51,28 @@
                             </ul>
                         </li>
                         <li><a href="javascript:void(0);">成員<span class="arrow-down"></span></a>
-                            <ul style="width: 100px;">
+                            <ul>
                                 <li><a href="/member/class-teacher">班主任</a></li>
                                 <li><a href="/member/faculty">師資陣容</a></li>
                                 <li><a href="/member/admin-staff">行政人員</a></li>
                             </ul>
                         </li>
                         <li><a href="javascript:void(0);">課程<span class="arrow-down"></span></a>
-                            <ul style="width: 100px;">
+                            <ul>
                                 <li><a href="/course">課程介紹</a></li>
                                 <li><a href="/course/graduation-conditions">畢業條件</a></li>
                             </ul>
                         </li>
-                        {{if .IsLogin}}
-                            <li><a href="javascript:void(0);">管理<span class="arrow-down"></span></a>
-                                <ul style="width: 100px;">
-                                    <li><a href="/manage">歡迎</a></li>
-                                    <li><a href="/manage/article">文章管理</a></li>
-                                    <li><a href="/manage/reg">註冊新用戶</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="/logout">登出</a></li>
-                        {{end}}
+                    {{if .IsLogin}}
+                        <li><a href="/manage">管理<span class="arrow-down"></span></a>
+                            <ul>
+                                <li><a href="/manage">歡迎</a></li>
+                                <li><a href="/manage/article">文章管理</a></li>
+                                <li><a href="/manage/reg">註冊新用戶</a></li>
+                                <li><a href="/logout">登出</a></li>
+                            </ul>
+                        </li>
+                    {{end}}
                     </ul>
                 </div>
             </div>
@@ -122,7 +124,7 @@
             </div>
 
         {{if .Isindex}}
-        <div id="middle-banner">
+        <div id="middle-banner" style="display:none;">
             <p>解放電資魂</p>
         </div>
         {{end}}
@@ -162,13 +164,13 @@
                     <tr>
                         <td>
                             <li>國立中興大學 National Chung Hsing University</li>
-                            <li>402 台中市南區興大路 145 號 電機大樓 3 樓</li>
-                            <li>125 Xinda Rd., South Dist., Taichung City 402</li>
+                            <li><i class="material-icons" style="vertical-align: middle; font-size: 1em;">map</i> <a href="https://goo.gl/maps/PVbB8YebuPfXP2qeA">402 台中市南區興大路 145 號 電機大樓 3 樓</a></li>
+                            <li><i class="material-icons" style="vertical-align: middle; font-size: 1em;">map</i> <a href="https://goo.gl/maps/PVbB8YebuPfXP2qeA">125 Xinda Rd., South Dist., Taichung City 402</a></li>
                         </td>
                         <td>
-                            <li>TEL: +886-4-22840120</li>
-                            <li>FAX: +886-4-22854662</li>
-                            <li>E-mail: eecs@nchu.edu.tw</li>
+                            <li><i class="material-icons" style="vertical-align: middle; font-size: 1em;">call</i> +886-4-22840120</li>
+                            <li><i class="material-icons" style="vertical-align: middle; font-size: 1em;">print</i> +886-4-22854662</li>
+                            <li><i class="material-icons" style="vertical-align: middle; font-size: 1em;">email</i> <a href="mailto:eecs@nchu.edu.tw">eecs@nchu.edu.tw</a></li>
                         </td>
                     </tr>
                 </table>

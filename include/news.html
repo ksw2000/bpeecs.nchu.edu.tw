@@ -12,16 +12,20 @@
             $("#article-parent").html(json_data.text);
             $("h1#title").text(json_data.json.Title);
         }).catch((reason) => {
-            console.log(reason);
-            $("#article-parent").html(reason.status + " error");
+            $("#article-parent").html("Article not found");
         });
     }else{
         let type = getParam.get('type');
+        let lnfw;
+        console.log(type);
         if(type === null){
-            type = 'normal';
+            $("h1#title").text("最新消息");
+            lnfw = new loadNewsForWhat('brief', 'public', null, 0, 19);
+        }else{
+            $("h1#title").text(articleTypeDecoder(type) + " ／ 最新消息");
+            lnfw = new loadNewsForWhat('brief', 'public-with-type', type, 0, 19);
         }
-        $("h1#title").text(articleTypeDecoder(type) + " ／ 最新消息");
-        let lnfw = new loadNewsForWhat('brief', 'public-with-type', type, 0, 19);
+
         lnfw.load().then((html_data) => {
             $("#article-parent").html(html_data);
         }).catch((reason) => {
