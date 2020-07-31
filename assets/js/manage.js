@@ -1,7 +1,7 @@
 window.directlyLeave = false;
 window.onbeforeunload = function(){
     if(!leave_editing()){
-        return 'Changes you made may not be saved.';
+        return '變更尚未儲存 (若確定已儲存請忽略此訊息)';
     }
     return;
 };
@@ -66,13 +66,14 @@ var Editor = new (function(){
                     $("#new-article-area .content").append(`
                         <div id="img-upload-area" style="display:none;">
                             <button id="btnUploadPic" class="attachment" onchange="javascript:uploadPic(event)" style="display:inline-block;">
-                                Upload
+                                選擇檔案
                                 <form enctype="multipart/form-data"><input type="file" accept="image/*"></form>
                             </button>
                             <span style="margin: 0px 5px;"><b>or</b></span>
                             <input type="text" placeholder="Input URL" style="display:inline-block;"/>
                         </div>
                         <div id="return-url" style="display:none;">
+                            <p>複製已下圖片代碼到編輯</p>
                             <input type="text" onfocus="this.select()" style="display:block;
                                 border-width:0px; border-bottom-width:2px; border-radius:0px;
                                 max-width:none; width:100%;"/>
@@ -145,19 +146,19 @@ function leave_editing(){
 }
 
 const btnAreaForDraft = `
-<button id="attachment" onchange="javascript:attach(event)">Attachment
+<button id="attachment" onchange="javascript:attach(event)">附件
     <form enctype="multipart/form-data">
         <input type="file" multiple/>
     </form>
 </button>
-<button id="save" onclick="javascript:save(true)">Save (Draft)</button>
-<button id="publish" onclick="javascript:publish()" class="blue">Publish</button>
+<button id="save" onclick="javascript:save(true)">儲存至草稿</button>
+<button id="publish" onclick="javascript:publish()" class="blue">發佈</button>
 `;
 
 const btnAreaForPublished = `
-<button id="attachment" onchange="javascript:attach(event)">Attachment<input type="file" multiple/></button>
-<button id="save" onclick="javascript:save(false)" class="blue">Republish</button>
-<button id="publish" onclick="javascript:delete_what(this, 'news')" class="red">Delete</button>
+<button id="attachment" onchange="javascript:attach(event)">附件<input type="file" multiple/></button>
+<button id="save" onclick="javascript:save(false)" class="blue">重新發佈</button>
+<button id="publish" onclick="javascript:delete_what(this, 'news')" class="red">刪除</button>
 `
 
 function newArticle(){
@@ -190,7 +191,7 @@ function openNewArticleArea(callback){
             callback();
         }
     });
-    $("#btn-add").text('Close');
+    $("#btn-add").text('收起');
 }
 
 function closeNewArticleArea(callback){
@@ -199,7 +200,7 @@ function closeNewArticleArea(callback){
             callback();
         }
     });
-    $("#btn-add").text('Continue');
+    $("#btn-add").text('展開');
 }
 
 function attach(e){
@@ -334,7 +335,7 @@ function delete_what(obj, what, num){
     }
     obj = $(obj);
     obj.fadeOut('fast', ()=>{
-        obj.text("SURE ?");
+        obj.text("確定？");
         if(typeof num === 'string'){
             obj.attr('onclick', `real_delete_${what}('${num}')`);
         }else{
@@ -343,7 +344,7 @@ function delete_what(obj, what, num){
         obj.fadeIn('slow', ()=>{
             setTimeout(()=>{
                 obj.fadeOut('fast',()=>{
-                    obj.text("Delete");
+                    obj.text("刪除");
                     if(typeof num === 'string'){
                         obj.attr('onclick', `delete_what(this, '${what}', '${num}')`);
                     }else{
@@ -368,7 +369,7 @@ function real_delete_attachment(filename){
         }
     }
     if(target < 0){
-        notice('Error, the file you want to delete is not in the attachment list.');
+        notice('錯誤，欲刪除之檔案不在附加檔案列表中');
         return;
     }
 

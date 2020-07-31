@@ -105,21 +105,21 @@
 <h1>Manage</h1>
 
 <div class="buttonArea">
-    <button onclick="javascript:newArticle()" id="btn-add">Add</button>
-    <button onclick="javascript:goToAll()" id="btn-all">All</button>
-    <button onclick="javascript:goToDraft()" id="btn-draft" class="hide-less-400px">Draft</button>
-    <button onclick="javascript:goToPublished()" id="btn-published" class="hide-less-400px">Published</button>
+    <button onclick="javascript:newArticle()" id="btn-add">新增</button>
+    <button onclick="javascript:goToAll()" id="btn-all">全部</button>
+    <button onclick="javascript:goToDraft()" id="btn-draft" class="hide-less-400px">草稿</button>
+    <button onclick="javascript:goToPublished()" id="btn-published" class="hide-less-400px">已發佈</button>
 </div>
 
 <div id="top-editor-area">
     <div class="article editor-area" id="new-article-area">
-        <div class="title"><input id="title" placeholder="Title" autocomplete="off"/></div>
+        <div class="title"><input id="title" placeholder="標題" autocomplete="off"/></div>
         <select id="type">
-            <option value="normal">Normal</option>
-            <option value="activity">Activity</option>
-            <option value="course">Course</option>
-            <option value="scholarships">Scholarships</option>
-            <option value="recruit">Recruit</option>
+            <option value="normal">一般消息</option>
+            <option value="activity">演講 & 活動</option>
+            <option value="course">課程 & 招生</option>
+            <option value="scholarships">獎學金</option>
+            <option value="recruit">徵才資訊</option>
         </select>
         <div class="content">
             <textarea></textarea>
@@ -132,8 +132,8 @@
     </div>
 </div>
 
-<script src="/assets/js/manage.js?202007291604" type="text/javascript"></script>
+<script src="/assets/js/manage.js?202007311145" type="text/javascript"></script>
 
 <div id="article-parent">
-    Loading...
+    載入中...
 </div>

@@ -153,12 +153,12 @@ function loadNewsForWhat(what, scope, type, from, to){
                 ret += `<div class="article" data-id="${data[i].Id}" style="${draftColor}">
                     <h2 class="title">${draftIcon}${data[i].Title}</h2>`;
                 ret+=`<div class="header" onclick="javascript:appendMoreInfo(this)">`;
-                ret+=`    <div class="candy-header"><span>Type</span><span>${data[i].Type}</span></div>`;
-                ret+=`    <div class="candy-header"><span>Last modified</span><span class="orange">${data[i].Last_modified}</span></div>`;
+                ret+=`    <div class="candy-header"><span>分類</span><span>${articleTypeDecoder(data[i].Type)}</span></div>`;
+                ret+=`    <div class="candy-header"><span>最後編輯</span><span class="orange">${data[i].Last_modified}</span></div>`;
                 ret+=`</div>`;
                 ret+=`<div style="display: none;">`;
-                ret+=`  <div class="candy-header hide-less-500px"><span>Create</span><span class="red">${data[i].Create_time}</span></div>`;
-                ret+=`  <div class="candy-header hide-less-500px"><span>First publish</span><span class="green">${data[i].Publish_time}</span></div>`;
+                ret+=`  <div class="candy-header hide-less-500px"><span>建立於</span><span class="red">${data[i].Create_time}</span></div>`;
+                ret+=`  <div class="candy-header hide-less-500px"><span>發佈於</span><span class="green">${data[i].Publish_time}</span></div>`;
                 ret+=`</div>`;
                 ret+=`
                     <div class="content">
@@ -168,9 +168,9 @@ function loadNewsForWhat(what, scope, type, from, to){
                         <ul>${attachment}</ul>
                     </div>
                     <div class="buttonArea" style="text-align: right;">
-                        <button id="read" onclick="window.location='/news?id=${data[i].Id}'"" class="border">Read</button>
-                        <button id="delete" onclick="javascript:delete_what(this, 'news', ${data[i].Id})" class="red">Delete</button>
-                        <button id="publish" onclick="javascript:edit_news(${data[i].Id})" class="blue">Edit</button>
+                        <button id="read" onclick="window.location='/news?id=${data[i].Id}'"" class="border">閱讀</button>
+                        <button id="delete" onclick="javascript:delete_what(this, 'news', ${data[i].Id})" class="red">刪除</button>
+                        <button id="publish" onclick="javascript:edit_news(${data[i].Id})" class="blue">編輯</button>
                     </div>
                 </div>
                 `;
@@ -196,13 +196,13 @@ function loadNewsForWhat(what, scope, type, from, to){
                 <div class="article" data-id="${data[i].Id}">
                     <h2 class="title">${data[i].Title}</h2>
                     <div class="header" onclick="javascript:appendMoreInfo(this)">
-                        <div class="candy-header"><span>發佈時間</span><span>${data[i].Publish_time}</span></div>
+                        <div class="candy-header"><span>發佈於</span><span>${data[i].Publish_time}</span></div>
                     </div>
                     <div style="display:none;">
                 `;
                 ret+=`<div class="candy-header"><span>分類</span><span class="green">${articleTypeDecoder(data[i].Type)}</span></div>`;
-                ret+=`<div class="candy-header"><span>建立時間</span><span class="red">${data[i].Create_time}</span></div>`;
-                ret+=`<div class="candy-header"><span>修改時間</span><span class="orange">${data[i].Last_modified}</span></div>`;
+                ret+=`<div class="candy-header"><span>建立於</span><span class="red">${data[i].Create_time}</span></div>`;
+                ret+=`<div class="candy-header"><span>最後編輯</span><span class="orange">${data[i].Last_modified}</span></div>`;
                 ret+=`<div class="candy-header"><span>發文</span><span class="cyan">@${data[i].User}</span></div>`;
                 ret+=`
                     </div>
@@ -262,12 +262,12 @@ function loadPublicNewsById(id){
             ret.text += `
             <div class="article" data-id="${data.Id}" style="border:0px;">
                 <div class="header" onclick="javascript:appendMoreInfo(this)">
-                    <div class="candy-header"><span>發佈時間</span><span>${data.Publish_time}</span></div>
+                    <div class="candy-header"><span>發佈於</span><span>${data.Publish_time}</span></div>
                 </div>
                 <div class="header" style="display: none;">`;
             ret.text += `<div class="candy-header"><span>分類</span><span class="green">${articleTypeDecoder(data.Type)}</span></div>`;
-            ret.text += `<div class="candy-header"><span>建立時間</span><span class="red">${data.Create_time}</span></div>`;
-            ret.text += `<div class="candy-header"><span>修改時間</span><span class="orange">${data.Last_modified}</span></div>`;
+            ret.text += `<div class="candy-header"><span>建立於</span><span class="red">${data.Create_time}</span></div>`;
+            ret.text += `<div class="candy-header"><span>修改於</span><span class="orange">${data.Last_modified}</span></div>`;
             ret.text += `<div class="candy-header"><span>發文</span><span class="cyan">@${data.User}</span></div>`;
             ret.text += `</div>
                 <div class="content">
