@@ -53,6 +53,14 @@ nav #logo img{
     z-index: 12;
 }
 
+nav #logo-less-450px{
+    display: none;
+}
+
+nav #logo-over-450px{
+    display: block;
+}
+
 nav #fix-1200{
     margin: 0px auto;
     max-width: 1200px;
@@ -277,6 +285,20 @@ nav #button-less-900px > a:hover{
         height: 50px;
     }
 
+    nav #button-over-900px{
+        top: 50px;
+        padding: 0px 0px 50px 0px;
+    }
+
+    nav #button-less-900px{
+        height: 40px;
+        padding-top: 5px;
+    }
+
+    nav #button-less-900px a{
+        padding: 2px;
+    }
+
     nav #logo{
         box-sizing: border-box;
         margin: 0px auto;
@@ -291,19 +313,13 @@ nav #button-less-900px > a:hover{
         margin: 0px auto;
         /*width: 100%;*/
     }
-
-    nav #button-over-900px{
-        top: 50px;
-        padding: 0px 0px 50px 0px;
+    
+    nav #logo-less-450px{
+        display: block;
     }
 
-    nav #button-less-900px{
-        height: 40px;
-        padding-top: 5px;
-    }
-
-    nav #button-less-900px a{
-        padding: 2px;
+    nav #logo-over-450px{
+        display: none;
     }
 }
 
