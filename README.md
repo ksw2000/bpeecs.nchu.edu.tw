@@ -100,11 +100,11 @@ CREATE TABLE "article" (
 ### files.db
 ```sql
 CREATE TABLE "files" (
-	"id"	INTEGER UNIQUE,
+	"id"	INTEGER NOT NULL UNIQUE,
+	"upload_time"	INTEGER,
 	"client_name"	TEXT,
 	"server_name"	TEXT,
 	"path"	TEXT,
-	"hash"	TEXT,
 	PRIMARY KEY("id")
 );
 ```
