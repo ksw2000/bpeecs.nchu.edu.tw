@@ -54,15 +54,15 @@
 .card li{
     align-items: baseline;
     display: flex;
-    line-height: 28px;
+    line-height: 30px;
     margin-left: 5px;
     vertical-align: baseline;
 }
 
-.card .icon{
-    height: 20px;
-    margin-right: 10px;
-    vertical-align: sub;
+.card li i{
+    vertical-align: middle;
+    font-size: 1.35em;
+    margin-right: 8px;
 }
 
 .card .profile{
