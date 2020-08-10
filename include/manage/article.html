@@ -1,5 +1,25 @@
 <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css"/>
+<script>
+var isIE = navigator.userAgent.search("Trident") > -1;
+if(isIE){
+    var r = confirm("抱歉，該網站不支援 IE，請按確定以下載 Google Chrome");
+    if (r){
+        document.location.href="https://www.google.com/chrome/";
+    }else{
+        if(confirm("請按確定以下載 Opera")){
+            document.location.href="https://www.opera.com/";
+        }else{
+            if(confirm("請按確定以下載 Firefox")){
+                document.location.href="https://www.mozilla.org/firefox/new/";
+            }else{
+                alert("你跟 IE 一樣固執而且沒有人愛你");
+                document.location.href="https://www.microsoft.com/zh-tw/edge";
+            }
+        }
+    }
+}
+</script>
 <style>
 .CodeMirror{
     background-color: rgb(240, 240, 240)!important;
