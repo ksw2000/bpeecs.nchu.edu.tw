@@ -183,9 +183,7 @@ function loadNewsForWhat(what, scope, type, from, to){
             let len = data.length;
             let ret = "";
             for(let i=0; i<len; i++){
-                data[i].Publish_time  = $.format.date(new Date(data[i].Publish_time * 1000), "yyyy-MM-dd HH : mm");
-                data[i].Last_modified = $.format.date(new Date(data[i].Last_modified * 1000), "yyyy-MM-dd HH : mm");
-                data[i].Create_time   = $.format.date(new Date(data[i].Create_time * 1000), "yyyy-MM-dd HH : mm");
+                data[i].Publish_time  = $.format.date(new Date(data[i].Publish_time * 1000), "yyyy-MM-dd");
                 let newContent = stripHtml(marked(data[i].Content));
                 if(newContent.length>30){
                     newContent = newContent.slice(0, 80);
@@ -201,8 +199,6 @@ function loadNewsForWhat(what, scope, type, from, to){
                     <div style="display:none;">
                 `;
                 ret+=`<div class="candy-header"><span>分類</span><span class="green">${articleTypeDecoder(data[i].Type)}</span></div>`;
-                ret+=`<div class="candy-header"><span>建立於</span><span class="red">${data[i].Create_time}</span></div>`;
-                ret+=`<div class="candy-header"><span>最後編輯</span><span class="orange">${data[i].Last_modified}</span></div>`;
                 ret+=`<div class="candy-header"><span>發文</span><span class="cyan">@${data[i].User}</span></div>`;
                 ret+=`
                     </div>
@@ -253,9 +249,7 @@ function loadPublicNewsById(id){
             let ret = {};
             ret.text = "";
 
-            data.Last_modified = $.format.date(new Date(data.Last_modified * 1000), "yyyy-MM-dd HH : mm");
-            data.Create_time   = $.format.date(new Date(data.Create_time * 1000), "yyyy-MM-dd HH : mm");
-            data.Publish_time  = $.format.date(new Date(data.Publish_time * 1000), "yyyy-MM-dd HH : mm");
+            data.Publish_time  = $.format.date(new Date(data.Publish_time * 1000), "yyyy-MM-dd");
             data.Content       = marked(data.Content);
 
             let attachment = loadAttchment(data.Attachment);
@@ -266,8 +260,6 @@ function loadPublicNewsById(id){
                 </div>
                 <div class="header" style="display: none;">`;
             ret.text += `<div class="candy-header"><span>分類</span><span class="green">${articleTypeDecoder(data.Type)}</span></div>`;
-            ret.text += `<div class="candy-header"><span>建立於</span><span class="red">${data.Create_time}</span></div>`;
-            ret.text += `<div class="candy-header"><span>修改於</span><span class="orange">${data.Last_modified}</span></div>`;
             ret.text += `<div class="candy-header"><span>發文</span><span class="cyan">@${data.User}</span></div>`;
             ret.text += `</div>
                 <div class="content">
