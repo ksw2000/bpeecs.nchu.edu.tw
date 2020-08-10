@@ -4,23 +4,25 @@ Loading...
 </div>
 
 <script>
-    let getParam = new URL(window.location.href).searchParams;
-    if(getParam.has('id')){
-        loadPublicNewsById(getParam.get('id')).then((json_data) => {
+    let url = window.location.href;
+    let id = url.match(/(.*?)\?id=(.*?)$/);
+    let type = url.match(/(.*?)\?type=(.*?)$/);
+    id = (id != null)? id[2] : null;
+    type = (type != null)? type[2] : null;
+
+    if(id != null){
+        loadPublicNewsById(id).then((json_data) => {
             /*
                 json_data.text : html data
                 json_data.json : original data from db (but some data are modified)
             */
-            console.log(json_data);
             $("#article-parent").html(json_data.text);
             $("h1#title").text(json_data.json.Title);
         }).catch((reason) => {
             $("#article-parent").html("Article not found");
         });
     }else{
-        let type = getParam.get('type');
         let lnfw;
-        console.log(type);
         if(type === null){
             $("h1#title").text("最新消息");
             lnfw = new loadNewsForWhat('brief', 'public', null, 0, 19);
