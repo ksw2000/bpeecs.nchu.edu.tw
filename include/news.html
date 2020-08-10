@@ -11,14 +11,14 @@ Loading...
     type = (type != null)? type[2] : null;
 
     if(id != null){
-        loadPublicNewsById(id).then((json_data) => {
+        loadPublicNewsById(id).then(function(json_data){
             /*
                 json_data.text : html data
                 json_data.json : original data from db (but some data are modified)
             */
             $("#article-parent").html(json_data.text);
             $("h1#title").text(json_data.json.Title);
-        }).catch((reason) => {
+        }).catch(function(reason){
             $("#article-parent").html("Article not found");
         });
     }else{
@@ -31,9 +31,9 @@ Loading...
             lnfw = new loadNewsForWhat('brief', 'public-with-type', type, 0, 19);
         }
 
-        lnfw.load().then((html_data) => {
+        lnfw.load().then(function(html_data){
             $("#article-parent").html(html_data);
-        }).catch((reason) => {
+        }).catch(function(reason){
             console.log(reason);
             $("#article-parent").html("Error " + reason.status);
         });
@@ -41,10 +41,10 @@ Loading...
     }
 
     function loadNext(obj){
-        window.lnfw.next().then((data) => {
+        window.lnfw.next().then(function(data){
             $("#article-parent").append(data);
             obj.remove();
-        }).catch((reason) => {
+        }).catch(function(reason){
             console.log(reason);
             notice("Error " + reason.status);
         })
