@@ -38,6 +38,16 @@ All of the javascript dependencies are embedded by the online resource links. If
 
 4. Marked.js: [markdown to html](https://github.com/markedjs/marked)
 
+5. Promise() for ES5: [ES6-promise](https://github.com/stefanpenner/es6-promise)
+
+### IE
+
+>
+> 1. Transfer ES6 to ES5 at [Babel](https://babeljs.io/)
+>
+> 2. ES5 promise() support [ES6-promise](https://github.com/stefanpenner/es6-promise)
+>
+
 ## Files
 + bin/ (golang bin)
 
