@@ -32,13 +32,11 @@ All of the javascript dependencies are embedded by the online resource links. If
 
 1. jQuery (v3.5.1)
 
-2. Text editor: [simplemde](https://simplemde.com/)
+2. Text editor: [CkEditor](https://ckeditor.com/)
 
 3. Date foramte (jQuery dependency): [jquery-dateFormat](https://github.com/phstc/jquery-dateFormat)
 
-4. Marked.js: [markdown to html](https://github.com/markedjs/marked)
-
-5. Promise() for ES5: [ES6-promise](https://github.com/stefanpenner/es6-promise)
+4. Promise() for ES5: [ES6-promise](https://github.com/stefanpenner/es6-promise)
 
 ### IE
 

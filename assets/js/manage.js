@@ -8,111 +8,7 @@ window.onbeforeunload = function(){
 
 var Editor = new (function(){
     let self = this;
-    this.editor = new SimpleMDE({
-        toolbar: [{
-            name: "bold",
-            action: SimpleMDE.toggleBold,
-            className: "fa fa-bold",
-            title: "Bold",
-        },{
-            name: "italic",
-            action: SimpleMDE.toggleItalic,
-            className: "fa fa-italic",
-            title: "Italic"
-        },{
-            name: "heading-1",
-            action: SimpleMDE.toggleHeading1,
-            title: "Big Heading",
-            className: "fa fa-header fa-header-x fa-header-1"
-        },{
-            name: "heading-2",
-            action: SimpleMDE.toggleHeading2,
-            title: "Medium Heading",
-            className: "fa fa-header fa-header-x fa-header-2"
-        },{
-            name: "heading-3",
-            action: SimpleMDE.toggleHeading3,
-            title: "Small Heading",
-            className: "fa fa-header fa-header-x fa-header-3"
-        },"|",{
-            name: "quote",
-            action: SimpleMDE.toggleBlockquote,
-            title: "Quote",
-            className: "fa fa-quote-left"
-        },{
-            name: "unordered-list",
-            action:  SimpleMDE.toggleUnorderedList,
-            title: "Generic List",
-            className: "fa fa-list-ul"
-        },{
-            name: "ordered-list",
-            action:  SimpleMDE.toggleOrderedList,
-            title: "Numbered List",
-            className: "fa fa-list-ol"
-        },{
-            name: "link",
-            action:  SimpleMDE.drawLink,
-            title: "Create Link",
-            className: "fa fa-link"
-        },{
-            name: "horizontal-rule",
-            action:  SimpleMDE.drawHorizontalRule,
-            title: "Insert Horizontal Line",
-            className: "fa fa-minus"
-        },"|",{
-            name: "image",
-            action:  function insertImage(){
-                if($("#new-article-area #img-upload-area").length == 0){
-                    $("#new-article-area .content").append(`
-                        <div id="img-upload-area" style="display:none;">
-                            <button id="btnUploadPic" class="attachment" onchange="javascript:uploadPic(event)" style="display:inline-block;">
-                                選擇檔案
-                                <form enctype="multipart/form-data"><input type="file" accept="image/*"></form>
-                            </button>
-                            <span style="margin: 0px 5px;"><b>or</b></span>
-                            <input type="text" placeholder="Input URL" style="display:inline-block;"/>
-                        </div>
-                        <div id="return-url" style="display:none;">
-                            <p>複製已下圖片代碼到編輯</p>
-                            <input type="text" onfocus="this.select()" style="display:block;
-                                border-width:0px; border-bottom-width:2px; border-radius:0px;
-                                max-width:none; width:100%;"/>
-                        </div>
-                    `);
-                    $("#new-article-area #img-upload-area").slideDown();
-                }else{
-                    $("#new-article-area #img-upload-area").slideToggle();
-                    $("#new-article-area #return-url").slideUp();
-                }
-            },
-            title: "Insert Image",
-            className: "fa fa-picture-o"
-        },{
-            name: "table",
-            action:  SimpleMDE.drawTable,
-            title: "Insert Table",
-            className: "fa fa-table"
-        },"|",{
-            name: "preview",
-            action:  SimpleMDE.togglePreview,
-            title: "Toggle Preview",
-            className: "fa fa-eye no-disable"
-        },{
-            name: "guide",
-            action:  function(){
-                window.open('https://simplemde.com/markdown-guide', '_blank');
-            },
-            title: "Markdown Guide",
-            className: "fa fa-question-circle"
-        }],
-
-        placeholder: "Type here...",
-        forceSync: true,
-        element: $("#new-article-area textarea")[0],
-        spellChecker: false
-    });
     this.serial = -1;
-
     this.defaultAttahmentVal = () =>{
         return {
             client_name: [],
@@ -120,6 +16,29 @@ var Editor = new (function(){
             path :[]
         };
     }
+    this.editor = null;
+
+    this.newCKEeditor = () => {
+        CKEDITOR.replace('mainEditor');
+        self.editor = CKEDITOR.instances.mainEditor;
+    }
+
+    this.destroyCKEeditor = () => {
+        if(self.editor){
+            self.editor.destroy();
+            self.editor = null;
+        }
+    }
+
+    this.getEditorValue = () => {
+        return (self.editor)? self.editor.getData() : '';
+    }
+    this.setEditorValue = (val) => {
+        if(self.editor){
+            self.editor.setData(val);
+        }
+    }
+
     this.attachment = this.defaultAttahmentVal();
     this.getType = () => {
         return $("#new-article-area #type").val();
@@ -131,7 +50,7 @@ var Editor = new (function(){
     this.preHash = hash(this.getType() + JSON.stringify(this.attachment));
 
     this.calcCurrentHash = () =>{
-        return hash(self.getTitle() + self.getType() + self.editor.value() + JSON.stringify(self.attachment));
+        return hash(self.getTitle() + self.getType() + self.getEditorValue() + JSON.stringify(self.attachment));
     }
 })();
 
@@ -186,6 +105,8 @@ function newArticle(){
 }
 
 function openNewArticleArea(callback){
+    Editor.destroyCKEeditor();
+    Editor.newCKEeditor();
     $("#new-article-area").slideDown('fast', () => {
         if(typeof callback === 'function'){
             callback();
@@ -285,7 +206,7 @@ function save(isPrivate){
         serial: Editor.serial,
         title: Editor.getTitle(),
         type: Editor.getType(),
-        content: Editor.editor.value(),
+        content: Editor.getEditorValue(),
         attachment: JSON.stringify(Editor.attachment)
     },function(data){
         if(data['err']){
@@ -311,7 +232,7 @@ function publish(){
         serial: Editor.serial,
         title: Editor.getTitle(),
         type: Editor.getType(),
-        content: Editor.editor.value(),
+        content: Editor.getEditorValue(),
         attachment: JSON.stringify(Editor.attachment)
     }
     ,function(data){
@@ -442,8 +363,9 @@ function real_delete_news(data_id){
 }
 
 function edit_news(data_id){
-    if(leave_editing()){
+    //if(leave_editing()){
         // 將原來收起來的區域展開
+        openNewArticleArea();
         if($('.article[data-id="' + Editor.serial + '"]').length){
             $('.article[data-id="' + Editor.serial + '"]').slideDown();
         }
@@ -469,14 +391,12 @@ function edit_news(data_id){
                     }
                     $("#new-article-area #type option[value = '" + data.Type + "']").attr('selected', 'selected');
 
-                    Editor.editor.value(data.Content);
-                    // Use default value (hash problem)
                     Editor.attachment = Editor.defaultAttahmentVal();
                     try{
                         Editor.attachment = JSON.parse(data.Attachment);
                         let parse = Editor.attachment;
                         let len = parse.client_name.length;
-                        let attachment = "";
+                        let attachment = '';
                         for(let i=0; i<len; i++){
                             attachment += `
                                 <li data-file-name="${parse.server_name[i]}">
@@ -489,7 +409,6 @@ function edit_news(data_id){
                     }catch(e){
                         console.log(e);
                     }
-                    Editor.preHash = Editor.calcCurrentHash();
                     Editor.serial = data_id;
 
                     // Step2: slideUp news area
@@ -509,7 +428,9 @@ function edit_news(data_id){
                             window.scrollTo({
                                 top : $("#new-article-area")[0].offsetTop - $("nav")[0].clientHeight,
                                 behavior: 'smooth'
-                            })
+                            });
+                            Editor.setEditorValue(data.Content);
+                            Editor.preHash = Editor.calcCurrentHash();
                         });
                     });
                 }
@@ -520,7 +441,7 @@ function edit_news(data_id){
             },
             dataType: 'json'
         });
-    }
+    //}
     // DO NOTHING
 }
 
@@ -554,17 +475,25 @@ function resetBtnColor(id){
     $('#btn-'+id).addClass('blue-green');
 }
 
+function restoreTopEditorArea(){
+    $('#top-editor-area').append($("#new-article-area"));
+    $("#new-article-area").css('display', 'none');
+}
+
 function goToAll(){
+    restoreTopEditorArea();
     resetBtnColor('all');
     reload_news('all');
 }
 
 function goToDraft(){
+    restoreTopEditorArea();
     resetBtnColor('draft');
     reload_news('draft');
 }
 
 function goToPublished(){
+    restoreTopEditorArea();
     resetBtnColor('published');
     reload_news('published');
 }

@@ -151,6 +151,11 @@ h3{
     transition: color 500ms;
 }
 
+/*CkEditor*/
+.marker{
+	background-color: Yellow;
+}
+
 /*----------------------------------------------footer----------------------------------------------*/
 footer{
     background-color: rgb(65, 65, 65);

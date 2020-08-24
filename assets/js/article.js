@@ -96,7 +96,7 @@ function loadNewsOnlyTitle(scope) {
 
       for (var i = 0; i < len; i++) {
         data[i].Publish_time = $.format.date(new Date(data[i].Publish_time * 1000), "yyyy-MM-dd");
-        ret += "\n                <div class=\"article\" data-id=\"".concat(data[i].Id, "\" style=\"cursor: pointer\"\n                    onclick=\"window.location='/news?id=").concat(data[i].Id, "'\">\n\n                    <div class=\"candy-header\"><span class=\"single\">").concat(data[i].Publish_time, "</span></div>\n                    <h2 class=\"title\">").concat(data[i].Title, "</h2>\n                </div>\n                ");
+        ret += "<div class=\"article\" data-id=\"".concat(data[i].Id, "\" style=\"cursor: pointer\" onclick=\"window.location='/news?id=").concat(data[i].Id, "'\"><div class=\"candy-header\"><span class=\"single\">").concat(data[i].Publish_time, "</span></div><h2 class=\"title\">").concat(data[i].Title, "</h2></div>");
       }
 
       resolve(ret);
@@ -118,7 +118,7 @@ function loadNewsForWhat(what, scope, type, from, to) {
         var ret = self.render(data.NewsList);
 
         if (data.HasNext) {
-          ret += "<div>\n                                <button style=\"margin:0px auto;\" onclick=\"loadNext(this)\">More</button>\n                            </div>\n                            ";
+          ret += "<div><button style=\"margin:0px auto;\" onclick=\"loadNext(this)\">More</button></div>";
         }
 
         resolve(ret);
@@ -139,7 +139,7 @@ function loadNewsForWhat(what, scope, type, from, to) {
         data[i].Create_time = $.format.date(new Date(data[i].Create_time * 1000), "yyyy-MM-dd HH : mm");
         data[i].Last_modified = data[i].Last_modified === 0 ? '-' : $.format.date(new Date(data[i].Last_modified * 1000), "yyyy-MM-dd HH : mm");
         data[i].Publish_time = data[i].Publish_time === 0 ? '-' : $.format.date(new Date(data[i].Publish_time * 1000), "yyyy-MM-dd HH : mm");
-        var newContent = stripHtml(marked(data[i].Content));
+        var newContent = stripHtml(data[i].Content);
 
         if (newContent.length > 50) {
           newContent = newContent.slice(0, 80);
@@ -171,7 +171,7 @@ function loadNewsForWhat(what, scope, type, from, to) {
 
       for (var i = 0; i < len; i++) {
         data[i].Publish_time = $.format.date(new Date(data[i].Publish_time * 1000), "yyyy-MM-dd");
-        var newContent = stripHtml(marked(data[i].Content));
+        var newContent = stripHtml(data[i].Content);
 
         if (newContent.length > 30) {
           newContent = newContent.slice(0, 80);
@@ -218,7 +218,7 @@ function loadPublicNewsById(id) {
       var ret = {};
       ret.text = "";
       data.Publish_time = $.format.date(new Date(data.Publish_time * 1000), "yyyy-MM-dd");
-      data.Content = marked(data.Content);
+      data.Content = data.Content;
       var attachment = loadAttchment(data.Attachment);
       ret.text += "\n            <div class=\"article\" data-id=\"".concat(data.Id, "\" style=\"border:0px;\">\n                <div class=\"header\" onclick=\"javascript:appendMoreInfo(this)\">\n                    <div class=\"candy-header\"><span>\u767C\u4F48\u65BC</span><span>").concat(data.Publish_time, "</span></div>\n                </div>\n                <div class=\"header\" style=\"display: none;\">");
       ret.text += "<div class=\"candy-header\"><span>\u5206\u985E</span><span class=\"green\">".concat(articleTypeDecoder(data.Type), "</span></div>");
