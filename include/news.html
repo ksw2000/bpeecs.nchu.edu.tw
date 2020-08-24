@@ -11,16 +11,18 @@ Loading...
     type = (type != null)? type[2] : null;
 
     if(id != null){
+        /*
         loadPublicNewsById(id).then(function(json_data){
             /*
                 json_data.text : html data
                 json_data.json : original data from db (but some data are modified)
-            */
+            
             $("#article-parent").html(json_data.text);
             $("h1#title").text(json_data.json.Title);
         }).catch(function(reason){
             $("#article-parent").html("Article not found");
         });
+        */
     }else{
         let lnfw;
         if(type === null){

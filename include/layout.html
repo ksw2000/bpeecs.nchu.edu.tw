@@ -10,6 +10,9 @@
         <link rel="stylesheet" href="/assets/style/form.css?{{.Time}}">
         <link rel="stylesheet" href="/assets/style/articles.css?{{.Time}}">
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <meta property="og:title" content="{{.Title}}"/>
+        <meta property="og:description" content="{{.Title}}"/>
+        <meta property="og:image" content="/assets/img/logo.png"/>
         {{if .Isindex}}
         <link rel="stylesheet" type="text/css" href="/assets/style/forIndex.css?{{.Time}}">
         {{end}}

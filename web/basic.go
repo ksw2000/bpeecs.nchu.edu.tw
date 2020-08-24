@@ -7,9 +7,12 @@ import(
     "log"
     "net/http"
     "os"
+    "strconv"
     "time"
+    "bpeecs.nchu.edu.tw/article"
     "bpeecs.nchu.edu.tw/function"
     "bpeecs.nchu.edu.tw/login"
+    "bpeecs.nchu.edu.tw/renderer"
 )
 
 type PageData struct{
@@ -118,6 +121,32 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
             if ok{
                 data.Title = subtitle +" | "+ data.Title;
             }
+
+            if id := function.GET("id", r); id != ""{
+                //id is uint32
+                serial_u64, err := strconv.ParseUint(id, 10, 32)
+
+                if err != nil{
+                    http.Redirect(w, r, "/error/404", 302)
+                    return
+                }else{
+                    art := article.New();
+                    art.Connect("./sql/article.db")
+
+                    user := ""
+                    if data.IsLogin{
+                        user = loginInfo.UserID
+                    }
+
+                    artInfo := art.GetArticleBySerial(uint32(serial_u64), user)
+
+                    data.Title = artInfo.Title + " | 國立中興大學電機資訊學院學士班"
+                    data.Main  = template.HTML(renderer.RenderPublicArticle(artInfo))
+                }
+            }else{
+                data.Title += " | 國立中興大學電機資訊學院學士班"
+                data.Main = getContent(path)
+            }
         case "/login":
             if login.CheckLogin(w, r) != nil{
                 http.Redirect(w, r, "/manage", 302)
@@ -146,6 +175,8 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
     if(path == "/manage"){
         data.Title += " | 國立中興大學電機資訊學院學士班"
         // retain data.Main
+    }else if(path == "/news"){
+
     }else if(path != "/"){
         data.Title += " | 國立中興大學電機資訊學院學士班"
         data.Main = getContent(path)
