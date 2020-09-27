@@ -88,8 +88,9 @@
     width: auto;
     -webkit-filter: drop-shadow(8px 8px 5px #303050);
     filter: drop-shadow(8px 8px 5px #303050);
+    user-select: none;
 }
-
+/*
 #banner #flex-parent .flex:hover{
     animation-name: shake;
     animation-duration: 500ms;
@@ -107,7 +108,7 @@
     93%  {transform: rotate(-5deg);}
     100% {transform: rotate(0deg);}
 }
-
+*/
 #banner #flex-parent p{
     color: #fff;
     display: block;

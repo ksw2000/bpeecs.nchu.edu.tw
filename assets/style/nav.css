@@ -265,7 +265,11 @@ nav #button-less-900px > a:hover{
         display: block;
     }
 
-    nav #button-over-900px a:hover, nav #button-over-900px > ul > li > ul > li > a:hover{
+    nav #button-over-900px a:hover{
+        color: inherit!important;
+    }
+
+    nav #button-over-900px > ul > li > ul > li > a:hover{
         background-color: #4e4e4e;
         color: #fff!important;
         transition: unset!important;
@@ -313,7 +317,7 @@ nav #button-less-900px > a:hover{
         margin: 0px auto;
         /*width: 100%;*/
     }
-    
+
     nav #logo-less-450px{
         display: block;
     }

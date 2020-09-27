@@ -1,10 +1,11 @@
+<h1>{{.Title}}</h1>
 <div class="article" data-id="{{.Id}}" style="border:0px;">
     <div class="header" onclick="javascript:appendMoreInfo(this)">
         <div class="candy-header"><span>發佈於</span><span>{{.Publish_time}}</span></div>
     </div>
     <div class="header" style="display: none;">
         <div class="candy-header"><span>分類</span><span class="green">{{.Type}}</span></div>
-        <div class="candy-header"><span>發文</span><span class="cyan">{{.User}}</span></div>
+        <div class="candy-header"><span>發文</span><span class="cyan">@{{.User}}</span></div>
     </div>
     <div class="content">
         {{.Content}}
