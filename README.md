@@ -47,45 +47,41 @@ All of the javascript dependencies are embedded by the online resource links. If
 >
 
 ## Files
-+ bin/ (golang bin)
++ beepcs.nchu.edu.tw/
+    + .git/
 
-+ pkg/ (golang package)
+    + assests/  (static file)
+        + fonts/
+        + img/
+        + js/
+        + style/
+        + upload/ (client upload files)
 
-+ src/ (golang source code)
+    + include/  (html files)
 
-    + beepcs.nchu.edu.tw/
-        + .git/
+    + sql/ (store database)
 
-        + assests/  (static file)
-            + fonts/
-            + img/
-            + js/
-            + style/
-            + upload/ (client upload files)
+    + article/ (process article/(news) add, update, delte)
+    + files/ (manage the file which clients uploaded)
 
-        + include/  (html files)
+    + function/ (some func that golang often use)
 
-        + sql/ (store database)
+    + login/ (process login)
 
-        + article/ (process article/(news) add, update, delte)
-        + files/ (manage the file which clients uploaded)
+    + web/
+        + basic.go (process: ./xxx)
+        + error.go (process error url)
+        + function.go (process ./function/xxx)
 
-        + function/ (some func that golang often use)
+    + go.mod
 
-        + login/ (process login)
+    + go.sum
 
-        + web/
-            + basic.go (process: ./xxx)
-            + error.go (process error url)
-            + function.go (process ./function/xxx)
+    + __index.go__ (main program)
 
-        + __index.go__ (main program)
+    + __index443.go__ (for https)
 
-        + newAccount.go `private` (regist a new user)
-
-    + github.com/
-        + go-session (for session)
-        + mattn (for sqlite3)
+    + newAccount.go `private` (regist a new user)
 
 ## Database
 

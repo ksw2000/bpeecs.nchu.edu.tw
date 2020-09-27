@@ -39,11 +39,27 @@ func RenderSimpleTime(timestamp uint64) string{
     //(t.Format("2006-01-02 15:04:05"))
 }
 
+func RenderArticleType(key string) string{
+    dict := map[string]string{
+        "normal"       : "一般消息",
+        "activity"     : "演講 & 活動",
+        "course"       : "課程 & 招生",
+        "scholarships" : "獎學金",
+        "recruit"      : "徵才資訊",
+    }
+
+    val, ok := dict[key]
+    if ok{
+        return val
+    }
+    return ""
+}
+
 func RenderPublicArticle(artInfo *article.Article_Format) string{
     data := new(Article_render)
     data.Id = artInfo.Id
     data.User = artInfo.User
-    data.Type = artInfo.Type
+    data.Type = RenderArticleType(artInfo.Type)
     data.Create_time = RenderSimpleTime(artInfo.Create_time)
     data.Publish_time = RenderSimpleTime(artInfo.Publish_time)
     data.Last_modified = RenderSimpleTime(artInfo.Last_modified)
