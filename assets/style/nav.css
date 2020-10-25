@@ -307,15 +307,12 @@ nav #button-less-900px > a:hover{
         box-sizing: border-box;
         margin: 0px auto;
         height: 50px;
-        /*padding: 0px;*/
-        /*width: 100%;*/
     }
 
     nav #logo img{
         box-sizing: border-box;
         height: auto;
         margin: 0px auto;
-        /*width: 100%;*/
     }
 
     nav #logo-less-450px{

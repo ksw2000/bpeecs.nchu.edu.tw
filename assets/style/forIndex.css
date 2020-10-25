@@ -72,8 +72,7 @@
     flex-wrap: nowrap;
     justify-content: space-around;
     max-width: 900px;
-    margin: 0px auto;
-    margin-top: 50px;
+    margin: 50px auto 0px;
     text-align: center;
     width: 100%;
 }
@@ -123,8 +122,7 @@
 #banner #flex-parent img{
     display: block;
     width: 50%;
-    margin: 0px auto;
-    margin-bottom: 15px;
+    margin: 0px auto 15px;
 }
 
 .banner-less-900px, .banner-less-450px{
