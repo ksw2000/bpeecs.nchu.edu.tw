@@ -87,6 +87,7 @@ function loadNews(scope, type, from, to) {
   });
 }
 
+/*
 function loadNewsOnlyTitle(scope) {
   return new Promise(function (resolve, reject) {
     loadNews(scope, 'normal').then(function (data) {
@@ -105,6 +106,7 @@ function loadNewsOnlyTitle(scope) {
     });
   });
 }
+*/
 
 function loadNewsForWhat(what, scope, type, from, to) {
   var self = this;
@@ -212,6 +214,7 @@ function loadNewsById(newsID) {
   });
 }
 
+/*
 function loadPublicNewsById(id) {
   return new Promise(function (resolve, reject) {
     loadNewsById(id).then(function (data) {
@@ -231,3 +234,4 @@ function loadPublicNewsById(id) {
     });
   });
 }
+*/

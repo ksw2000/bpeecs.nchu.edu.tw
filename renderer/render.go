@@ -4,7 +4,6 @@ import (
     "encoding/json"
     "html/template"
     "time"
-    "fmt"
     "bpeecs.nchu.edu.tw/article"
 )
 
@@ -77,10 +76,28 @@ func RenderPublicArticle(artInfo *article.Article_Format) string{
         }
     }
 
-    fmt.Println(data.Attachment)
-
     var buf bytes.Buffer
     t, _ := template.ParseFiles("./include/article_layout.html")
     t.Execute(&buf, data)
     return buf.String()
+}
+
+func RenderPublicArticleBriefList(artInfoList []article.Article_Format) template.HTML{
+    data := new(Article_render)
+    ret := ""
+    for _, artInfo := range artInfoList{
+        data.Id = artInfo.Id
+        data.Publish_time = RenderSimpleTime(artInfo.Publish_time)
+        data.Title = artInfo.Title
+        var buf bytes.Buffer
+        t, _ := template.New("article_list_brief").Parse(`
+        <div class="article" data-id="{{.Id}}" style="cursor: pointer" onclick="window.location='/news?id={{.Id}}'">
+            <div class="candy-header"><span class="single">{{.Publish_time}}</span></div>
+            <h2 class="title">{{.Title}}</h2>
+        </div>`)
+        t.Execute(&buf, data)
+        ret += buf.String()
+    }
+
+    return template.HTML(ret)
 }

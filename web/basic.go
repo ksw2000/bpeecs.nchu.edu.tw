@@ -19,11 +19,11 @@ type PageData struct{
     Title   string
     Isindex bool
     IsLogin bool
-    Main    interface{}
+    Main    template.HTML
     Time    int64
 }
 
-func getContent(fileName string) interface{}{
+func getContent(fileName string) template.HTML{
     file, err := os.Open("./include" + fileName + ".html")
     if err != nil{
         log.Fatal(err)
@@ -106,7 +106,22 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
         case "/":
             data.Title = "國立中興大學電機資訊學院學士班"
             data.Isindex = true
-            data.Main = getContent("/index")
+
+            template_index, _ := template.ParseFiles("./include/index.html")
+            art := article.New();
+            art.Connect("./sql/article.db")
+
+            // Default from = 0, to = 19
+            // return (list []art.Article_Format, hasNext bool)
+            artFormatList, _ := art.GetLatest("public", "normal", "", int32(0), int32(19))
+            data_index := new(struct{
+                Article_list_brief template.HTML
+            })
+            data_index.Article_list_brief = renderer.RenderPublicArticleBriefList(artFormatList)
+
+            var buf bytes.Buffer
+            template_index.Execute(&buf, data_index)
+            data.Main = template.HTML(buf.String())
         case "/news":
             data.Title = "最新消息"
             artType := function.GET("type", r);
@@ -182,7 +197,7 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
         data.Main = getContent(path)
     }
 
-    data.Time = time.Now().Unix()
+    data.Time = time.Now().Unix() >> 7
 
     t.Execute(w, data)
 }

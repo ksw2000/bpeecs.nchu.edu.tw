@@ -82,31 +82,6 @@ function loadNews(scope, type, from, to){
     });
 }
 
-function loadNewsOnlyTitle(scope){
-    return new Promise((resolve, reject) => {
-        loadNews(scope, 'normal').then((data) => {
-            data = data.NewsList;
-            let len = data.length;
-            let ret = "";
-            for(let i=0; i<len; i++){
-                data[i].Publish_time = $.format.date(new Date(data[i].Publish_time * 1000), "yyyy-MM-dd");
-
-                ret += `
-                <div class="article" data-id="${data[i].Id}" style="cursor: pointer"
-                    onclick="window.location='/news?id=${data[i].Id}'">
-
-                    <div class="candy-header"><span class="single">${data[i].Publish_time}</span></div>
-                    <h2 class="title">${data[i].Title}</h2>
-                </div>
-                `;
-            }
-            resolve(ret);
-        }).catch((err)=>{
-            reject(err);
-        });
-    });
-}
-
 function loadNewsForWhat(what, scope, type, from, to){
     var self = this;
 
@@ -239,42 +214,6 @@ function loadNewsById(newsID){
                 reject(err);
             },
             dataType: 'json'
-        });
-    });
-}
-
-function loadPublicNewsById(id){
-    return new Promise((resolve, reject) => {
-        loadNewsById(id).then((data) => {
-            let ret = {};
-            ret.text = "";
-
-            data.Publish_time  = $.format.date(new Date(data.Publish_time * 1000), "yyyy-MM-dd");
-            data.Content       = marked(data.Content);
-
-            let attachment = loadAttchment(data.Attachment);
-            ret.text += `
-            <div class="article" data-id="${data.Id}" style="border:0px;">
-                <div class="header" onclick="javascript:appendMoreInfo(this)">
-                    <div class="candy-header"><span>發佈於</span><span>${data.Publish_time}</span></div>
-                </div>
-                <div class="header" style="display: none;">`;
-            ret.text += `<div class="candy-header"><span>分類</span><span class="green">${articleTypeDecoder(data.Type)}</span></div>`;
-            ret.text += `<div class="candy-header"><span>發文</span><span class="cyan">@${data.User}</span></div>`;
-            ret.text += `</div>
-                <div class="content">
-                    ${data.Content}
-                </div>
-                <div id="attachmentArea">
-                    <ul>${attachment}</ul>
-                </div>
-            </div>
-            `;
-
-            ret.json = data;
-            resolve(ret);
-        }).catch((err)=>{
-            reject(err);
         });
     });
 }
