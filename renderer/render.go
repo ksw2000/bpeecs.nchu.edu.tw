@@ -91,9 +91,9 @@ func RenderPublicArticleBriefList(artInfoList []article.Article_Format) template
         data.Title = artInfo.Title
         var buf bytes.Buffer
         t, _ := template.New("article_list_brief").Parse(`
-        <div class="article" data-id="{{.Id}}" style="cursor: pointer" onclick="window.location='/news?id={{.Id}}'">
+        <div class="article brief">
             <div class="candy-header"><span class="single">{{.Publish_time}}</span></div>
-            <h2 class="title">{{.Title}}</h2>
+            <a href="/news?id={{.Id}}">{{.Title}}</a>
         </div>`)
         t.Execute(&buf, data)
         ret += buf.String()
