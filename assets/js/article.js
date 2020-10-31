@@ -87,27 +87,6 @@ function loadNews(scope, type, from, to) {
   });
 }
 
-/*
-function loadNewsOnlyTitle(scope) {
-  return new Promise(function (resolve, reject) {
-    loadNews(scope, 'normal').then(function (data) {
-      data = data.NewsList;
-      var len = data.length;
-      var ret = "";
-
-      for (var i = 0; i < len; i++) {
-        data[i].Publish_time = $.format.date(new Date(data[i].Publish_time * 1000), "yyyy-MM-dd");
-        ret += "<div class=\"article\" data-id=\"".concat(data[i].Id, "\" style=\"cursor: pointer\" onclick=\"window.location='/news?id=").concat(data[i].Id, "'\"><div class=\"candy-header\"><span class=\"single\">").concat(data[i].Publish_time, "</span></div><h2 class=\"title\">").concat(data[i].Title, "</h2></div>");
-      }
-
-      resolve(ret);
-    }).catch(function (err) {
-      reject(err);
-    });
-  });
-}
-*/
-
 function loadNewsForWhat(what, scope, type, from, to) {
   var self = this;
   this.from = from;
@@ -213,25 +192,3 @@ function loadNewsById(newsID) {
     });
   });
 }
-
-/*
-function loadPublicNewsById(id) {
-  return new Promise(function (resolve, reject) {
-    loadNewsById(id).then(function (data) {
-      var ret = {};
-      ret.text = "";
-      data.Publish_time = $.format.date(new Date(data.Publish_time * 1000), "yyyy-MM-dd");
-      data.Content = data.Content;
-      var attachment = loadAttchment(data.Attachment);
-      ret.text += "\n            <div class=\"article\" data-id=\"".concat(data.Id, "\" style=\"border:0px;\">\n                <div class=\"header\" onclick=\"javascript:appendMoreInfo(this)\">\n                    <div class=\"candy-header\"><span>\u767C\u4F48\u65BC</span><span>").concat(data.Publish_time, "</span></div>\n                </div>\n                <div class=\"header\" style=\"display: none;\">");
-      ret.text += "<div class=\"candy-header\"><span>\u5206\u985E</span><span class=\"green\">".concat(articleTypeDecoder(data.Type), "</span></div>");
-      ret.text += "<div class=\"candy-header\"><span>\u767C\u6587</span><span class=\"cyan\">@".concat(data.User, "</span></div>");
-      ret.text += "</div>\n                <div class=\"content\">\n                    ".concat(data.Content, "\n                </div>\n                <div id=\"attachmentArea\">\n                    <ul>").concat(attachment, "</ul>\n                </div>\n            </div>\n            ");
-      ret.json = data;
-      resolve(ret);
-    }).catch(function (err) {
-      reject(err);
-    });
-  });
-}
-*/
