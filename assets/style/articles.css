@@ -11,8 +11,7 @@
 
 .article:hover{
     border-color: #0695d2;
-    transition-duration: 1000ms;
-    transition-property: border-color;
+    transition: border-color 1000ms;
 }
 
 .article .header{
@@ -79,9 +78,9 @@
 }
 
 .article h1{
-    font-size: 28px!important;
-    color: #0391e0!important;
     border-bottom: 0px!important;
+    color: #0391e0!important;
+    font-size: 28px!important;
 }
 
 .article .draftIcon{

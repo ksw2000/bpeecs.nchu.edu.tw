@@ -115,27 +115,28 @@ h1{
 }
 
 #main h1:after{
-    border-bottom: 2px solid rgb(23,76,111);
+    border-bottom: 3px solid rgb(23,76,111);
     content: "";
     display: block;
     padding-top: 10px;
-    width: 62%;
+    transition: width 1800ms;
+    width: 0%;
 }
 
 #main h1:hover:after{
+    transition: width 600ms;
     width: 100%;
-    transition: width 700ms;
 }
 
 h2{
-    font-size: 23px;
     color: rgb(11, 71, 111);
+    font-size: 23px;
     font-weight: normal;
 }
 
 h3{
-    font-size: 20px;
     color: rgb(93, 99, 125);
+    font-size: 20px;
     font-weight: normal;
 }
 
