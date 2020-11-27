@@ -17,9 +17,7 @@ function hash(str){
 // output: string(html code)
 function loadAttchment(str){
     // load attachment
-    if(str === ""){
-        return ""
-    }
+    if(str === "") return ""
 
     try{
         let attachment = "";
@@ -202,18 +200,15 @@ function loadNewsForWhat(what, scope, type, from, to){
     }
 }
 
-function loadNewsById(newsID){
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            url: '/function/get_news?id=' + newsID,
-            type: 'GET',
-            success: function(data){
-                resolve(data);
-            },
-            error: function(err) {
-                reject(err);
-            },
-            dataType: 'json'
-        });
+function notice(msg){
+    $("#notice").html(msg);
+    $("#notice").slideDown(100,function(){
+        setTimeout(function(){
+            $("#notice").slideUp(500);
+        },10000);
     });
+}
+
+function slideToggole(id){
+    $('#'+id).slideToggle();
 }
