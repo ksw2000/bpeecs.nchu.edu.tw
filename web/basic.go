@@ -156,6 +156,12 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
 
                     artInfo := art.GetArticleBySerial(uint32(serial_u64), user)
 
+                    // avoid /news?id=xxx
+                    if artInfo == nil{
+                        http.Redirect(w, r, "/error/404", 302)
+                        return
+                    }
+
                     data.Title = artInfo.Title + " | 國立中興大學電機資訊學院學士班"
                     data.Main  = template.HTML(renderer.RenderPublicArticle(artInfo))
                 }
@@ -181,8 +187,9 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
             }
 
         default:
-            fmt.Println("未預期的路徑")
-            fmt.Println(path)
+            fmt.Println("未預期的路徑", path)
+            fmt.Printf("%#v\n", r)
+            
             http.Redirect(w, r, "/error/404", 302)
             return
         }
@@ -191,8 +198,6 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
     if(path == "/manage"){
         data.Title += " | 國立中興大學電機資訊學院學士班"
         // retain data.Main
-    }else if(path == "/news"){
-
     }else if(path != "/"){
         data.Title += " | 國立中興大學電機資訊學院學士班"
         data.Main = getContent(path)

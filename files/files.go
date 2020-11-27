@@ -2,11 +2,11 @@ package files
 
 import(
     "database/sql"
-    "fmt"
     "io"
     "mime/multipart"
     "os"
     "time"
+    "log"
     "path/filepath"
     _"github.com/mattn/go-sqlite3"
     "bpeecs.nchu.edu.tw/function"
@@ -19,54 +19,47 @@ type Files struct{
     Server_name string
     Path string
     Hash string
-    err error
 }
 
 func New() *Files{
     return new(Files)
 }
 
-func (f *Files) errProcess(err error){
-    if err!=nil{
-        fmt.Println(err)
-        f.err = err
-        return
-    }
-}
-
-func (f *Files) GetErr() error{
-    return f.err
-}
-
 func (f *Files) Connect(path string) *sql.DB{
     db, err := sql.Open("sqlite3", path)
     f.db = db
-    f.errProcess(err)
+    if err != nil{
+        log.Println(err)
+        return nil
+    }
     return f.db
 }
 
-func (f *Files) Del(server_name string){
+func (f *Files) Del(server_name string) error{
     // SELECT from database (to get real path)
     row := f.db.QueryRow("SELECT `path` FROM files WHERE server_name = ?", server_name)
 
     var filePath string
     err := row.Scan(&filePath)
-    if err == sql.ErrNoRows{
-        f.errProcess(err)
-        return
+    if err != nil{
+        log.Println(err)
+        return err
     }
 
     // Delete from database
-    stmt, err := f.db.Prepare("DELETE from files WHERE server_name = ?")
-    f.errProcess(err)
+    stmt, _ := f.db.Prepare("DELETE from files WHERE server_name = ?")
     _, err = stmt.Exec(server_name)
-    f.errProcess(err)
+    if err != nil{
+        log.Println(err)
+        return err
+    }
 
     // Delete from os
     os.Remove(".." + filePath)
+    return nil
 }
 
-func (f *Files) NewFile(fh *multipart.FileHeader) *Files{
+func (f *Files) NewFile(fh *multipart.FileHeader) error{
     filePath := "./assets/upload/"
     fileExt  := filepath.Ext(fh.Filename)
 
@@ -77,16 +70,23 @@ func (f *Files) NewFile(fh *multipart.FileHeader) *Files{
     }
 
     newFile, err := os.OpenFile(filePath + string(fileName) + fileExt, os.O_WRONLY | os.O_CREATE, 0666)
-    f.errProcess(err);
+    if err != nil{
+        log.Println(err)
+        log.Println("os.OpenFile failed")
+        return err
+    }
 
     oriFile, _ := fh.Open()
     defer oriFile.Close()
 
     _, err = io.Copy(newFile, oriFile)
-    f.errProcess(err);
+    if err != nil{
+        log.Println(err)
+        log.Println("io.Copy failed")
+        return err
+    }
 
-    stmt, err := f.db.Prepare("INSERT INTO files(upload_time, client_name, server_name, path) values(?, ?, ?, ?)")
-    f.errProcess(err)
+    stmt, _ := f.db.Prepare("INSERT INTO files(upload_time, client_name, server_name, path) values(?, ?, ?, ?)")
     now := time.Now().Unix()
 
     f.Upload_time = uint64(now)
@@ -94,9 +94,13 @@ func (f *Files) NewFile(fh *multipart.FileHeader) *Files{
     f.Server_name = fileName
     f.Path = "/assets/upload/" + fileName + fileExt
 
-    stmt.Exec(now, f.Client_name, f.Server_name, f.Path)
+    _, err = stmt.Exec(now, f.Client_name, f.Server_name, f.Path)
+    if err != nil{
+        log.Println(err)
+        return err
+    }
 
-    return f
+    return nil
 }
 
 func fileExists(filename string) bool {

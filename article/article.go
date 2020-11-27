@@ -3,13 +3,13 @@ import(
     "database/sql"
     "fmt"
     "time"
+    "log"
     _"github.com/mattn/go-sqlite3"
 )
 
 type Article struct{
     db *sql.DB
     artList []Article_Format
-    err error
 }
 
 type Article_Format struct{
@@ -24,76 +24,75 @@ type Article_Format struct{
     Attachment string
 }
 
-func New() (a *Article){
-    a = new(Article)
-    return a
-}
-
-func (a *Article) GetErr() error{
-    return a.err
+func New() *Article{
+    return new(Article)
 }
 
 func (a *Article) GetArtList() []Article_Format{
     return a.artList
 }
 
-func (a *Article) errProcess(err error){
-    if err!=nil{
-        fmt.Println(err)
-        a.err = err
-        return
-    }
-}
-
 func (a *Article) Connect(path string) *sql.DB{
     db, err := sql.Open("sqlite3", path)
     a.db = db
-    a.errProcess(err)
+    if err != nil{
+        log.Println(err)
+        return nil
+    }
     return a.db
 }
 
-func (a *Article) NewArticle(user string) uint32{
-    stmt, err := a.db.Prepare("INSERT INTO article(id, user, create_time, publish_time, last_modified, title, content, attachment) values(?, ?, ?, ?, ?, ?, ?, ?)")
-    a.errProcess(err)
+func (a *Article) NewArticle(user string) (uint32, error){
+    stmt, _ := a.db.Prepare("INSERT INTO article(id, user, create_time, publish_time, last_modified, title, content, attachment) values(?, ?, ?, ?, ?, ?, ?, ?)")
     now := time.Now().Unix()
     serial_num := a.serialNumber(user);
-    stmt.Exec(serial_num, user, now, 0, 0, "", "", "")
+    if _, err := stmt.Exec(serial_num, user, now, 0, 0, "", "", ""); err != nil{
+        log.Println(err)
+        return 0, err
+    }
 
-    return serial_num
+    return serial_num, nil
 }
 
 // Save article (do not change scope)
-func (a *Article) Save(artfmt Article_Format){
-    stmt, err := a.db.Prepare("UPDATE article SET title=?, type=?, content=?, last_modified=?, attachment=?  WHERE id=? and user=?")
-    a.errProcess(err)
+func (a *Article) Save(artfmt Article_Format) error{
+    stmt, _ := a.db.Prepare("UPDATE article SET title=?, type=?, content=?, last_modified=?, attachment=?  WHERE id=? and user=?")
     now := time.Now().Unix()
-    _, err = stmt.Exec(artfmt.Title, artfmt.Type, artfmt.Content, now, artfmt.Attachment, artfmt.Id, artfmt.User)
-    a.errProcess(err)
+    if _, err := stmt.Exec(artfmt.Title, artfmt.Type, artfmt.Content, now, artfmt.Attachment, artfmt.Id, artfmt.User); err != nil{
+        log.Println(err)
+        return err
+    }
+    return nil
 }
 
-func (a *Article) UpdateAttachment(id uint32, user string, attachment string){
-    stmt, err := a.db.Prepare("UPDATE article SET last_modified=?, attachment=?  WHERE id=? and user=?")
-    a.errProcess(err)
+func (a *Article) UpdateAttachment(id uint32, user string, attachment string) error{
+    stmt, _ := a.db.Prepare("UPDATE article SET last_modified=?, attachment=?  WHERE id=? and user=?")
     now := time.Now().Unix()
-    _, err = stmt.Exec(now, attachment, id, user)
-    a.errProcess(err)
+    if _, err := stmt.Exec(now, attachment, id, user); err != nil{
+        log.Println(err)
+        return err
+    }
+    return nil
 }
 
 // Publish an article (update content and change scope)
-func (a *Article) Publish(artfmt Article_Format){
-    stmt, err := a.db.Prepare("UPDATE article SET title=?, type=?, content=?, publish_time=?, last_modified=? , attachment=?  WHERE id=? and user=?")
-    a.errProcess(err)
+func (a *Article) Publish(artfmt Article_Format) error{
+    stmt, _ := a.db.Prepare("UPDATE article SET title=?, type=?, content=?, publish_time=?, last_modified=? , attachment=?  WHERE id=? and user=?")
     now := time.Now().Unix()
-    _, err = stmt.Exec(artfmt.Title, artfmt.Type, artfmt.Content, now, now, artfmt.Attachment, artfmt.Id, artfmt.User)
-    a.errProcess(err)
+    if _, err := stmt.Exec(artfmt.Title, artfmt.Type, artfmt.Content, now, now, artfmt.Attachment, artfmt.Id, artfmt.User); err != nil{
+        log.Println(err)
+        return err
+    }
+    return nil
 }
 
 // Delete an article
-func (a *Article) Del(serial uint32, user string){
-    stmt, err := a.db.Prepare("DELETE from article WHERE id=? and user=?")
-    a.errProcess(err)
-    _, err = stmt.Exec(serial, user)
-    a.errProcess(err)
+func (a *Article) Del(serial uint32, user string) error{
+    stmt, _ := a.db.Prepare("DELETE from article WHERE id=? and user=?")
+    if _, err := stmt.Exec(serial, user); err != nil{
+        return err
+    }
+    return nil
 }
 
 // Get the lastest article
@@ -149,14 +148,16 @@ func (a *Article) GetLatest(scope string, artType string, user string, from int3
     }else{
         rows, err = a.db.Query(db_query_str)
     }
-    a.errProcess(err)
+    if err != nil{
+        log.Println(err)
+        return nil, false
+    }
 
     defer rows.Close()
     for i:= int32(0); rows.Next()  ; i++ {
         var r Article_Format
-        err = rows.Scan(&r.Id, &r.User, &r.Type, &r.Create_time, &r.Publish_time, &r.Last_modified, &r.Title, &r.Content, &r.Attachment)
-        a.errProcess(err)
-        if i == to-from+1 {
+        rows.Scan(&r.Id, &r.User, &r.Type, &r.Create_time, &r.Publish_time, &r.Last_modified, &r.Title, &r.Content, &r.Attachment)
+        if i == to - from + 1 {
             hasNext = true;
         }else{
             list = append(list, r)
@@ -177,14 +178,11 @@ func (a *Article) GetArticleBySerial(serial uint32, user string) *Article_Format
     if err == sql.ErrNoRows{
         return nil
     }
-    a.errProcess(err)
 
     // The news has not been published
-    if r.Publish_time == 0{
-        if r.User != user {
-            // Permission denied
-            return nil
-        }
+    // Permission denied
+    if r.Publish_time == 0 && r.User != user {
+        return nil
     }
 
     return r
@@ -199,14 +197,11 @@ func (a *Article) serialNumber(user string) uint32{
     if err == sql.ErrNoRows{
         return 1
     }
-    a.errProcess(err)
 
     /* 如果流水號最大的那個消息是空消息且該消息屬於你自己則刪除該消息，並回傳該消息序號 */
     if title == "" && content == "" && attachment == "" && user_in_db == user{
-        stmt, err := a.db.Prepare("DELETE FROM article WHERE `id` = ?")
-        a.errProcess(err)
-        _, err = stmt.Exec(num)
-        a.errProcess(err)
+        stmt, _ := a.db.Prepare("DELETE FROM article WHERE `id` = ?")
+        stmt.Exec(num)
         return num
     }
     return num + 1

@@ -101,15 +101,14 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
 
         // step1: connect to database
         art := article.New();
-        art.Connect("./sql/article.db")
-        if err := art.GetErr(); err != nil{
+        if db := art.Connect("./sql/article.db"); db == nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結失敗", "code": 2}`)
             return
         }
 
         // step2: get serial number
-        serial := art.NewArticle(user)
-        if err := art.GetErr(); err != nil{
+        serial, err := art.NewArticle(user)
+        if err != nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結成功但新增文章失敗", "code": 2}`)
             return
         }
@@ -139,8 +138,8 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
 
         // step2: connect to database
         art := article.New();
-        art.Connect("./sql/article.db")
-        if err := art.GetErr(); err != nil{
+
+        if db := art.Connect("./sql/article.db"); db == nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結失敗", "code": 2}`)
             return
         }
@@ -158,15 +157,16 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         }
 
         // step3: call Save() or Publish()
+        art_operation_err := error(nil)
         if path == "/function/save_news" {
-            art.Save(artFormat)
+            art_operation_err = art.Save(artFormat)
         }else if path == "/function/publish_news" {
-            art.Publish(artFormat)
+            art_operation_err = art.Publish(artFormat)
         }else if path == "/function/del_news" {
-            art.Del(serial, user)
+            art_operation_err = art.Del(serial, user)
         }
 
-        if err := art.GetErr(); err != nil{
+        if art_operation_err != nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結成功但操作文章失敗", "code": 2}`)
             return
         }
@@ -221,8 +221,8 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
 
         // step3: connect to database
         art := article.New();
-        art.Connect("./sql/article.db")
-        if err := art.GetErr(); err != nil{
+
+        if db := art.Connect("./sql/article.db"); db == nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結失敗", "code": 2}`)
             return
         }
@@ -265,13 +265,13 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
 
         for _, fh := range fhs {
             f := files.New()
-            f.Connect("./sql/files.db")
-            if err := f.GetErr(); err != nil{
+
+            if db := f.Connect("./sql/files.db"); db == nil{
                 fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結失敗", "code": 2}`)
                 return
             }
-            f = f.NewFile(fh)
-            if err := f.GetErr(); err != nil{
+
+            if err := f.NewFile(fh); err != nil{
                 fmt.Fprint(w, `{"err" : true , "msg" : "新增檔案失敗", "code": 4}`)
                 return
             }
@@ -301,8 +301,7 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         // Delete file record in database and delete file in system
         f := new(files.Files)
         f.Connect("./sql/files.db")
-        f.Del(server_name)
-        if err := f.GetErr(); err != nil{
+        if err := f.Del(server_name); err != nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "檔案資料庫連結失敗或檔案刪除失敗", "code": 2}`)
             return
         }
@@ -310,14 +309,12 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         // Update databse article (prevent user from not storing the article)
         art := article.New();
         art.Connect("./sql/article.db")
-        art.UpdateAttachment(uint32(num), user, new_attachment);
-        if err := f.GetErr(); err != nil{
+        if err := art.UpdateAttachment(uint32(num), user, new_attachment); err != nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "article資料庫更新失敗", "code": 2}`)
             return
         }
 
         fmt.Fprint(w, `{"err" : false}`)
-
     }else{
         fmt.Println("未預期的路徑")
         fmt.Println(path)
