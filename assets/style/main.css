@@ -1,27 +1,8 @@
 /*
     Hadname Online Techonology
-
     RWD support
-
-    PC:
-    _____________________________________________
-    |                                           |
-    |                                           |
-    |<---------------- 1200 px ---------------->|
-    |                                           |
-    |                                           |
-    |                                           |
-    |                                           |
-
-    Mobile: 450px
-    __________________
-    |                |
-    |<--- 450 px --->|
-    |                |
-    |                |
-    |                |
-    |                |
-    |                |
+    PC: < 1200px
+    Mobile: < 450px
 */
 
 @font-face{
@@ -43,6 +24,10 @@
 *{
     font-family: 'NotoSans', 'Noto Sans CJK TC', '微軟正黑體', 'Open Sans' ,sans-serif;
     font-size: 16px;
+}
+
+:focus{
+    outline: none;
 }
 
 body{
@@ -79,8 +64,22 @@ body{
 blockquote{
     border-left: 3px solid #0391e0;
     box-sizing: border-box;
-    padding: 5px 10px;
+    padding: 10px;
     margin: 10px auto;
+    transition: border-color 500ms;
+}
+
+blockquote:hover{
+    border-color: #03e005;
+}
+
+ul{
+    margin: 5px 0px 5px 10px;
+    padding: 0px 0px 0px 20px;
+}
+
+li{
+    padding: 3px 0px;
 }
 
 .loader{
@@ -156,6 +155,29 @@ h3{
 	background-color: Yellow;
 }
 
+table{
+    width: 100%;
+    max-width: 600px;
+    margin: 0px auto;
+    border-spacing: 0px;
+}
+
+table thead{
+    text-align: center;
+}
+
+table thead tr{
+    background-color: #b5d6f5;
+}
+
+table tbody tr:nth-child(2n){
+    background-color: #cfe0e0;
+}
+
+table td{
+    padding: 5px;
+}
+
 /*----------------------------------------------footer----------------------------------------------*/
 footer{
     background-color: rgb(65, 65, 65);
@@ -170,12 +192,11 @@ footer{
 footer a{
     text-decoration: none;
     color: rgb(64, 220, 255);
+    transition: color 500ms;
 }
 
 footer a:hover{
     color: rgb(176, 223, 246);
-    transition-duration: 500ms;
-    transition-property: color;
 }
 
 footer li{
@@ -193,6 +214,10 @@ footer table{
     margin: 0px auto;
     max-width: 900px;
     width: 100%;
+}
+
+footer table tr{
+    background-color: transparent;
 }
 
 footer table td{
@@ -227,5 +252,242 @@ footer table td img{
 
     *{
         font-size: 14px;
+    }
+}
+
+/*----------------------------------------------form----------------------------------------------*/
+section{
+    box-sizing: border-box;
+    margin: 0px auto;
+    margin-top: 80px;
+    margin-bottom: 80px;
+    max-width: 500px;
+    padding: 10px;
+    text-align: center;
+    width: 100%;
+}
+
+input{
+    border: 1px solid #343434;
+    border-radius: 8px;
+    box-sizing: border-box;
+    color: inherit;
+    display: block;
+    font-size: 15px;
+    height: 35px;
+    line-height: 35px;
+    margin: 0px auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    max-width: 300px;
+    width: 100%;
+}
+
+input[type="text"], input[type="password"]{
+    background-color: transparent;
+    letter-spacing: 2px;
+    padding: 0px 10px;
+}
+
+input[type="button"]{
+    background-color: transparent;
+    cursor: pointer;
+    letter-spacing: 10px;
+}
+
+select{
+    background-color: transparent;
+    border-width: 0px 0px 2px;
+    border-color: transparent transparent #343434;
+    border-radius: 0px;
+    box-sizing: border-box;
+    color: inherit;
+    display: block;
+    font-size: 15px;
+    height: 40px;
+    line-height: 40px;
+    margin: 0px 10px;
+    max-width: 300px;
+    width: 100%;
+}
+
+button{
+    background-color: transparent;
+    border: 1px solid #343434;
+    border-radius: 8px;
+    box-sizing: border-box;
+    color: inherit;
+    cursor: pointer;
+    display: block;
+    font-size: 15px;
+    line-height: 30px;
+    max-width: 100px;
+    width: 100%;
+}
+
+button.border{
+    border-color: #343434;
+    background-color: transparent;
+    color: #343434;
+}
+
+button.border:hover{
+    background-color: #343434;
+}
+
+button.blue{
+    border-color: #14a1ff;
+    background-color: #14a1ff;
+    color: #fff;
+}
+
+button.blue:hover{
+    border-color: #307eb3;
+    background-color: #307eb3;
+    color: #fff;
+}
+
+button.red{
+    border-color: #fe6c6c;
+    background-color: #fe6c6c;
+    color: #fff;
+}
+
+button.red:hover{
+    border-color: #f01d1d;
+    background-color: #f01d1d;
+    color: #fff;
+}
+
+button.blue-green{
+    border-color: #11d2cd;
+    background-color: #11d2cd;
+    color: #fff;
+}
+
+button.blue-green:hover{
+    border-color: #347e7c;
+    background-color: #347e7c;
+    color: #fff;
+}
+
+input[type="button"]:hover, button:hover{
+    background-color: #343434;
+    border-color: #343434;
+    color: #fff;
+    transition: background-color 500ms, color 500ms, border-color 500ms;
+}
+
+/*----------------------------------------------article----------------------------------------------*/
+.article{
+    border-left: 3px solid rgb(58, 112, 135);
+    box-sizing: border-box;
+    padding: 8px 10px;
+    margin: 8px 0px 16px 0px;
+}
+
+.article .title{
+    margin: 0px;
+}
+
+.article:hover{
+    border-color: #0695d2;
+    transition: border-color 1000ms;
+}
+
+.article .header{
+    margin: 10px 0px;
+    position: relative;
+}
+
+.article .header p{
+    margin: 3px 5px 3px 0px;
+    color: rgb(129, 129, 129);
+    display: inline-block;
+}
+
+.article .candy-header{
+    align-self: center;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    height: fit-content;
+    flex-shrink: 0;
+    margin: 5px 3px;
+    padding: 0px;
+}
+
+.article .candy-header span{
+    display: inline-block;
+    font-size: 12px!important;
+    padding: 3px 7px;
+}
+
+.article .candy-header span:nth-child(1){
+    background-color: #626262;
+    border-radius: 5px 0px 0px 5px;
+}
+
+.article .candy-header span.single{
+    border-radius: 5px 5px 5px 5px;
+}
+
+.article .candy-header span:nth-child(2){
+    background-color: #0391e0;
+    border-radius: 0px 5px 5px 0px;
+}
+
+.article .candy-header span.orange{
+    background-color: #ff7a00;
+}
+
+.article .candy-header span.red{
+    background-color: #c92d2d;
+}
+
+.article .candy-header span.green{
+    background-color: #36b349;
+}
+
+.article .candy-header span.cyan{
+    background-color: #02b79e;
+}
+
+.article .content{
+    font-size: inherit;
+    line-height: 30px;
+}
+
+.article h1{
+    border-bottom: 0px!important;
+    color: #0391e0!important;
+    font-size: 28px!important;
+}
+
+.article .draftIcon{
+    background-color: transparent;
+    border: 2px solid #fb3e3e;
+    border-radius: 5px;
+    color: #fb3e3e;
+    display: inline-block;
+    font-size: 0.8em;
+    height: fit-content;
+    margin-right: 5px;
+    padding: 3px 8px;
+    vertical-align: text-bottom;
+}
+
+#article-parent .content img{
+    max-width: 500px;
+    width: 100%;
+}
+
+@media screen and (max-width: 700px){
+    .article .candy-header span{
+        font-size: 11px!important;
+        padding: 3px 5px;
+    }
+    .article .candy-header{
+        margin: 2px 2px;
     }
 }
