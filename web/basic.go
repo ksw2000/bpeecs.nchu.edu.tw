@@ -56,6 +56,7 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
         "/about/why-establish" : "創系緣由",
         "/course" : "課程內容",
         "/course/graduation-conditions" : "畢業條件",
+        "/course/109" : "109學年度課程內容",
         "/member/admin-staff" : "行政人員",
         "/member/faculty" : "師資陣容",
         "/member/class-teacher" : "班主任",
