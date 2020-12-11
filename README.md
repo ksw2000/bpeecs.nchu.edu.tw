@@ -4,16 +4,9 @@
 
 ## Dependencies
 
-__GOlang__
-1. Install go-session
-```sh
-$ go get -v github.com/go-session/session
-```
+__GoLang__
 
-2. Install go-sqlite3
-```sh
-$ go get -v github.com/mattn/go-sqlite3
-```
+Powered by Golang 1.12 (need go mod)
 
 __SQlite3__
 
@@ -34,7 +27,7 @@ All of the javascript dependencies are embedded by the online resource links. If
 
 2. Text editor: [CkEditor](https://ckeditor.com/)
 
-3. Date foramte (jQuery dependency): [jquery-dateFormat](https://github.com/phstc/jquery-dateFormat)
+3. Date foramt (jQuery dependency): [jquery-dateFormat](https://github.com/phstc/jquery-dateFormat)
 
 4. Promise() for ES5: [ES6-promise](https://github.com/stefanpenner/es6-promise)
 
@@ -53,6 +46,7 @@ All of the javascript dependencies are embedded by the online resource links. If
     + assests/  (static file)
         + fonts/
         + img/
+        + json/
         + js/
         + style/
         + upload/ (client upload files)
@@ -67,7 +61,9 @@ All of the javascript dependencies are embedded by the online resource links. If
     + function/ (some func that golang often use)
 
     + login/ (process login)
-
+    + render/
+        + dynamic.go (render in runtime)
+        + static.go (render in compile-time)
     + web/
         + basic.go (process: ./xxx)
         + error.go (process error url)
@@ -77,9 +73,7 @@ All of the javascript dependencies are embedded by the online resource links. If
 
     + go.sum
 
-    + __index.go__ (main program)
-
-    + __index443.go__ (for https)
+    + __main.go__ (main program)
 
     + newAccount.go `private` (regist a new user)
 
@@ -136,17 +130,15 @@ func pwdHash(pwd string, salt string)
 
 3. use `newAccount.go` to create a new account
 
-3. go run
-
+4. go build
 ```sh
-$ cd ./src
-$ go run index.go
+$ go build main.go
 ```
-
-## Build
-
+5. run in port 8080
 ```sh
-$ cd ./src
-$ go build index.go
-$ ./index
+./main -r -p 8080
+# or https (443)
+./main -r -p 443
 ```
+`-p` can specify port.
+`-r` can render static page
