@@ -25,10 +25,10 @@ type PageData struct{
 
 func getContent(fileName string) template.HTML{
     file, err := os.Open("./include" + fileName + ".html")
+    defer file.Close()
     if err != nil{
         log.Fatal(err)
     }
-    defer file.Close()
     content, err := ioutil.ReadAll(file)
 
     return template.HTML(content);
@@ -114,7 +114,7 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
 
             // Default from = 0, to = 19
             // return (list []art.Article_Format, hasNext bool)
-            artFormatList, _ := art.GetLatest("public", "normal", "", int32(0), int32(19))
+            artFormatList, _ := art.GetLatest("public", "normal", "", int32(0), int32(9))
             data_index := new(struct{
                 Article_list_brief template.HTML
             })
@@ -163,7 +163,7 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
                     }
 
                     data.Title = artInfo.Title + " | 國立中興大學電機資訊學院學士班"
-                    data.Main  = template.HTML(renderer.RenderPublicArticle(artInfo))
+                    data.Main  = renderer.RenderPublicArticle(artInfo)
                 }
             }else{
                 data.Title += " | 國立中興大學電機資訊學院學士班"
@@ -189,7 +189,7 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
         default:
             fmt.Println("未預期的路徑", path)
             fmt.Printf("%#v\n", r)
-            
+
             http.Redirect(w, r, "/error/404", 302)
             return
         }
@@ -198,6 +198,7 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
     if(path == "/manage"){
         data.Title += " | 國立中興大學電機資訊學院學士班"
         // retain data.Main
+    }else if(path == "/news"){
     }else if(path != "/"){
         data.Title += " | 國立中興大學電機資訊學院學士班"
         data.Main = getContent(path)

@@ -70,6 +70,7 @@ func (f *Files) NewFile(fh *multipart.FileHeader) error{
     }
 
     newFile, err := os.OpenFile(filePath + string(fileName) + fileExt, os.O_WRONLY | os.O_CREATE, 0666)
+    defer newFile.Close()
     if err != nil{
         log.Println(err)
         log.Println("os.OpenFile failed")
