@@ -1,0 +1,21 @@
+<h2>{{.Title}}</h2>
+  <table>
+  <thead>
+    <tr>
+      <th>課程名稱</th>
+      <th>必選別</th>
+      <th>先修科目</th>
+      <th>授課教師</th>
+    </tr>
+  </thead>
+    <tbody>
+    {{range .Course}}
+      <tr>
+        <td>{{.course}}</td>
+        <td>{{.required}}</td>
+        <td>{{.prereq}}</td>
+        <td>{{.teacher}}</td>
+      </tr>
+    {{end}}
+  </tbody>
+</table>

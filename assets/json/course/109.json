@@ -1,0 +1,68 @@
+[{
+    "strm": 1,
+    "level": 1,
+    "list": [
+        {
+            "course": "服務學習(一)：勞作教育",
+            "required": true,
+            "prereq": "",
+            "teacher": ["全體教師"]
+        },{
+            "course": "微積分(一)",
+            "required": true,
+            "prereq": "",
+            "teacher": ["楊懿淑"]
+        },{
+            "course": "普通物理學",
+            "required": true,
+            "prereq": "",
+            "teacher": ["張雨晏"]
+        },{
+            "course": "普通物理學實驗",
+            "required": true,
+            "prereq": "",
+            "teacher": ["陳明克"]
+        },{
+            "course": "計算機程式設計",
+            "required": true,
+            "prereq": "",
+            "teacher": ["吳國光"]
+        },{
+            "course": "離散數學",
+            "required": true,
+            "prereq": "",
+            "teacher": ["高勝助"]
+        }
+    ]
+}, {
+    "strm": 2,
+    "level": 1,
+    "list" : [
+        {
+            "course": "服務學習(一)：勞作教育",
+            "required": true,
+            "prereq": "",
+            "teacher": ["全體教師"]
+        },{
+            "course": "微積分(二)",
+            "required": true,
+            "prereq": "",
+            "teacher": [""]
+        },{
+            "course": "線性代數",
+            "required": true,
+            "prereq": "",
+            "teacher": ["陳正倫"]
+        },{
+            "course": "交換電路與邏輯設計",
+            "required": true,
+            "prereq": "",
+            "teacher": ["范志鵬"]
+        },{
+            "course": "人工智慧概論",
+            "required": true,
+            "prereq": "",
+            "teacher": ["林維亮"]
+        }
+    ]
+}]

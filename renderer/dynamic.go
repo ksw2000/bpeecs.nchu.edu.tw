@@ -54,7 +54,7 @@ func RenderArticleType(key string) string{
     return ""
 }
 
-func RenderPublicArticle(artInfo *article.Article_Format) string{
+func RenderPublicArticle(artInfo *article.Article_Format) template.HTML{
     data := new(Article_render)
     data.Id = artInfo.Id
     data.User = artInfo.User
@@ -79,7 +79,7 @@ func RenderPublicArticle(artInfo *article.Article_Format) string{
     var buf bytes.Buffer
     t, _ := template.ParseFiles("./include/article_layout.html")
     t.Execute(&buf, data)
-    return buf.String()
+    return template.HTML(buf.String())
 }
 
 func RenderPublicArticleBriefList(artInfoList []article.Article_Format) template.HTML{
