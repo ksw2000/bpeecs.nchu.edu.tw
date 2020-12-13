@@ -1,158 +1,157 @@
 <script>
 var isIE = navigator.userAgent.search("Trident") > -1;
 if(isIE){
-    var r = confirm("抱歉，該網站不支援 IE，請按確定以下載 Google Chrome");
-    if (r){
-        document.location.href="https://www.google.com/chrome/";
+  var r = confirm("抱歉，該網站不支援 IE，請按確定以下載 Google Chrome");
+  if (r){
+    document.location.href="https://www.google.com/chrome/";
+  }else{
+    if(confirm("請按確定以下載 Opera")){
+      document.location.href="https://www.opera.com/";
     }else{
-        if(confirm("請按確定以下載 Opera")){
-            document.location.href="https://www.opera.com/";
-        }else{
-            if(confirm("請按確定以下載 Firefox")){
-                document.location.href="https://www.mozilla.org/firefox/new/";
-            }else{
-                alert("你跟 IE 一樣固執而且沒有人愛你");
-                document.location.href="https://www.microsoft.com/zh-tw/edge";
-            }
-        }
+      if(confirm("請按確定以下載 Firefox")){
+        document.location.href="https://www.mozilla.org/firefox/new/";
+      }else{
+        alert("你跟 IE 一樣固執而且沒有人愛你");
+        document.location.href="https://www.microsoft.com/zh-tw/edge";
+      }
     }
+  }
 }
 </script>
 <style>
 .CodeMirror{
-    background-color: rgb(240, 240, 240)!important;
-    color: #5a5a5a;
+  background-color: rgb(240, 240, 240)!important;
+  color: #5a5a5a;
 }
 
 #new-article-area{
-    display: none;
+  display: none;
 }
 
 .editor-area #title{
-    border-width: 0px 0px 2px 0px;
-    border-radius: 0px;
-    background-color: transparent;
-    height: 50px;
-    font-size: 25px;
-    line-height: 50px;
-    margin-top: 0px;
-    max-width: 1200px!important;
-    padding: 0px 10px;
-    width: 100%;
+  border-width: 0px 0px 2px 0px;
+  border-radius: 0px;
+  background-color: transparent;
+  height: 50px;
+  font-size: 25px;
+  line-height: 50px;
+  margin-top: 0px;
+  max-width: 1200px!important;
+  padding: 0px 10px;
+  width: 100%;
 }
 
 .editor-area #title:focus, select:focus{
-    outline: none;
-    border-color: rgb(7, 126, 224);
-    transition: border 1s ;
-    /*scubic-bezier(0.455, 0.03, 0.515, 0.955)*/;
+  outline: none;
+  border-color: rgb(7, 126, 224);
+  transition: border 1s ;
+  /*scubic-bezier(0.455, 0.03, 0.515, 0.955)*/;
 }
 
 .buttonArea button{
-    display: inline-block;
-    margin: 3px 5px;
+  display: inline-block;
+  margin: 3px 5px;
 }
 
 #attachment, .attachment{
-    cursor: pointer;
-    overflow: hidden;
-    position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
 }
 
 #attachment input, .attachment input{
-    border: 0px;
-    bottom: 0px;
-    cursor: pointer;
-    height: 100px;
-    margin: 0px;
-    position: absolute;
-    right: 0px;
-    width: 500px;
+  border: 0px;
+  bottom: 0px;
+  cursor: pointer;
+  height: 100px;
+  margin: 0px;
+  position: absolute;
+  right: 0px;
+  width: 500px;
 }
 
 #new-article-area #attachmentArea li{
-    margin: 15px 0px;
+  margin: 15px 0px;
 }
 
 #new-article-area #attachmentArea button{
-    display: inline-block;
-    font-size: 0.85em;
-    height: inherit;
-    line-height: inherit;
-    margin-left: 10px;
-    padding: 2px 10px;
-    width: auto;
+  display: inline-block;
+  font-size: 0.85em;
+  height: inherit;
+  line-height: inherit;
+  margin-left: 10px;
+  padding: 2px 10px;
+  width: auto;
 }
 
 #new-article-area #attachmentArea .loader {
-    border: 3px solid transparent;
-    border-top: 3px solid #3498db;
-    border-radius: 50%;
-    display: none;
-    width: 30px;
-    height: 30px;
+  border: 3px solid transparent;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  display: none;
+  width: 30px;
+  height: 30px;
 }
 
 @media screen and (max-width: 700px){
-    .hide-less-700px{
-        display: none!important;
-    }
+  .hide-less-700px{
+    display: none!important;
+  }
 
-    button{
-        font-size: 12px;
-        line-height: 20px;
-        margin: 2px 2px 2px 2px!important;
-        padding: 3px 0px;
-        width: 80px;
-    }
+  button{
+    font-size: 12px;
+    line-height: 20px;
+    margin: 2px 2px 2px 2px!important;
+    padding: 3px 0px;
+    width: 80px;
+  }
 }
 
 @media screen and (max-width: 500px){
-    .hide-less-500px{
-        display: none!important;
-    }
+  .hide-less-500px{
+    display: none!important;
+  }
 }
 
 @media screen and (max-width: 400px){
-    .hide-less-400px{
-        display: none!important;
-    }
+  .hide-less-400px{
+    display: none!important;
+  }
 }
 </style>
 
 <h1>Manage</h1>
 
 <div class="buttonArea">
-    <button onclick="javascript:newArticle()" id="btn-add">新增</button>
-    <button onclick="javascript:goToAll()" id="btn-all">全部</button>
-    <button onclick="javascript:goToDraft()" id="btn-draft" class="hide-less-400px">草稿</button>
-    <button onclick="javascript:goToPublished()" id="btn-published" class="hide-less-400px">已發佈</button>
+  <button onclick="javascript:newArticle()" id="btn-add">新增</button>
+  <button onclick="javascript:goToAll()" id="btn-all">全部</button>
+  <button onclick="javascript:goToDraft()" id="btn-draft" class="hide-less-400px">草稿</button>
+  <button onclick="javascript:goToPublished()" id="btn-published" class="hide-less-400px">已發佈</button>
 </div>
 
 <div id="top-editor-area">
-    <div class="article editor-area" id="new-article-area">
-        <div class="title"><input id="title" placeholder="標題" autocomplete="off"/></div>
-        <select id="type">
-            <option value="normal">一般消息</option>
-            <option value="activity">演講 & 活動</option>
-            <option value="course">課程 & 招生</option>
-            <option value="scholarships">獎學金</option>
-            <option value="recruit">徵才資訊</option>
-        </select>
-        <div class="content">
-            <textarea name="mainEditor"></textarea>
-        </div>
-        <div id="attachmentArea">
-            <ul></ul>
-            <div class="loader"></div>
-        </div>
-        <div class="buttonArea" style="text-align: right;"></div>
+  <div class="article editor-area" id="new-article-area">
+    <div class="title"><input id="title" placeholder="標題" autocomplete="off"/></div>
+    <select id="type">
+      <option value="normal">一般消息</option>
+      <option value="activity">演講 & 活動</option>
+      <option value="course">課程 & 招生</option>
+      <option value="scholarships">獎學金</option>
+      <option value="recruit">徵才資訊</option>
+    </select>
+    <div class="content">
+      <textarea name="mainEditor"></textarea>
     </div>
+    <div id="attachmentArea">
+      <ul></ul>
+      <div class="loader"></div>
+    </div>
+    <div class="buttonArea" style="text-align: right;"></div>
+  </div>
 </div>
 
 <script src="/assets/js/manage.js?202008191610" type="text/javascript"></script>
 
-
 <div id="article-parent">
-    載入中...
+  載入中...
 </div>

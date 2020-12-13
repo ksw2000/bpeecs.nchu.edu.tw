@@ -1,47 +1,47 @@
 <style>
-    #profile{
-        box-sizing: border-box;
-        margin: 0px auto;
-        max-width: 350px;
-        padding: 10px;
-        text-align: center;
-        width: 100%;
-    }
+  #profile{
+    box-sizing: border-box;
+    margin: 0px auto;
+    max-width: 350px;
+    padding: 10px;
+    text-align: center;
+    width: 100%;
+  }
 
-    #profile #profile-photo{
-        border-radius: 50%;
-        margin: 0px auto;
-        width: 120px;
-    }
+  #profile #profile-photo{
+    border-radius: 50%;
+    margin: 0px auto;
+    width: 120px;
+  }
 
-    #profile #userID{
-        margin-bottom: 10px 0px 20px;
-    }
+  #profile #userID{
+    margin-bottom: 10px 0px 20px;
+  }
 
-    #profile a.button{
-        border: 2px solid #3e3e3e;
-        border-radius: 5px;
-        color: #3e3e3e;
-        display: block;
-        line-height: 30px;
-        margin: 5px 0px;
-    }
+  #profile a.button{
+    border: 2px solid #3e3e3e;
+    border-radius: 5px;
+    color: #3e3e3e;
+    display: block;
+    line-height: 30px;
+    margin: 5px 0px;
+  }
 
-    #profile a.button:hover{
-        background-color: #3e3e3e;
-        color: #fff;
-        transition: background-color 500ms, color 500ms;
-    }
+  #profile a.button:hover{
+    background-color: #3e3e3e;
+    color: #fff;
+    transition: background-color 500ms, color 500ms;
+  }
 
 </style>
 <h1>Welcome</h1>
 
 <div id="profile">
-    <div style="text-align: left;">
-    <h2>Hi!👋 {{.UserName}}</h2>
-    </div>
-    <img src="/assets/img/profile.jpg" id="profile-photo">
-    <p id="userID">@{{.UserID}}</p>
-    <a href="/manage/article" class="button">文章管理系統</a>
-    <a href="/manage/reg" class="button">註冊新用戶</a>
+  <div style="text-align: left;">
+  <h2>Hi!👋 {{.UserName}}</h2>
+  </div>
+  <img src="/assets/img/profile.jpg" id="profile-photo">
+  <p id="userID">@{{.UserID}}</p>
+  <a href="/manage/article" class="button">文章管理系統</a>
+  <a href="/manage/reg" class="button">註冊新用戶</a>
 </div>

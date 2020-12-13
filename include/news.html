@@ -1,37 +1,37 @@
 <h1 id="title"></h1>
 <div id="article-parent">
-    <div class="loader" style="margin:30px 0px"></div>
+  <div class="loader" style="margin:30px 0px"></div>
 </div>
 
 <script>
-    let url = window.location.href;
-    let type = url.match(/(.*?)\?type=(.*?)$/);
-    type = (type != null)? type[2] : null;
+  let url = window.location.href;
+  let type = url.match(/(.*?)\?type=(.*?)$/);
+  type = (type != null)? type[2] : null;
 
-    let lnfw;
-    if(type === null){
-        $("h1#title").text("最新消息");
-        lnfw = new loadNewsForWhat('brief', 'public', null, 0, 19);
-    }else{
-        $("h1#title").text(articleTypeDecoder(type) + " ／ 最新消息");
-        lnfw = new loadNewsForWhat('brief', 'public-with-type', type, 0, 19);
-    }
+  let lnfw;
+  if(type === null){
+    $("h1#title").text("最新消息");
+    lnfw = new loadNewsForWhat('brief', 'public', null, 0, 19);
+  }else{
+    $("h1#title").text(articleTypeDecoder(type) + " ／ 最新消息");
+    lnfw = new loadNewsForWhat('brief', 'public-with-type', type, 0, 19);
+  }
 
-    lnfw.load().then(function(html_data){
-        $("#article-parent").html(html_data);
+  lnfw.load().then(function(html_data){
+    $("#article-parent").html(html_data);
+  }).catch(function(reason){
+    console.log(reason);
+    $("#article-parent").html("Error " + reason.status);
+  });
+  window.lnfw = lnfw;
+
+  function loadNext(obj){
+    window.lnfw.next().then(function(data){
+      $("#article-parent").append(data);
+      obj.remove();
     }).catch(function(reason){
-        console.log(reason);
-        $("#article-parent").html("Error " + reason.status);
-    });
-    window.lnfw = lnfw;
-
-    function loadNext(obj){
-        window.lnfw.next().then(function(data){
-            $("#article-parent").append(data);
-            obj.remove();
-        }).catch(function(reason){
-            console.log(reason);
-            notice("Error " + reason.status);
-        })
-    }
+      console.log(reason);
+      notice("Error " + reason.status);
+    })
+  }
 </script>

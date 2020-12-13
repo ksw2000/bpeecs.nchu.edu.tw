@@ -1,35 +1,35 @@
 <h1>登入</h1>
 <section id="login">
-    <input autocomplete="off" type="text" placeholder="帳號" id="id" onkeydown="key_enter(this)" autofocus/>
-    <input autocomplete="off" type="password" placeholder="密碼" id="pwd" onkeydown="key_enter(this)"/>
-    <input type="button" value="登入" onclick="javascript:login()"/>
-    <p id="error" class="err"></p>
+  <input autocomplete="off" type="text" placeholder="帳號" id="id" onkeydown="key_enter(this)" autofocus/>
+  <input autocomplete="off" type="password" placeholder="密碼" id="pwd" onkeydown="key_enter(this)"/>
+  <input type="button" value="登入" onclick="javascript:login()"/>
+  <p id="error" class="err"></p>
 </section>
 <script>
-    function login(){
-        var id  = $("#login #id").val();
-        var pwd = $("#login #pwd").val();
-        if(id === "" || pwd === ""){
-            $("#login #error").text("帳號或密碼不可為空！");
-            return;
-        }
-        $.post('/function/login',{
-            id: id,
-            pwd: pwd
-        }
-        ,function(data){
-            console.log(data);
-            console.log(data["err"]);
-            if(data["err"]){
-                $("#login #error").text(data["msg"]);
-            }else{
-                window.location.href="/manage";
-            }
-        },'json');
+  function login(){
+    var id  = $("#login #id").val();
+    var pwd = $("#login #pwd").val();
+    if(id === "" || pwd === ""){
+      $("#login #error").text("帳號或密碼不可為空！");
+      return;
     }
+    $.post('/function/login',{
+      id: id,
+      pwd: pwd
+    }
+    ,function(data){
+      console.log(data);
+      console.log(data["err"]);
+      if(data["err"]){
+        $("#login #error").text(data["msg"]);
+      }else{
+        window.location.href="/manage";
+      }
+    },'json');
+  }
 
-    function key_enter(e){
-        let keycode = (window.event)? window.event.keyCode : e.which;
-        if(keycode === 13) login();
-    }
+  function key_enter(e){
+    let keycode = (window.event)? window.event.keyCode : e.which;
+    if(keycode === 13) login();
+  }
 </script>
