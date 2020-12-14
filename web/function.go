@@ -18,7 +18,7 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
 
     if path == "/function/login" {
         l := login.New()
-        l.Connect("./sql/user.db")
+        l.Connect("./db/main.db")
 
         if err := l.Login(w, r); err != nil{
             fmt.Fprint(w, err.Error())
@@ -37,7 +37,7 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         }
 
         l := login.New()
-        l.Connect("./sql/user.db")
+        l.Connect("./db/main.db")
 
         id := function.GET("id", r)
         pwd := function.GET("pwd", r)
@@ -101,7 +101,7 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
 
         // step1: connect to database
         art := article.New();
-        if db := art.Connect("./sql/article.db"); db == nil{
+        if db := art.Connect("./db/main.db"); db == nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結失敗", "code": 2}`)
             return
         }
@@ -139,7 +139,7 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         // step2: connect to database
         art := article.New();
 
-        if db := art.Connect("./sql/article.db"); db == nil{
+        if db := art.Connect("./db/main.db"); db == nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結失敗", "code": 2}`)
             return
         }
@@ -222,7 +222,7 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         // step3: connect to database
         art := article.New();
 
-        if db := art.Connect("./sql/article.db"); db == nil{
+        if db := art.Connect("./db/main.db"); db == nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結失敗", "code": 2}`)
             return
         }
@@ -266,7 +266,7 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         for _, fh := range fhs {
             f := files.New()
 
-            if db := f.Connect("./sql/files.db"); db == nil{
+            if db := f.Connect("./db/main.db"); db == nil{
                 fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結失敗", "code": 2}`)
                 return
             }
@@ -287,11 +287,10 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
             fmt.Fprint(w, `{"err" : true , "msg" : "尚未登入", "code" : 1}`)
             return
         }
-        user := loginInfo.UserID
 
-        server_name    := function.GET("server_name", r)
-        serial_num     := function.GET("serial_num", r)
-        num, err := strconv.Atoi(serial_num)
+        server_name := function.GET("server_name", r)
+        serial_num  := function.GET("serial_num", r)
+        num, err    := strconv.Atoi(serial_num)
         if err != nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "文章代碼錯誤 (GET 參數錯誤)", "code": 3}`)
             return
@@ -299,25 +298,24 @@ func FunctionWeb(w http.ResponseWriter, r *http.Request){
         new_attachment := function.GET("new_attachment", r)
 
         // Delete file record in database and delete file in system
-        f := new(files.Files)
-        f.Connect("./sql/files.db")
+        f := files.New()
+        f.Connect("./db/main.db")
         if err := f.Del(server_name); err != nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "檔案資料庫連結失敗或檔案刪除失敗", "code": 2}`)
             return
         }
 
         // Update databse article (prevent user from not storing the article)
-        art := article.New();
-        art.Connect("./sql/article.db")
-        if err := art.UpdateAttachment(uint32(num), user, new_attachment); err != nil{
-            fmt.Fprint(w, `{"err" : true , "msg" : "article資料庫更新失敗", "code": 2}`)
+        art := article.New()
+        art.Connect("./db/main.db")
+        if err := art.UpdateAttachment(uint32(num), new_attachment); err != nil{
+            fmt.Fprint(w, `{"err" : true , "msg" : "Article 資料庫更新失敗", "code": 2}`)
             return
         }
 
         fmt.Fprint(w, `{"err" : false}`)
     }else{
-        fmt.Println("未預期的路徑")
-        fmt.Println(path)
+        fmt.Println("未預期的路徑" + path)
         http.Redirect(w, r, "/error/404", 302)
     }
 }

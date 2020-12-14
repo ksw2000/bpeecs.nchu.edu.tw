@@ -377,6 +377,7 @@ function edit_news(data_id){
             },
             type: 'GET',
             success: function(data){
+                console.log(data);
                 if(data['err']){
                     if(data['code'] === 1){
                         window.location = '/?notlogin';
@@ -393,11 +394,11 @@ function edit_news(data_id){
 
                     Editor.attachment = Editor.defaultAttahmentVal();
                     try{
+                        console.log(data.Attachment)
                         Editor.attachment = JSON.parse(data.Attachment);
                         let parse = Editor.attachment;
-                        let len = parse.client_name.length;
                         let attachment = '';
-                        for(let i=0; i<len; i++){
+                        for(let i=0; i < parse.client_name.length; i++){
                             attachment += `
                                 <li data-file-name="${parse.server_name[i]}">
                                     <a href="${parse.path[i]}">${parse.client_name[i]}</a>

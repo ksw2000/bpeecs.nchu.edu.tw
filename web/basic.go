@@ -43,7 +43,7 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
         return
     }
     // TEMPLATE
-    t, _ := template.ParseFiles("./include/layout.html")
+    t, _ := template.ParseFiles("./include/layout.gohtml")
 
     data := new(PageData)
     data.Isindex = false    // default value
@@ -110,11 +110,11 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
 
             template_index, _ := template.ParseFiles("./include/index.html")
             art := article.New();
-            art.Connect("./sql/article.db")
+            art.Connect("./db/main.db")
 
             // Default from = 0, to = 19
             // return (list []art.Article_Format, hasNext bool)
-            artFormatList, _ := art.GetLatest("public", "normal", "", int32(0), int32(9))
+            artFormatList, _ := art.GetLatest("public", "normal", "", int32(0), int32(7))
             data_index := new(struct{
                 Article_list_brief template.HTML
             })
@@ -147,7 +147,7 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
                     return
                 }else{
                     art := article.New();
-                    art.Connect("./sql/article.db")
+                    art.Connect("./db/main.db")
 
                     user := ""
                     if data.IsLogin{
@@ -178,7 +178,7 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
             }
         case "/logout":
             l := login.New()
-            l.Connect("./sql/user.db")
+            l.Connect("./db/main.db")
             if err := l.Logout(w, r); err!=nil {
                 fmt.Fprint(w, `{"err" : true, "msg" : "登出失敗"}`)
             }else{
@@ -204,7 +204,7 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
         data.Main = getContent(path)
     }
 
-    data.Time = time.Now().Unix() >> 7
+    data.Time = time.Now().Unix() >> 10
 
     t.Execute(w, data)
 }

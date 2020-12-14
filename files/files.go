@@ -35,35 +35,11 @@ func (f *Files) Connect(path string) *sql.DB{
     return f.db
 }
 
-func (f *Files) Del(server_name string) error{
-    // SELECT from database (to get real path)
-    row := f.db.QueryRow("SELECT `path` FROM files WHERE server_name = ?", server_name)
-
-    var filePath string
-    err := row.Scan(&filePath)
-    if err != nil{
-        log.Println(err)
-        return err
-    }
-
-    // Delete from database
-    stmt, _ := f.db.Prepare("DELETE from files WHERE server_name = ?")
-    _, err = stmt.Exec(server_name)
-    if err != nil{
-        log.Println(err)
-        return err
-    }
-
-    // Delete from os
-    os.Remove(".." + filePath)
-    return nil
-}
-
 func (f *Files) NewFile(fh *multipart.FileHeader) error{
     filePath := "./assets/upload/"
     fileExt  := filepath.Ext(fh.Filename)
 
-    //Generate new file name on server (do not use client name)
+    // Generate new file name on server (do not use client name)
     fileName := function.RandomString(10)
     for fileExists(filePath + fileName + fileExt){
         fileName = function.RandomString(10)
@@ -72,8 +48,7 @@ func (f *Files) NewFile(fh *multipart.FileHeader) error{
     newFile, err := os.OpenFile(filePath + string(fileName) + fileExt, os.O_WRONLY | os.O_CREATE, 0666)
     defer newFile.Close()
     if err != nil{
-        log.Println(err)
-        log.Println("os.OpenFile failed")
+        log.Println(err, "files.go NewFile() os.OpenFile() failed")
         return err
     }
 
@@ -82,8 +57,7 @@ func (f *Files) NewFile(fh *multipart.FileHeader) error{
 
     _, err = io.Copy(newFile, oriFile)
     if err != nil{
-        log.Println(err)
-        log.Println("io.Copy failed")
+        log.Println(err, "files.go NewFile() io.Copy() failed")
         return err
     }
 
@@ -97,11 +71,65 @@ func (f *Files) NewFile(fh *multipart.FileHeader) error{
 
     _, err = stmt.Exec(now, f.Client_name, f.Server_name, f.Path)
     if err != nil{
-        log.Println(err)
+        log.Println(err, "files.go NewFile() stmt.Exec() failed")
         return err
     }
 
     return nil
+}
+
+// Delete by server_name
+func (f *Files) Del(server_name string) error{
+    rows := f.db.QueryRow("SELECT path FROM files WHERE server_name = ?", server_name)
+
+    var path string
+    err := rows.Scan(&path)
+    if err != nil{
+        log.Println(err)
+        return err
+    }
+
+    return f.DelByPathList([]string{path})
+}
+
+// Delete files by path list
+func (f *Files) DelByPathList(pathList []string) error{
+    for _, v := range pathList{
+        err := os.Remove("." + v)
+        if err != nil{
+            log.Println(err, "files.go os.Remove()")
+        }
+        stmt, _ := f.db.Prepare("DELETE FROM files WHERE path=?")
+        _, err = stmt.Exec(v)
+        if err != nil{
+            log.Println(err, "files.go Remove() stmt.Exec() failed")
+            return err
+        }
+    }
+    return nil
+}
+
+// Delete files do not be used anymore
+func (f *Files) AutoDel(){
+    rows, err := f.db.Query(`
+        SELECT path FROM files
+        WHERE article_id is null and upload_time < ?` ,
+        time.Now().Unix() - 12*60*60)
+
+    if err != nil{
+        log.Println(err, "files.go Automremove() db.Query failed")
+        return
+    }
+
+    path := ""
+    pathList := []string{}
+    for rows.Next(){
+        rows.Scan(&path)
+        pathList = append(pathList, path)
+    }
+    rows.Close()
+
+    f.DelByPathList(pathList)
 }
 
 func fileExists(filename string) bool {
