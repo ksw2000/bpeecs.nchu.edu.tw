@@ -26,6 +26,6 @@ func ErrorWeb(w http.ResponseWriter, r *http.Request){
         data.Time = time.Now().Unix()
     }
 
-    t, _ := template.ParseFiles("./include/layout.html")
+    t, _ := template.ParseFiles("./include/layout.gohtml")
     t.Execute(w, data)
 }

@@ -77,7 +77,7 @@ func RenderPublicArticle(artInfo *article.Article_Format) template.HTML{
     }
 
     var buf bytes.Buffer
-    t, _ := template.ParseFiles("./include/article_layout.html")
+    t, _ := template.ParseFiles("./include/article_layout.gohtml")
     t.Execute(&buf, data)
     return template.HTML(buf.String())
 }

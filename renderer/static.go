@@ -14,7 +14,7 @@ type Course_render struct{
 }
 
 const COURSE_DATA_DIR = "./assets/json/course/"
-const COURSE_TEMPLATE = "./include/course/template.html"
+const COURSE_TEMPLATE = "./include/course/template.gohtml"
 const COURSE_OUTPUT = "./include/course/"
 
 func translate_strm(i int) string{
@@ -60,6 +60,9 @@ func RenderCourseByYear(year uint){
     if err != nil{
         panic("render/static.go RenderCourseByYear() can not found " + path)
     }
+
+    // render title e.g. 109學年度課程內容
+    fmt.Fprintf(f, fmt.Sprintf("<h1>%d學年度課程內容</h1>", year))
 
     for _, s := range year_unit{
         temp.Title  = "大" + translate_level(int(s["level"].(float64)))
