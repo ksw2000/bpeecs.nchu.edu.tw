@@ -1,22 +1,26 @@
 # bpeecs.nchu.edu.tw
 
-> A website for Banchelor Program of Electrical Engineering and Computer Science
+__NCHU BPEECS__ [https://bpeecs.nchu.edu.tw/](https://bpeecs.nchu.edu.tw/)
 
 ## Dependencies
 
-__GoLang__
+__Go__
 
 Powered by Golang 1.12 (need go mod)
 
-__SQlite3__
+![](https://golang.org/doc/gopher/pkg.png)
+
+__SQLite3__
+
+![](https://www.sqlite.org/images/sqlite370_banner.gif)
 
 1. Install
 
     > Today, almost all the flavours of Linux OS are being shipped with SQLite. So you just issue the following command to check if you already have SQLite installed on your machine.
 
-2. Create tables
+2. Create database
 ```sh
-$ sqlite3 tableName
+$ sqlite3 main.db
 ```
 
 __Front-end js dependencies__
@@ -51,23 +55,24 @@ All of the javascript dependencies are embedded by the online resource links. If
         + style/
         + upload/ (client upload files)
 
-    + include/  (html files)
+    + db/ (sqlite3 database)
+        + main.db
 
-    + sql/ (store database)
+    + include/  (html files & gohtml files)
 
-    + article/ (process article/(news) add, update, delte)
-    + files/ (manage the file which clients uploaded)
+    + article/ (handle article/(news) add, update, delete)
+    + files/ (manage the uploaded files)
 
-    + function/ (some func that golang often use)
+    + function/ (some func we usually use)
 
-    + login/ (process login)
+    + login/ (handle login)
     + render/
-        + dynamic.go (render in runtime)
-        + static.go (render in compile-time)
+        + dynamic.go (render some pages when requesting)
+        + static.go (render some pages before requesting)
     + web/
-        + basic.go (process: ./xxx)
-        + error.go (process error url)
-        + function.go (process ./function/xxx)
+        + basic.go (handle: ./xxx)
+        + error.go (hanle HTTP403 & 404)
+        + function.go (handle ./function/xxx for Ajax)
 
     + go.mod
 
@@ -78,50 +83,43 @@ All of the javascript dependencies are embedded by the online resource links. If
     + newAccount.go `private` (regist a new user)
 
 ## Database
+__main.db__
 
-### article.db
 ```sql
 CREATE TABLE "article" (
-	"id"	INTEGER UNIQUE,
+	"id"	INTEGER,
 	"user"	TEXT,
 	"type"	TEXT DEFAULT 'normal',
 	"create_time"	INTEGER,
 	"publish_time"	INTEGER,
 	"last_modified"	INTEGER,
 	"title"	TEXT,
-	"content"	INTEGER,
-	"attachment"	INTEGER,
+	"content"	TEXT,
 	PRIMARY KEY("id")
 );
-```
 
-### files.db
-```sql
 CREATE TABLE "files" (
-	"id"	INTEGER NOT NULL UNIQUE,
 	"upload_time"	INTEGER,
 	"client_name"	TEXT,
 	"server_name"	TEXT,
 	"path"	TEXT,
-	PRIMARY KEY("id")
+	"article_id"	INTEGER,
+	FOREIGN KEY("article_id") REFERENCES "article"("id"),
+	PRIMARY KEY("server_name")
 );
-```
 
-### user.db
-```sql
 CREATE TABLE "user" (
-	"num"	INTEGER UNIQUE,
-	"id"	TEXT UNIQUE,
+	"id"	TEXT,
 	"password"	TEXT,
 	"salt"	TEXT,
 	"name"	TEXT,
-	PRIMARY KEY("num")
+	PRIMARY KEY("id")
 );
 ```
 
 ## Quick run
 
-1. create database
+1. Create database `./db/main.db`
 
 2. implemented pwdHash() in `package login`
 ```go
@@ -134,10 +132,14 @@ func pwdHash(pwd string, salt string)
 ```sh
 $ go build main.go
 ```
-5. run in port 8080
+
+5. run
 ```sh
+# run at port 9000
+./main
+# run at port 8080 and render static page
 ./main -r -p 8080
-# or https (443)
+# run at port 443
 ./main -r -p 443
 ```
 `-p` can specify port.
