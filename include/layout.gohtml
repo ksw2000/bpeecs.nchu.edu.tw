@@ -137,12 +137,14 @@
               <li>National Chung Hsing University</li>
               <li><a target="_blank" href="http://www.eecs.nchu.edu.tw/">電機資訊學院</a></li>
               <li>College of Electrical Engineering and Computer Science</li>
-              <li><a target="_blank" href="http://www.cs.nchu.edu.tw/">資訊工程學系</a></li>
-              <li>Department of Computer Science and Engineering</li>
-            </td>
-            <td>
               <li><a target="_blank" href="http://www.twisc.nchu.edu.tw/twisc@nchu/">資通安全研究與教學中心</a></li>
               <li>Taiwan Information Security Center @ NCHU</li>
+            </td>
+            <td>
+              <li><a target="_blank" href="http://www.cs.nchu.edu.tw/">資訊工程學系</a></li>
+              <li>Department of Computer Science and Engineering</li>
+              <li><a target="_blank" href="http://www.ee.nchu.edu.tw/">電機工程學系</a></li>
+              <li>Department of Electrical Engineering</li>
             {{if .IsLogin}}
               <li><a href="/logout">登出</a> | <a href="/login">開發人員</a></li>
               <li>Log out | For developer</li>
@@ -168,7 +170,7 @@
           </tr>
         </table>
         <center>
-          <p>© 2020 國立中興大學電機資訊學院學士班<p>
+          <p>© {{.Year}} 國立中興大學電機資訊學院學士班<p>
           <p> ── NCHU Taiwan ❤︎ ──</p>
         </center>
       </div>

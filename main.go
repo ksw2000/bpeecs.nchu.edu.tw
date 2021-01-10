@@ -50,11 +50,11 @@ func main(){
     if *port == 443 {
         go http.ListenAndServe(":80", http.HandlerFunc(redirect))
         if err := server.ListenAndServeTLS("certificate.crt", "private.key"); err != nil{
-            log.Fatal("ListenAndServe: ", err)
+            log.Fatalln("ListenAndServe: ", err)
         }
     }else{
         if err := server.ListenAndServe(); err != nil{
-            log.Fatal("ListenAndServe: ", err)
+            log.Fatalln("ListenAndServe: ", err)
         }
     }
 }

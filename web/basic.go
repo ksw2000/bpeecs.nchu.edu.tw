@@ -21,13 +21,14 @@ type PageData struct{
     IsLogin bool
     Main    template.HTML
     Time    int64
+    Year    int
 }
 
 func getContent(fileName string) template.HTML{
     file, err := os.Open("./include" + fileName + ".html")
     defer file.Close()
     if err != nil{
-        log.Fatal(err)
+        log.Println(err)
     }
     content, err := ioutil.ReadAll(file)
 
@@ -205,6 +206,7 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
     }
 
     data.Time = time.Now().Unix() >> 10
+    data.Year, _, _ = time.Now().Date()
 
     t.Execute(w, data)
 }
