@@ -181,3 +181,10 @@ function notice(msg){
 function slideToggole(id){
     $('#'+id).slideToggle();
 }
+
+$(window).on('resize', function(){
+    var win = $(this); //this = window
+    if(win.width() > 900) {
+        $("#button-over-900px").show();
+    }
+});
