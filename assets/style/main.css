@@ -113,6 +113,7 @@ h1{
   width: fit-content;
 }
 
+/*
 #main h1:after{
   border-bottom: 3px solid rgb(23,76,111);
   content: "";
@@ -126,7 +127,7 @@ h1{
   transition: width 600ms;
   width: 100%;
 }
-
+*/
 h2{
   color: rgb(11, 71, 111);
   font-size: 23px;
@@ -171,7 +172,7 @@ table thead tr{
 }
 
 table tbody tr:nth-child(2n){
-  background-color: #cfe0e0;
+  background-color: #d3dbdb;
 }
 
 table td{
