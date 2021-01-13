@@ -4,6 +4,7 @@ import(
     "fmt"
     "html/template"
     "io/ioutil"
+    "log"
     "os"
     "strings"
 )
@@ -46,7 +47,7 @@ func RenderCourseByYear(year uint){
 
     json_data, err := ioutil.ReadFile(path)
 	if err != nil {
-		panic("render/static.go RenderCourseByYear() can not found " + path)
+		log.Fatalln("render/static.go RenderCourseByYear() can not found " + path)
 	}
 
     temp := Course_render{}
@@ -58,15 +59,15 @@ func RenderCourseByYear(year uint){
     f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0644)
     defer f.Close()
     if err != nil{
-        panic("render/static.go RenderCourseByYear() can not found " + path)
+        log.Fatalln("render/static.go RenderCourseByYear() can not found " + path)
     }
 
     // render title e.g. 109學年度課程內容
     fmt.Fprintf(f, fmt.Sprintf("<h1>%d學年度課程內容</h1>", year))
 
     for _, s := range year_unit{
-        temp.Title  = "大" + translate_level(int(s["level"].(float64)))
-        temp.Title += translate_strm(int(s["strm"].(float64))) + "學期"
+        temp.Title  = "大" + translate_level(int(s["level"].(float64))) +
+                      translate_strm(int(s["strm"].(float64))) + "學期"
         temp.Course = []map[string]interface{}{}
         for _, v := range s["list"].([]interface{}){
             info := v.(map[string]interface{})
@@ -81,13 +82,14 @@ func RenderCourseByYear(year uint){
             }else{
                 info["required"] = "選修"
             }
-
+            info["link"] = (info["number"].(float64) > 0)
+            info["semester"] = fmt.Sprintf("%d%d", year, int(s["strm"].(float64)))
             temp.Course = append(temp.Course, info)
         }
 
         t, err := template.ParseFiles(COURSE_TEMPLATE)
         if err != nil{
-            panic("render/static.go RenderCourseByYear() can not found template " +
+            log.Fatalln("render/static.go RenderCourseByYear() can not found template " +
             COURSE_TEMPLATE)
         }
         t.Execute(f, temp)

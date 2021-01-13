@@ -4,16 +4,18 @@
     <tr>
       <th>課程名稱</th>
       <th>必選別</th>
-      <th>先修科目</th>
       <th>授課教師</th>
     </tr>
   </thead>
     <tbody>
     {{range .Course}}
       <tr>
-        <td>{{.course}}</td>
+        {{if .link}}
+          <td><a href="/syllabus/{{.semester}}/{{.number}}" title="查看課程大綱">{{.course}}</a></td>
+        {{else}}
+          <td>{{.course}}</td>
+        {{end}}
         <td>{{.required}}</td>
-        <td>{{.prereq}}</td>
         <td>{{.teacher}}</td>
       </tr>
     {{end}}
