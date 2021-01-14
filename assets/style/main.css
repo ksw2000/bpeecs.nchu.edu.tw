@@ -179,6 +179,18 @@ table td{
   padding: 5px;
 }
 
+table.customize{
+  max-width: none;
+}
+
+table.customize tr:nth-child(2n){
+  background-color: transparent!important;
+}
+
+table.customize td.color{
+  background-color: #d3dbdb;
+}
+
 /*----------------------------------------------footer----------------------------------------------*/
 footer{
   background-color: rgb(65, 65, 65);
