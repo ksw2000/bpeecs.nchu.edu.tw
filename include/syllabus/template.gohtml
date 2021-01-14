@@ -1,0 +1,91 @@
+<h1>{{.Course_name_zh}} - 教學大綱</h1>
+<table border="1" class="customize">
+  <tr>
+    <td rowspan="2" class="color">課程名稱</td>
+    <td colspan="5">{{.Course_name_zh}}</td>
+  </tr>
+  <tr>
+    <td colspan="5">{{.Course_name_en}}</td>
+  </tr>
+  <tr>
+    <td class="color">開課單位</td>
+    <td colspan="5">{{.Offering_dept}}</td>
+  </tr>
+  <tr>
+    <td class="color">課程類別</td>
+    <td>{{.Course_type}}</td>
+    <td class="color">學分</td>
+    <td>{{.Credits}}</td>
+    <td class="color">授課教師</td>
+    <td>{{.Teacher}}</td>
+  </tr>
+  <tr>
+    <td class="color">選課單位</td>
+    <td>{{.Department}}</td>
+    <td class="color">授課使用語言</td>
+    <td>{{.Language}}</td>
+    <td class="color">開課學期</td>
+    <td>{{.Semester}}</td>
+  </tr>
+  <tr>
+    <td class="color">課程簡述</td>
+    <td colspan="5">{{.Course_description}}</td>
+  </tr>
+  <tr>
+    <td class="color">先修課程名稱</td>
+    <td colspan="5">{{.Prerequisites}}</td>
+  </tr>
+</table><table border="1" class="customize">
+  <tr>
+    <td rowspan="3" style="width: 33%;" class="color">課程與核心能力關聯配比(%)</td>
+    <td>課程目標</td>
+    <td>{{.Course_objectives}}</td>
+  </tr>
+  <tr>
+    <td>核心能力</td>
+    <td>{{.Competency_indicators}}</td>
+  </tr>
+  <tr>
+    <td>配比(%)</td>
+    <td>{{.Ratio}}</td>
+  </tr>
+  <tr>
+    <td rowspan="2" class="color">課程目標之教學方法與評量方法</td>
+    <td>教學方法</td>
+    <td>{{.Teaching_methods}}</td>
+  </tr>
+  <tr>
+    <td>評量方法</td>
+    <td>{{.Assessment_methods}}</td>
+  </tr>
+  <tr>
+    <td colspan="3" class="color">授課內容(單元名稱與內容、習作/每週授課、考試進度-共18週)</td>
+  </tr>
+  <tr>
+    <td colspan="3">{{.Course_content}}</td>
+  </tr>
+  <tr>
+    <td colspan="3" class="color">學習評量方式</td>
+  </tr>
+  <tr>
+    <td colspan="3">{{.Evaluation}}</td>
+  </tr>
+  <tr>
+    <td colspan="3" class="color">教科書＆參考書目(書名、作者、書局、代理商、說明)</td>
+  </tr>
+  <tr>
+    <td colspan="3">{{.Textbook}}</td>
+  </tr>
+  <tr>
+    <td colspan="3" class="color">課程教材（教師個人網址請列在本校內之網址）</td>
+  </tr>
+  <tr>
+    <td colspan="3">{{.Teaching_aids}}</td>
+  </tr>
+  <tr>
+    <td colspan="3" class="color">課程輔導時間</td>
+  </tr>
+  <tr>
+    <td colspan="3">{{.Office_hours}}</td>
+  </tr>
+</table>

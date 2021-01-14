@@ -3,6 +3,7 @@ import(
     "flag"
     "fmt"
     "log"
+    "time"
     "net/http"
     "bpeecs.nchu.edu.tw/web"
     "bpeecs.nchu.edu.tw/renderer"
@@ -31,6 +32,28 @@ func main(){
     }
 
     // server
+    halting := make(chan bool)
+    counter := 0
+    go server(port, halting)
+
+    for _ = range halting{
+        counter++
+        log.Printf("%2d halting, try to restart... after %ds\n", counter, counter)
+        time.Sleep(time.Duration(counter)*time.Second)
+        log.Println("restarting")
+        go server(port, halting)
+    }
+}
+
+func server(port *int, halting chan bool){
+    // server recover()
+    defer func(){
+       if err := recover(); err != nil {
+           log.Println(err)
+           halting <- true
+       }
+    }()
+
     mux := http.NewServeMux()
     static_folder := []string{"/assets/", "/.well-known/pki-validation/"}
 
@@ -38,9 +61,11 @@ func main(){
         mux.Handle(v, http.StripPrefix(v, http.FileServer(http.Dir("." + v))))
     }
 
-    mux.HandleFunc("/function/", web.FunctionWeb)
-    mux.HandleFunc("/error/", web.ErrorWeb)
-    mux.HandleFunc("/",  web.BasicWeb)
+    mux.HandleFunc("/function/", web.FunctionWebHandler)
+    mux.HandleFunc("/error/", web.ErrorWebHandler)
+    mux.HandleFunc("/manage/", web.ManageWebHandler)
+    mux.HandleFunc("/syllabus/", web.SyllabusWebHandler)
+    mux.HandleFunc("/",  web.BasicWebHandler)
 
     server := &http.Server {
         Addr: fmt.Sprintf(":%d", *port),
@@ -57,4 +82,5 @@ func main(){
             log.Fatalln("ListenAndServe: ", err)
         }
     }
+    halting <- true
 }

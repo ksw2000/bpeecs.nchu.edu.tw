@@ -1,0 +1,23 @@
+{
+    "Course_name_zh": "普通物理學",
+    "Course_name_en": "General Physics",
+    "Offering_dept": "物理系",
+    "Course_type": "必修",
+    "Credits": 3,
+    "Teacher": "張雨晏",
+    "Department": "電資學士 / 學士班",
+    "Language": "中文",
+    "Semester": "2020-FALL",
+    "Course_description": "提供電機資訊學生大學程度的普通物理學課程。",
+    "Prerequisites": "",
+    "Course_objectives": "",
+    "Competency_indicators": "",
+    "Ratio": "",
+    "Teaching_methods": "網路/遠距教學<br>習作<br>討論<br>其他<br>講授",
+    "Assessment_methods": "作業<br>測驗<br>其他",
+    "Course_content": "W01 Introduction<br>W02 Force, Motion, Energy, and Work<br>W03 Momentum, Gravitation, and Oscillations<br>W04 Math for General Physics<br>W05 Math for General Physics<br>W06 Electric Fields and Gauss's Law<br>W07 Electric Potential and Capacitance<br>W08 Current, Resistance, and Curcuits<br>W09 Mid-term Exam<br>W10 Magnetic Fields<br>W11 Faraday's Law and Inductance<br>W12 Alternating-Current Circuits<br>W13 Maxwell's Equation<br>W14 Electromagnetic Waves<br>W15 Optics<br>W16 Morden Physics<br>W17 Morden Physics<br>W18 Final Exam",
+    "Evaluation": "Homework and Quiz: 40%<br>Midterm: 30%<br>Final: 30%",
+    "Textbook": "Principles of Physics<br>by Jearl Walker, David Halliday, and Robert Resnick",
+    "Teaching_aids": "iLearning",
+    "Office_hours": ""
+}

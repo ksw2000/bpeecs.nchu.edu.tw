@@ -12,7 +12,7 @@ import(
     "bpeecs.nchu.edu.tw/files"
 )
 
-func FunctionWeb(w http.ResponseWriter, r *http.Request){
+func FunctionWebHandler(w http.ResponseWriter, r *http.Request){
     r.ParseForm()
     path := r.URL.Path
 

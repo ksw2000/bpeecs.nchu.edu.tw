@@ -24,18 +24,27 @@ type PageData struct{
     Year    int
 }
 
-func getContent(fileName string) template.HTML{
+func initPageData() *PageData{
+    data := new(PageData)
+    data.Isindex = false // default value
+    data.Time = time.Now().Unix() >> 10
+    data.Year, _, _ = time.Now().Date()
+    return data
+}
+
+func getHTML(fileName string) (template.HTML, error){
     file, err := os.Open("./include" + fileName + ".html")
     defer file.Close()
     if err != nil{
         log.Println(err)
+        return template.HTML("error try again"), err
     }
     content, err := ioutil.ReadAll(file)
 
-    return template.HTML(content);
+    return template.HTML(content), nil;
 }
 
-func BasicWeb(w http.ResponseWriter, r *http.Request){
+func BasicWebHandler(w http.ResponseWriter, r *http.Request){
     r.ParseForm()
     path := r.URL.Path
 
@@ -43,11 +52,8 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
         http.Redirect(w, r, "/assets/img/favicon.ico", 301)
         return
     }
-    // TEMPLATE
-    t, _ := template.ParseFiles("./include/layout.gohtml")
 
-    data := new(PageData)
-    data.Isindex = false    // default value
+    data := initPageData()
 
     var simpleWeb = map[string]string{
         "/about/education-goal-and-core-ability" : "教育目標及核心能力",
@@ -61,49 +67,17 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
         "/member/admin-staff" : "行政人員",
         "/member/faculty" : "師資陣容",
         "/member/class-teacher" : "班主任",
+        "/syllabus" : "課程大綱",
     }
 
     // Is login?
     loginInfo := login.CheckLogin(w, r)
-    if loginInfo != nil{
-        data.IsLogin = true
-    }else{
-        data.IsLogin = false
-    }
+    data.IsLogin = (loginInfo != nil)
 
     var ok bool
     data.Title, ok = simpleWeb[path]
 
-    if !ok {
-        var manageWeb = map[string]string{
-            "/manage" : "歡迎進入後台管理系統",
-            "/manage/article" : "文章管理",
-            "/manage/reg" : "註冊新用戶",
-            "/manage/reg-done" : "新用戶註冊成功",
-        }
-
-        data.Title, ok = manageWeb[path]
-        if ok{
-            if data.IsLogin{
-                manageTemplate, _ := template.ParseFiles("./include/manage.html")
-                var manageTemplateByte bytes.Buffer
-                manageTemplateData := struct{
-                    UserID      string
-                    UserName    string
-                }{
-                    UserID: loginInfo.UserID,
-                    UserName: loginInfo.UserName,
-                }
-                manageTemplate.Execute(&manageTemplateByte, manageTemplateData)
-                data.Main = template.HTML(manageTemplateByte.String())
-            }else{
-                http.Redirect(w, r, "/?notlogin", 302)
-                return
-            }
-        }
-    }
-
-    if !ok {
+    if !ok{
         switch path {
         case "/":
             data.Title = "國立中興大學電機資訊學院學士班"
@@ -168,7 +142,7 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
                 }
             }else{
                 data.Title += " | 國立中興大學電機資訊學院學士班"
-                data.Main = getContent(path)
+                data.Main, _ = getHTML(path)
             }
         case "/login":
             if login.CheckLogin(w, r) != nil{
@@ -196,17 +170,12 @@ func BasicWeb(w http.ResponseWriter, r *http.Request){
         }
     }
 
-    if(path == "/manage"){
+    if(path != "/" && path != "/news"){
         data.Title += " | 國立中興大學電機資訊學院學士班"
-        // retain data.Main
-    }else if(path == "/news"){
-    }else if(path != "/"){
-        data.Title += " | 國立中興大學電機資訊學院學士班"
-        data.Main = getContent(path)
+        data.Main, _ = getHTML(path)
     }
 
-    data.Time = time.Now().Unix() >> 10
-    data.Year, _, _ = time.Now().Date()
-
+    // TEMPLATE
+    t, _ := template.ParseFiles("./include/layout.gohtml")
     t.Execute(w, data)
 }

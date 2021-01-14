@@ -1,0 +1,23 @@
+{
+    "Course_name_zh": "物件導向程式設計",
+    "Course_name_en": "Object-Oriented Programming",
+    "Offering_dept": "Bachelor Program of Electrical Engineering and Computer Science",
+    "Course_type": "必修",
+    "Credits": 3,
+    "Teacher": "歐陽彥杰",
+    "Department": "電資學士 / 學士班",
+    "Language": "中文",
+    "Semester": "2020-SPRING",
+    "Course_description": "1. Introduction, 2.Fundamental Data Types, 3. Decisions, 4. Loops, 5. Methods, 6. Arrays and Array Lists, 7. Input/Output and Exception Handling, 8. Objects and Classes, 9. Inheritance and Interfaces, 10. Object-Oriented Programming: Polymorphism and Interfaces, 14 Strings, Characters and Regular Expressions, 15 Files, Input/Output Streams, NIO and XML Serialization, 23 Concurrency",
+    "Prerequisites": "",
+    "Course_objectives": "You’ll learn object-oriented programming—today’s key programming methodology. You’ll create and work with many software objects.",
+    "Competency_indicators": "",
+    "Ratio": "",
+    "Teaching_methods": "Exercises<br>Practicum<br>Lecturing",
+    "Assessment_methods": "Attendance<br>Assignment<br>Study Outcome<br>Quiz<br>Internship",
+    "Course_content": "1. Introduction, 2.Fundamental Data Types, 3. Decisions, 4. Loops, 6. Methods, 7. Arrays and Array Lists, 8. Objects and Classes, 9. Inheritance and Interfaces, 10. Polymorphism, 17 File, Streams and Object Serialization, 26 Multithreading, 27. Networking",
+    "Evaluation": "Home work assignment: 15%; Online Exam 25%; Mid-term Exam 25%; Final Exam 35%",
+    "Textbook": "Java™ How to Program<br>Early Objects, ELEVENTH EDITION<br>by Paul Deitel and Harvey Deitel",
+    "Teaching_aids": "mmlab.ee.nchu.edu.tw",
+    "Office_hours": ""
+}

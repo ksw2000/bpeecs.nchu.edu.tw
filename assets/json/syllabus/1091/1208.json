@@ -1,0 +1,23 @@
+{
+    "Course_name_zh": "微積分(一)",
+    "Course_name_en": "Calculus(I)",
+    "Offering_dept": "應數系",
+    "Course_type": "必修",
+    "Credits": 3,
+    "Teacher": "楊懿淑",
+    "Department": "電資學士 / 學士班",
+    "Language": "中文",
+    "Semester": "2020-FALL",
+    "Course_description": "闡述和應用解開切線斜率問題之微分和解決不規則區域面積之積分於解決實務問題的學科",
+    "Prerequisites": "",
+    "Course_objectives": "建立微分與積分的觀念，並能利用微分與積分解決實務問題。",
+    "Competency_indicators": "",
+    "Ratio": "",
+    "Teaching_methods": "Exercises<br>Lecturing",
+    "Assessment_methods": "Quiz",
+    "Course_content": "Week 1 Functions and Limits<br>Week 2 Functions and Limits<br>Week 3 Functions and Limits<br>Week 4 Derivatives<br>Week 5 Derivatives<br>Week 6 Derivatives<br>Week 7 Applications of Differentiation<br>Week 8 Applications of Differentiation<br>Week 9 Midterm Exam<br>Week 10 Applications of Differentiation<br>Week 11 Applications of Differentiation<br>Week 12 Integrals<br>Week 13 Integrals<br>Week 14 Integrals<br>Week 15 Inverse Functions<br>Week 16 Inverse Functions<br>Week 17 Inverse Functions<br>Week 18 Final Exam",
+    "Evaluation": "平時 40%、 期中考 30%、 期末考 30%",
+    "Textbook": "Biocalculus for the life sciences、James Stewart、Cengage Learning、滄海書局",
+    "Teaching_aids": "iLearning",
+    "Office_hours": "星期五13:00~14:00"
+}

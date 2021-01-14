@@ -2,10 +2,16 @@ package renderer
 import (
     "bytes"
     "encoding/json"
+    "fmt"
     "html/template"
+    "io/ioutil"
+    "log"
     "time"
     "bpeecs.nchu.edu.tw/article"
 )
+
+const SYLLABUS_DATA_DIR = "./assets/json/syllabus/"
+const SYLLABUS_TEMPLATE = "./include/syllabus/template.gohtml"
 
 type Files_render struct{
     Client_name []string `json:"client_name"`
@@ -100,4 +106,37 @@ func RenderPublicArticleBriefList(artInfoList []article.Article_Format) template
     }
 
     return template.HTML(ret)
+}
+
+func RenderSyllabus(semester int, course_number int) (template.HTML, string, error){
+    path := fmt.Sprintf("%s%d/%d.json", SYLLABUS_DATA_DIR, semester, course_number)
+
+    json_data, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Fatalln("render/dynamic.go RenderSyllabus() can not found " + path)
+        return template.HTML(""), "", err
+    }
+
+    maps := map[string]interface{}{}
+    json.Unmarshal(json_data, &maps)
+
+    course_name, _ := maps["Course_name_zh"].(string)
+
+    for k, v := range maps{
+        switch u := v.(type){
+        case string:
+            maps[k] = template.HTML(u)
+        }
+    }
+
+
+    t, err := template.ParseFiles(SYLLABUS_TEMPLATE)
+    if err != nil{
+        log.Fatalln("render/dynamic.go RenderSyllabus() can not found template " +
+        SYLLABUS_TEMPLATE)
+    }
+
+    var buf bytes.Buffer
+    t.Execute(&buf, maps)
+    return template.HTML(buf.String()), course_name, nil
 }

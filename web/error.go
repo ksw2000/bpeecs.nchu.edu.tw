@@ -3,27 +3,22 @@ package web
 import(
     "html/template"
     "net/http"
-    "time"
 )
 
-func ErrorWeb(w http.ResponseWriter, r *http.Request){
+func ErrorWebHandler(w http.ResponseWriter, r *http.Request){
     r.ParseForm()
     path := r.URL.Path
-    data := new(PageData)
+    data := initPageData()
 
     switch path {
     case "/error/404":
         w.WriteHeader(404)
         data.Title = "HTTP 404 Not Found"
-        data.Isindex = false
-        data.Main = getContent("/http404")
-        data.Time = time.Now().Unix()
+        data.Main, _ = getHTML("/http404")
     case "/error/403":
         w.WriteHeader(403)
         data.Title = "HTTP 403 Forbidden"
-        data.Isindex = false
-        data.Main = getContent("/http403")
-        data.Time = time.Now().Unix()
+        data.Main, _ = getHTML("/http403")
     }
 
     t, _ := template.ParseFiles("./include/layout.gohtml")

@@ -1,0 +1,23 @@
+{
+    "Course_name_zh": "交換電路與邏輯設計",
+    "Course_name_en": "Switching Circuits & Logic Designd",
+    "Offering_dept": "Bachelor Program of Electrical Engineering and Computer Science",
+    "Course_type": "必修",
+    "Credits": 3,
+    "Teacher": "范志鵬",
+    "Department": "電資學士 / 學士班",
+    "Language": "中文",
+    "Semester": "2020-SPRING",
+    "Course_description": "經由修此門課,同學們能熟悉數位邏輯設計理論與實務,包含組合與序向邏輯設計及邏輯架構設計.",
+    "Prerequisites": "",
+    "Course_objectives": "1. 對邏輯設計有基礎之瞭解<br>2. 瞭解數位邏輯電路設計原理及應用<br>3. 學習由理論到邏輯電路的轉換",
+    "Competency_indicators": "",
+    "Ratio": "",
+    "Teaching_methods": "Discussion<br>Lecturing",
+    "Assessment_methods": "Attendance<br>Assignment<br>Quiz",
+    "Course_content": "課程大綱: Digital Logic Design<br>Binary Systems<br>Boolean Algebra and Logic Gates<br>Gate-level Minimization<br>Combinational Logic<br>Synchronous Sequential Logic<br>Memory and Programmable Logic<br>Registers and Counters<br>Advanced Topics",
+    "Evaluation": "1. 第1次期中考試(30％)<br>2. 第2次期中考試(30％)<br>3. 期末考試(30％)<br>4. 作業(10％)",
+    "Textbook": "M. Morris Mano and Michael D. Ciletti, “ Digital Design ”, Prentice Hall, 6 Edition.",
+    "Teaching_aids": "請上網 Logic in 進入中興大學 iLearning 平台",
+    "Office_hours": ""
+}
