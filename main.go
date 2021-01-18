@@ -5,6 +5,7 @@ import(
     "log"
     "time"
     "net/http"
+    "strings"
     "bpeecs.nchu.edu.tw/web"
     "bpeecs.nchu.edu.tw/renderer"
 )
@@ -45,6 +46,17 @@ func main(){
     }
 }
 
+func neuter(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        if strings.HasSuffix(r.URL.Path, "/") {
+            http.NotFound(w, r)
+            return
+        }
+
+        next.ServeHTTP(w, r)
+    })
+}
+
 func server(port *int, halting chan bool){
     // server recover()
     defer func(){
@@ -55,10 +67,11 @@ func server(port *int, halting chan bool){
     }()
 
     mux := http.NewServeMux()
-    static_folder := []string{"/assets/", "/.well-known/pki-validation/"}
+    static_folder := []string{"/assets", "/.well-known/pki-validation"}
 
     for _, v := range static_folder {
-        mux.Handle(v, http.StripPrefix(v, http.FileServer(http.Dir("." + v))))
+        fileServer := http.FileServer(http.Dir("." + v))
+        mux.Handle(v + "/", http.StripPrefix(v, neuter(fileServer)))
     }
 
     mux.HandleFunc("/function/", web.FunctionWebHandler)
