@@ -10,22 +10,22 @@ import (
     "bpeecs.nchu.edu.tw/article"
 )
 
-const SYLLABUS_DATA_DIR = "./assets/json/syllabus/"
-const SYLLABUS_TEMPLATE = "./include/syllabus/template.gohtml"
+const syllabusDataDir = "./assets/json/syllabus/"
+const syllabusTemplate = "./include/syllabus/template.gohtml"
 
-type Files_render struct{
+type filesInfo struct{
     Client_name []string `json:"client_name"`
     Server_name []string `json:"server_name"`
     Path []string        `json:"path"`
 }
 
-type File_render struct{
+type fileInfo struct{
     Client_name string
     Server_name string
     Path string
 }
 
-type Article_render struct{
+type articleRenderInfo struct{
     Id uint32
     User string
     Type string
@@ -34,17 +34,17 @@ type Article_render struct{
     Last_modified string
     Title string
     Content template.HTML
-    Attachment []File_render
+    Attachment []fileInfo
 }
 
-func RenderSimpleTime(timestamp uint64) string{
+func renderDate(timestamp uint64) string{
     //t := time.Unix(fmt.Sprintf("%u", timestamp), 0)
     t := time.Unix(int64(timestamp), 0)
     return t.Format("2006-01-02")
     //(t.Format("2006-01-02 15:04:05"))
 }
 
-func RenderArticleType(key string) string{
+func renderArticleType(key string) string{
     dict := map[string]string{
         "normal"       : "一般消息",
         "activity"     : "演講 & 活動",
@@ -60,22 +60,23 @@ func RenderArticleType(key string) string{
     return ""
 }
 
-func RenderPublicArticle(artInfo *article.Article_Format) template.HTML{
-    data := new(Article_render)
+// RenderPublicArticle renders an article at url: /news/[articleID]
+func RenderPublicArticle(artInfo *article.Format) template.HTML{
+    data := new(articleRenderInfo)
     data.Id = artInfo.Id
     data.User = artInfo.User
-    data.Type = RenderArticleType(artInfo.Type)
-    data.Create_time = RenderSimpleTime(artInfo.Create_time)
-    data.Publish_time = RenderSimpleTime(artInfo.Publish_time)
-    data.Last_modified = RenderSimpleTime(artInfo.Last_modified)
+    data.Type = renderArticleType(artInfo.Type)
+    data.Create_time = renderDate(artInfo.Create_time)
+    data.Publish_time = renderDate(artInfo.Publish_time)
+    data.Last_modified = renderDate(artInfo.Last_modified)
     data.Title = artInfo.Title
     data.Content = template.HTML(artInfo.Content)
 
-    res := Files_render{}
+    res := filesInfo{}
     json.Unmarshal([]byte(artInfo.Attachment), &res)
-    data.Attachment = make([]File_render, len(res.Path))
+    data.Attachment = make([]fileInfo, len(res.Path))
     for i:=0; i < len(res.Path); i++{
-        data.Attachment[i] = File_render{
+        data.Attachment[i] = fileInfo{
             Client_name : res.Client_name[i],
             Server_name : res.Server_name[i],
             Path : res.Path[i],
@@ -88,12 +89,13 @@ func RenderPublicArticle(artInfo *article.Article_Format) template.HTML{
     return template.HTML(buf.String())
 }
 
-func RenderPublicArticleBriefList(artInfoList []article.Article_Format) template.HTML{
-    data := new(Article_render)
+// RenderPublicArticleBriefList dynamically renders article list an home page
+func RenderPublicArticleBriefList(artInfoList []article.Format) template.HTML{
+    data := new(articleRenderInfo)
     ret := ""
     for _, artInfo := range artInfoList{
         data.Id = artInfo.Id
-        data.Publish_time = RenderSimpleTime(artInfo.Publish_time)
+        data.Publish_time = renderDate(artInfo.Publish_time)
         data.Title = artInfo.Title
         var buf bytes.Buffer
         t, _ := template.New("article_list_brief").Parse(`
@@ -108,19 +110,20 @@ func RenderPublicArticleBriefList(artInfoList []article.Article_Format) template
     return template.HTML(ret)
 }
 
-func RenderSyllabus(semester int, course_number int) (template.HTML, string, error){
-    path := fmt.Sprintf("%s%d/%d.json", SYLLABUS_DATA_DIR, semester, course_number)
+// RenderSyllabus dynamically renders syllabus page
+func RenderSyllabus(semester int, courseNumber int) (template.HTML, string, error){
+    path := fmt.Sprintf("%s%d/%d.json", syllabusDataDir, semester, courseNumber)
 
-    json_data, err := ioutil.ReadFile(path)
+    jsonData, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Fatalln("render/dynamic.go RenderSyllabus() can not found " + path)
         return template.HTML(""), "", err
     }
 
     maps := map[string]interface{}{}
-    json.Unmarshal(json_data, &maps)
+    json.Unmarshal(jsonData, &maps)
 
-    course_name, _ := maps["Course_name_zh"].(string)
+    courseName, _ := maps["Course_name_zh"].(string)
 
     for k, v := range maps{
         switch u := v.(type){
@@ -130,13 +133,13 @@ func RenderSyllabus(semester int, course_number int) (template.HTML, string, err
     }
 
 
-    t, err := template.ParseFiles(SYLLABUS_TEMPLATE)
+    t, err := template.ParseFiles(syllabusTemplate)
     if err != nil{
         log.Fatalln("render/dynamic.go RenderSyllabus() can not found template " +
-        SYLLABUS_TEMPLATE)
+        syllabusTemplate)
     }
 
     var buf bytes.Buffer
     t.Execute(&buf, maps)
-    return template.HTML(buf.String()), course_name, nil
+    return template.HTML(buf.String()), courseName, nil
 }

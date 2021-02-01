@@ -9,16 +9,16 @@ import(
     "strings"
 )
 
-type Course_render struct{
+type courseInfo struct{
     Title string
     Course []map[string]interface{}
 }
 
-const COURSE_DATA_DIR = "./assets/json/course/"
-const COURSE_TEMPLATE = "./include/course/template.gohtml"
-const COURSE_OUTPUT = "./include/course/"
+const courseDataDir = "./assets/json/course/"
+const courseTemplate = "./include/course/template.gohtml"
+const courseOutput = "./include/course/"
 
-func translate_strm(i int) string{
+func convertStrm(i int) string{
     switch i {
     case 1:
         return "上"
@@ -28,7 +28,7 @@ func translate_strm(i int) string{
     return ""
 }
 
-func translate_level(i int) string{
+func convertLevel(i int) string{
     switch i {
     case 1:
         return "一"
@@ -42,19 +42,20 @@ func translate_level(i int) string{
     return ""
 }
 
+// RenderCourseByYear statically renders course page by inputing year
 func RenderCourseByYear(year uint){
-    path := fmt.Sprintf("%s%d.json", COURSE_DATA_DIR, year)
+    path := fmt.Sprintf("%s%d.json", courseDataDir, year)
 
-    json_data, err := ioutil.ReadFile(path)
+    jsonData, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Fatalln("render/static.go RenderCourseByYear() can not found " + path)
 	}
 
-    temp := Course_render{}
-    year_unit := []map[string]interface{}{}
-    json.Unmarshal(json_data, &year_unit)
+    temp := courseInfo{}
+    yearUnit := []map[string]interface{}{}
+    json.Unmarshal(jsonData, &yearUnit)
 
-    path = fmt.Sprintf("%s%d.html", COURSE_OUTPUT, year)
+    path = fmt.Sprintf("%s%d.html", courseOutput, year)
     os.Remove(path)
     f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0644)
     defer f.Close()
@@ -65,9 +66,9 @@ func RenderCourseByYear(year uint){
     // render title e.g. 109學年度課程內容
     fmt.Fprintf(f, fmt.Sprintf("<h1>%d學年度課程內容</h1>", year))
 
-    for _, s := range year_unit{
-        temp.Title  = "大" + translate_level(int(s["level"].(float64))) +
-                      translate_strm(int(s["strm"].(float64))) + "學期"
+    for _, s := range yearUnit{
+        temp.Title  = "大" + convertLevel(int(s["level"].(float64))) +
+                      convertStrm(int(s["strm"].(float64))) + "學期"
         temp.Course = []map[string]interface{}{}
         for _, v := range s["list"].([]interface{}){
             info := v.(map[string]interface{})
@@ -87,10 +88,10 @@ func RenderCourseByYear(year uint){
             temp.Course = append(temp.Course, info)
         }
 
-        t, err := template.ParseFiles(COURSE_TEMPLATE)
+        t, err := template.ParseFiles(courseTemplate)
         if err != nil{
             log.Fatalln("render/static.go RenderCourseByYear() can not found template " +
-            COURSE_TEMPLATE)
+            courseTemplate)
         }
         t.Execute(f, temp)
     }
