@@ -3,10 +3,8 @@ import(
     "bytes"
     "fmt"
     "html/template"
-    "io/ioutil"
     "log"
     "net/http"
-    "os"
     "strconv"
     "time"
     "bpeecs.nchu.edu.tw/article"
@@ -15,6 +13,7 @@ import(
     "bpeecs.nchu.edu.tw/renderer"
 )
 
+// PageData is a type for filling HTML template
 type PageData struct{
     Title   string
     Isindex bool
@@ -33,17 +32,18 @@ func initPageData() *PageData{
 }
 
 func getHTML(fileName string) (template.HTML, error){
-    file, err := os.Open("./include" + fileName + ".html")
-    defer file.Close()
+    t, err := template.ParseFiles("./include" + fileName + ".html")
     if err != nil{
         log.Println(err)
         return template.HTML("error try again"), err
     }
-    content, err := ioutil.ReadAll(file)
 
-    return template.HTML(content), nil;
+    var buf bytes.Buffer
+    t.Execute(&buf, nil)
+    return template.HTML(buf.String()), nil;
 }
 
+// BasicWebHandler is a handler for handling url whose prefix is /
 func BasicWebHandler(w http.ResponseWriter, r *http.Request){
     r.ParseForm()
     path := r.URL.Path
@@ -83,20 +83,18 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request){
             data.Title = "國立中興大學電機資訊學院學士班"
             data.Isindex = true
 
-            template_index, _ := template.ParseFiles("./include/index.html")
+            t, _ := template.ParseFiles("./include/index.html")
             art := article.New();
-            art.Connect("./db/main.db")
-
             // Default from = 0, to = 19
-            // return (list []art.Article_Format, hasNext bool)
+            // return (list []art.Format, hasNext bool)
             artFormatList, _ := art.GetLatest("public", "normal", "", int32(0), int32(7))
-            data_index := new(struct{
-                Article_list_brief template.HTML
+            data2 := new(struct{
+                ArticleListBrief template.HTML
             })
-            data_index.Article_list_brief = renderer.RenderPublicArticleBriefList(artFormatList)
+            data2.ArticleListBrief = renderer.RenderPublicArticleBriefList(artFormatList)
 
             var buf bytes.Buffer
-            template_index.Execute(&buf, data_index)
+            t.Execute(&buf, data2)
             data.Main = template.HTML(buf.String())
         case "/news":
             data.Title = "最新消息"
@@ -115,31 +113,28 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request){
 
             if id := function.GET("id", r); id != ""{
                 //id is uint32
-                serial_u64, err := strconv.ParseUint(id, 10, 32)
+                serialUint64, err := strconv.ParseUint(id, 10, 32)
 
                 if err != nil{
                     http.Redirect(w, r, "/error/404", 302)
                     return
-                }else{
-                    art := article.New();
-                    art.Connect("./db/main.db")
-
-                    user := ""
-                    if data.IsLogin{
-                        user = loginInfo.UserID
-                    }
-
-                    artInfo := art.GetArticleBySerial(uint32(serial_u64), user)
-
-                    // avoid /news?id=xxx
-                    if artInfo == nil{
-                        http.Redirect(w, r, "/error/404", 302)
-                        return
-                    }
-
-                    data.Title = artInfo.Title + " | 國立中興大學電機資訊學院學士班"
-                    data.Main  = renderer.RenderPublicArticle(artInfo)
                 }
+                art := article.New();
+                user := ""
+                if data.IsLogin{
+                    user = loginInfo.UserID
+                }
+
+                artInfo := art.GetArticleBySerial(uint32(serialUint64), user)
+
+                // avoid /news?id=xxx
+                if artInfo == nil{
+                    http.Redirect(w, r, "/error/404", 302)
+                    return
+                }
+
+                data.Title = artInfo.Title + " | 國立中興大學電機資訊學院學士班"
+                data.Main  = renderer.RenderPublicArticle(artInfo)
             }else{
                 data.Title += " | 國立中興大學電機資訊學院學士班"
                 data.Main, _ = getHTML(path)
@@ -148,23 +143,18 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request){
             if login.CheckLogin(w, r) != nil{
                 http.Redirect(w, r, "/manage", 302)
                 return
-            }else{
-                data.Title = "登入"
             }
+            data.Title = "登入"
         case "/logout":
-            l := login.New()
-            l.Connect("./db/main.db")
-            if err := l.Logout(w, r); err!=nil {
+            if err := login.New().Logout(w, r); err!=nil {
                 fmt.Fprint(w, `{"err" : true, "msg" : "登出失敗"}`)
-            }else{
-                http.Redirect(w, r, "/", 302)
                 return
             }
 
+            http.Redirect(w, r, "/", 302)
+            return
         default:
-            fmt.Println("未預期的路徑", path)
-            fmt.Printf("%#v\n", r)
-
+            fmt.Printf("未預期的路徑 %s IP: %s\n", path, r.RemoteAddr)
             http.Redirect(w, r, "/error/404", 302)
             return
         }
