@@ -7,6 +7,7 @@ import(
     "bpeecs.nchu.edu.tw/login"
 )
 
+// ManageWebHandler is a handler for handling url whose prefix is /manage
 func ManageWebHandler(w http.ResponseWriter, r *http.Request){
     r.ParseForm()
     path := r.URL.Path
@@ -20,6 +21,7 @@ func ManageWebHandler(w http.ResponseWriter, r *http.Request){
     var manageWeb = map[string]string{
         "/manage/" : "歡迎進入後台管理系統",
         "/manage/article" : "文章管理",
+        "/manage/calendar" : "行事曆管理",
         "/manage/reg" : "註冊新用戶",
         "/manage/reg-done" : "新用戶註冊成功",
     }

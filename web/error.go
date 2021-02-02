@@ -5,6 +5,7 @@ import(
     "net/http"
 )
 
+// ErrorWebHandler is a handler for handling url whose prefix is /error
 func ErrorWebHandler(w http.ResponseWriter, r *http.Request){
     r.ParseForm()
     path := r.URL.Path
