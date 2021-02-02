@@ -5,39 +5,45 @@ import(
     "database/sql"
     "errors"
     "fmt"
+    "log"
     "github.com/go-session/session"
-    _"github.com/mattn/go-sqlite3"
     "net/http"
     "bpeecs.nchu.edu.tw/function"
+    "bpeecs.nchu.edu.tw/db"
 )
 
+// Login handles manipulations about login
 type Login struct{
     IsLogin bool
     UserID string
     UserName string
-    db *sql.DB
 }
 
-var ERROR_REAPEAT_ID error
+// ErrorReapeatID is returned when the user want to sign up an account which has already existed
+var ErrorReapeatID error
 
+// New returns new instance of Login
 func New() (l *Login){
     l = new(Login)
-    ERROR_REAPEAT_ID = errors.New("ID-Repeat")
+    ErrorReapeatID = errors.New("ID-Repeat")
     return
 }
 
-func (l *Login) Connect(path string) (err error){
-    l.db, err = sql.Open("sqlite3", path)
-    return
-}
-
+// Login is a function handle login
 func (l *Login) Login(w http.ResponseWriter, r *http.Request) (err error){
     id, pwd := function.GET("id", r), function.GET("pwd", r)
-    row := l.db.QueryRow("SELECT `password`, `name`, `salt` FROM user WHERE `id` = ?", id)
 
-    var pwd_in_db, name, salt string
-    err = row.Scan(&pwd_in_db, &name, &salt)
-    defer l.db.Close()
+    d, err := db.Connect(db.Main)
+    if err != nil{
+        log.Println(err)
+        return err
+    }
+    defer d.Close()
+    row := d.QueryRow("SELECT `password`, `name`, `salt` FROM user WHERE `id` = ?", id)
+
+    var enryptedPwd, name, salt string
+    err = row.Scan(&enryptedPwd, &name, &salt)
+
     // Check account
     if err == sql.ErrNoRows{
         l   = nil
@@ -46,7 +52,7 @@ func (l *Login) Login(w http.ResponseWriter, r *http.Request) (err error){
     }
 
     // Check password
-    if pwdHash(pwd, salt) != pwd_in_db{
+    if pwdHash(pwd, salt) != enryptedPwd{
         l   = nil
         err = errors.New(`{"err" : true , "msg" : "Password is wrong"}`)
         return
@@ -56,7 +62,7 @@ func (l *Login) Login(w http.ResponseWriter, r *http.Request) (err error){
     l.UserID = id
     l.UserName = name
 
-    //Session srart
+    // Session srart
     store, err := session.Start(context.Background(), w, r)
     if err != nil {
         err = errors.New(`{"err" : true , "msg" : "Session start error"}`)
@@ -73,18 +79,23 @@ func (l *Login) Login(w http.ResponseWriter, r *http.Request) (err error){
     }
 
     err = nil
-
     return
 }
 
+// NewAcount creates a new account
 func (l *Login) NewAcount(id string, pwd string, name string) error{
     // check if there are the same id in db
-    row := l.db.QueryRow("SELECT COUNT(*) FROM user WHERE `id` = ?", id)
-    defer l.db.Close()
+    d, err := db.Connect(db.Main)
+    if err != nil{
+        log.Println(err)
+        return err
+    }
+    defer d.Close()
+
+    row := d.QueryRow("SELECT COUNT(*) FROM user WHERE `id` = ?", id)
 
     count := 0
-    err := row.Scan(&count)
-    if err != nil {
+    if err := row.Scan(&count); err != nil {
         fmt.Println(err)
         return err
     }
@@ -94,7 +105,7 @@ func (l *Login) NewAcount(id string, pwd string, name string) error{
         salt := function.RandomString(64);
         pwd = pwdHash(pwd, salt)
 
-        stmt, err := l.db.Prepare("INSERT INTO user(id, password, salt, name) values(?, ?, ?, ?)")
+        stmt, err := d.Prepare("INSERT INTO user(id, password, salt, name) values(?, ?, ?, ?)")
         if err != nil{
             return err
         }
@@ -102,21 +113,21 @@ func (l *Login) NewAcount(id string, pwd string, name string) error{
         stmt.Exec(id, pwd, salt, name)
 
         return nil
-    }else{
-        return ERROR_REAPEAT_ID
     }
+
+    return ErrorReapeatID
 }
 
+// Logout is a function deal with sign out
 func (l *Login) Logout(w http.ResponseWriter, r *http.Request) (err error){
     store, err := session.Start(context.Background(), w, r)
-
     store.Set("isLogin", "no")
     store.Set("userID", "")
     store.Set("userName", "")
-
     return err
 }
 
+// CheckLogin checks if ID and Password is match
 func CheckLogin(w http.ResponseWriter, r *http.Request) *Login{
     store, err := session.Start(context.Background(), w, r)
     if err != nil {
@@ -136,10 +147,9 @@ func CheckLogin(w http.ResponseWriter, r *http.Request) *Login{
         return nil
     }
 
-    l := new(Login)
-    l.IsLogin = true
-    l.UserID = userID.(string)
-    l.UserName = userName.(string)
-
-    return l
+    return &Login{
+        IsLogin: true,
+        UserID: userID.(string),
+        UserName: userName.(string),
+    }
 }

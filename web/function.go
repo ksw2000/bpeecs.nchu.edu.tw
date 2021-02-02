@@ -12,13 +12,13 @@ import(
     "bpeecs.nchu.edu.tw/files"
 )
 
+// FunctionWebHandler is a handler for handling url whose prefix is /function
 func FunctionWebHandler(w http.ResponseWriter, r *http.Request){
     r.ParseForm()
     path := r.URL.Path
 
     if path == "/function/login" {
         l := login.New()
-        l.Connect("./db/main.db")
 
         if err := l.Login(w, r); err != nil{
             fmt.Fprint(w, err.Error())
@@ -37,11 +37,10 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request){
         }
 
         l := login.New()
-        l.Connect("./db/main.db")
 
         id := function.GET("id", r)
         pwd := function.GET("pwd", r)
-        re_pwd := function.GET("re_pwd", r)
+        rePwd := function.GET("re_pwd", r)
         name := function.GET("name", r)
 
         match, err := regexp.MatchString("^[a-zA-Z0-9_]{5,30}$", id)
@@ -55,7 +54,7 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request){
             return
         }
 
-        if pwd != re_pwd{
+        if pwd != rePwd{
             fmt.Fprint(w, `{"err" : true , "msg" : "密碼與確認密碼不一致"}`)
             return
         }
@@ -67,19 +66,19 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request){
         }
 
         match, err = regexp.MatchString("^.*?\\d+.*?$", pwd)
-        if err!=nil || !match {
+        if err != nil || !match {
             fmt.Fprint(w, `{"err" : true , "msg" : "密碼必需含有數字"}`)
             return
         }
 
         match, err = regexp.MatchString("^.*?[a-zA-Z]+.*?$", pwd)
-        if err!=nil || !match {
+        if err != nil || !match {
             fmt.Fprint(w, `{"err" : true , "msg" : "密碼必需含有英文字母"}`)
             return
         }
 
         err = l.NewAcount(id, pwd, name)
-        if err == login.ERROR_REAPEAT_ID{
+        if err == login.ErrorReapeatID{
             fmt.Fprint(w, `{"err" : true , "msg" : "所申請之 ID 重複"}`)
             return
         }else if err != nil{
@@ -98,15 +97,8 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request){
             return
         }
         user := loginInfo.UserID
-
-        // step1: connect to database
         art := article.New();
-        if db := art.Connect("./db/main.db"); db == nil{
-            fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結失敗", "code": 2}`)
-            return
-        }
-
-        // step2: get serial number
+        // get serial number
         serial, err := art.NewArticle(user)
         if err != nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結成功但新增文章失敗", "code": 2}`)
@@ -138,35 +130,26 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request){
 
         // step2: connect to database
         art := article.New();
-
-        if db := art.Connect("./db/main.db"); db == nil{
-            fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結失敗", "code": 2}`)
-            return
-        }
-
-        artFormat := article.Article_Format{
-            Id : serial,
+        artFormat := article.Format{
+            ID : serial,
             User : user,
             Type : artType,
-            //Create_time uint64
-            //Publish_time uint64
-            //Last_modified uint64
             Title : title,
             Content : content,
             Attachment : attachment,
         }
 
         // step3: call Save() or Publish()
-        art_operation_err := error(nil)
+        artOperationErr := error(nil)
         if path == "/function/save_news" {
-            art_operation_err = art.Save(artFormat)
+            artOperationErr = art.Save(artFormat)
         }else if path == "/function/publish_news" {
-            art_operation_err = art.Publish(artFormat)
+            artOperationErr = art.Publish(artFormat)
         }else if path == "/function/del_news" {
-            art_operation_err = art.Del(serial, user)
+            artOperationErr = art.Del(serial, user)
         }
 
-        if art_operation_err != nil{
+        if artOperationErr != nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結成功但操作文章失敗", "code": 2}`)
             return
         }
@@ -181,26 +164,26 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request){
         from, to := 0, 19   // Default from = 0, to = 19
 
         scopes := [...]string{"all", "draft", "published", "public", "public-with-type"}
-        check_valid_scope := false
+        checkValidScope := false
         for _, v := range scopes{
             if v == scope{
-                check_valid_scope = true
+                checkValidScope = true
                 break
             }
         }
 
-        if !check_valid_scope{
+        if !checkValidScope{
             if n == ""{
                 fmt.Fprint(w, `{"err" : true , "msg" : "錯誤的請求 (GET 參數錯誤)", "code": 3}`)
                 return;
-            }else{
-                num, err := strconv.Atoi(n)
-                if err != nil{
-                    fmt.Fprint(w, `{"err" : true , "msg" : "文章代碼錯誤 (GET 參數錯誤)", "code": 3}`)
-                    return
-                }
-                serial = uint32(num)
             }
+
+            num, err := strconv.Atoi(n)
+            if err != nil{
+                fmt.Fprint(w, `{"err" : true , "msg" : "文章代碼錯誤 (GET 參數錯誤)", "code": 3}`)
+                return
+            }
+            serial = uint32(num)
         }else{
             if f, scope := function.GET("from", r), function.GET("to", r); f != "" && scope != ""{
                 var err error
@@ -222,15 +205,10 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request){
         // step3: connect to database
         art := article.New();
 
-        if db := art.Connect("./db/main.db"); db == nil{
-            fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結失敗", "code": 2}`)
-            return
-        }
-
         // step4: call GetLatest(scope, from, to)
         if scope != ""{
             ret := new(struct{
-                NewsList []article.Article_Format
+                NewsList []article.Format
                 HasNext bool
                 Err error
             })
@@ -238,7 +216,6 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request){
             ret.Err = nil;
 
             // step5: encode to json
-            // art.GetArtList()
             json.NewEncoder(w).Encode(ret)
         }else if n != ""{
             if ret := art.GetArticleBySerial(serial, user); ret != nil{
@@ -266,16 +243,11 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request){
         for _, fh := range fhs {
             f := files.New()
 
-            if db := f.Connect("./db/main.db"); db == nil{
-                fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結失敗", "code": 2}`)
-                return
-            }
-
             if err := f.NewFile(fh); err != nil{
                 fmt.Fprint(w, `{"err" : true , "msg" : "新增檔案失敗", "code": 4}`)
                 return
             }
-            ret.Filename = append(ret.Filepath, f.Server_name)
+            ret.Filename = append(ret.Filepath, f.ServerName)
             ret.Filepath = append(ret.Filepath, f.Path)
         }
         ret.Err = false
@@ -288,27 +260,25 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request){
             return
         }
 
-        server_name := function.GET("server_name", r)
-        serial_num  := function.GET("serial_num", r)
-        num, err    := strconv.Atoi(serial_num)
+        serverName := function.GET("serverName", r)
+        serialNum  := function.GET("serialNum", r)
+        num, err    := strconv.Atoi(serialNum)
         if err != nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "文章代碼錯誤 (GET 參數錯誤)", "code": 3}`)
             return
         }
-        new_attachment := function.GET("new_attachment", r)
+        newAttachment := function.GET("new_attachment", r)
 
         // Delete file record in database and delete file in system
         f := files.New()
-        f.Connect("./db/main.db")
-        if err := f.Del(server_name); err != nil{
+        if err := f.Del(serverName); err != nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "檔案資料庫連結失敗或檔案刪除失敗", "code": 2}`)
             return
         }
 
         // Update databse article (prevent user from not storing the article)
         art := article.New()
-        art.Connect("./db/main.db")
-        if err := art.UpdateAttachment(uint32(num), new_attachment); err != nil{
+        if err := art.UpdateAttachment(uint32(num), newAttachment); err != nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "Article 資料庫更新失敗", "code": 2}`)
             return
         }

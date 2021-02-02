@@ -1,40 +1,31 @@
 package files
 
 import(
-    "database/sql"
     "io"
     "mime/multipart"
     "os"
     "time"
     "log"
     "path/filepath"
-    _"github.com/mattn/go-sqlite3"
     "bpeecs.nchu.edu.tw/function"
+    "bpeecs.nchu.edu.tw/db"
 )
 
+// Files handles manipulations about files
 type Files struct{
-    db *sql.DB
-    Upload_time uint64
-    Client_name string
-    Server_name string
+    UploadTime uint64
+    ClientName string
+    ServerName string
     Path string
     Hash string
 }
 
+// New returns new instance of Files
 func New() *Files{
     return new(Files)
 }
 
-func (f *Files) Connect(path string) *sql.DB{
-    db, err := sql.Open("sqlite3", path)
-    f.db = db
-    if err != nil{
-        log.Println(err)
-        return nil
-    }
-    return f.db
-}
-
+// NewFile creates new file by FileHeader
 func (f *Files) NewFile(fh *multipart.FileHeader) error{
     filePath := "./assets/upload/"
     fileExt  := filepath.Ext(fh.Filename)
@@ -61,15 +52,21 @@ func (f *Files) NewFile(fh *multipart.FileHeader) error{
         return err
     }
 
-    stmt, _ := f.db.Prepare("INSERT INTO files(upload_time, client_name, server_name, path) values(?, ?, ?, ?)")
+    d, err := db.Connect(db.Main)
+    if err != nil{
+        log.Println(err)
+        return err
+    }
+    defer d.Close()
+    stmt, _ := d.Prepare("INSERT INTO files(upload_time, client_name, server_name, path) values(?, ?, ?, ?)")
     now := time.Now().Unix()
 
-    f.Upload_time = uint64(now)
-    f.Client_name = fh.Filename
-    f.Server_name = fileName
+    f.UploadTime = uint64(now)
+    f.ClientName = fh.Filename
+    f.ServerName = fileName
     f.Path = "/assets/upload/" + fileName + fileExt
 
-    _, err = stmt.Exec(now, f.Client_name, f.Server_name, f.Path)
+    _, err = stmt.Exec(now, f.ClientName, f.ServerName, f.Path)
     if err != nil{
         log.Println(err, "files.go NewFile() stmt.Exec() failed")
         return err
@@ -78,13 +75,18 @@ func (f *Files) NewFile(fh *multipart.FileHeader) error{
     return nil
 }
 
-// Delete by server_name
+// Del deletes a file by server_name
 func (f *Files) Del(server_name string) error{
-    rows := f.db.QueryRow("SELECT path FROM files WHERE server_name = ?", server_name)
+    d, err := db.Connect(db.Main)
+    if err != nil{
+        log.Println(err)
+        return err
+    }
+    defer d.Close()
+    rows := d.QueryRow("SELECT path FROM files WHERE server_name = ?", server_name)
 
     var path string
-    err := rows.Scan(&path)
-    if err != nil{
+    if err := rows.Scan(&path); err != nil{
         log.Println(err)
         return err
     }
@@ -92,14 +94,22 @@ func (f *Files) Del(server_name string) error{
     return f.DelByPathList([]string{path})
 }
 
-// Delete files by path list
+// DelByPathList deletes files by path list
 func (f *Files) DelByPathList(pathList []string) error{
+    d, err := db.Connect(db.Main)
+    if err != nil{
+        log.Println(err)
+        return err
+    }
+    defer d.Close()
+
     for _, v := range pathList{
         err := os.Remove("." + v)
         if err != nil{
             log.Println(err, "files.go os.Remove()")
         }
-        stmt, _ := f.db.Prepare("DELETE FROM files WHERE path=?")
+
+        stmt, _ := d.Prepare("DELETE FROM files WHERE path=?")
         _, err = stmt.Exec(v)
         if err != nil{
             log.Println(err, "files.go Remove() stmt.Exec() failed")
@@ -109,12 +119,20 @@ func (f *Files) DelByPathList(pathList []string) error{
     return nil
 }
 
-// Delete files do not be used anymore
+// AutoDel deletes files do not be used anymore
 func (f *Files) AutoDel(){
-    rows, err := f.db.Query(`
+    d, err := db.Connect(db.Main)
+    if err != nil{
+        log.Println(err)
+        return
+    }
+    defer d.Close()
+
+    rows, err := d.Query(`
         SELECT path FROM files
         WHERE article_id is null and upload_time < ?` ,
         time.Now().Unix() - 12*60*60)
+    defer rows.Close()
 
     if err != nil{
         log.Println(err, "files.go Automremove() db.Query failed")
@@ -127,7 +145,6 @@ func (f *Files) AutoDel(){
         rows.Scan(&path)
         pathList = append(pathList, path)
     }
-    rows.Close()
 
     f.DelByPathList(pathList)
 }
