@@ -14,24 +14,24 @@ const syllabusDataDir = "./assets/json/syllabus/"
 const syllabusTemplate = "./include/syllabus/template.gohtml"
 
 type filesInfo struct{
-    Client_name []string `json:"client_name"`
-    Server_name []string `json:"server_name"`
+    ClientName []string `json:"client_name"`
+    ServerName []string `json:"server_name"`
     Path []string        `json:"path"`
 }
 
 type fileInfo struct{
-    Client_name string
-    Server_name string
+    ClientName string
+    ServerName string
     Path string
 }
 
 type articleRenderInfo struct{
-    Id uint32
+    ID uint32
     User string
     Type string
-    Create_time string
-    Publish_time string
-    Last_modified string
+    CreateTime string
+    PublishTime string
+    LastModified string
     Title string
     Content template.HTML
     Attachment []fileInfo
@@ -63,12 +63,12 @@ func renderArticleType(key string) string{
 // RenderPublicArticle renders an article at url: /news/[articleID]
 func RenderPublicArticle(artInfo *article.Format) template.HTML{
     data := new(articleRenderInfo)
-    data.Id = artInfo.Id
+    data.ID = artInfo.ID
     data.User = artInfo.User
     data.Type = renderArticleType(artInfo.Type)
-    data.Create_time = renderDate(artInfo.Create_time)
-    data.Publish_time = renderDate(artInfo.Publish_time)
-    data.Last_modified = renderDate(artInfo.Last_modified)
+    data.CreateTime = renderDate(artInfo.CreateTime)
+    data.PublishTime = renderDate(artInfo.PublishTime)
+    data.LastModified = renderDate(artInfo.LastModified)
     data.Title = artInfo.Title
     data.Content = template.HTML(artInfo.Content)
 
@@ -77,8 +77,8 @@ func RenderPublicArticle(artInfo *article.Format) template.HTML{
     data.Attachment = make([]fileInfo, len(res.Path))
     for i:=0; i < len(res.Path); i++{
         data.Attachment[i] = fileInfo{
-            Client_name : res.Client_name[i],
-            Server_name : res.Server_name[i],
+            ClientName : res.ClientName[i],
+            ServerName : res.ServerName[i],
             Path : res.Path[i],
         }
     }
@@ -94,14 +94,14 @@ func RenderPublicArticleBriefList(artInfoList []article.Format) template.HTML{
     data := new(articleRenderInfo)
     ret := ""
     for _, artInfo := range artInfoList{
-        data.Id = artInfo.Id
-        data.Publish_time = renderDate(artInfo.Publish_time)
+        data.ID = artInfo.ID
+        data.PublishTime = renderDate(artInfo.PublishTime)
         data.Title = artInfo.Title
         var buf bytes.Buffer
         t, _ := template.New("article_list_brief").Parse(`
         <div class="article brief">
-            <div class="candy-header"><span class="single">{{.Publish_time}}</span></div>
-            <a href="/news?id={{.Id}}">{{.Title}}</a>
+            <div class="candy-header"><span class="single">{{.PublishTime}}</span></div>
+            <a href="/news?id={{.ID}}">{{.Title}}</a>
         </div>`)
         t.Execute(&buf, data)
         ret += buf.String()
