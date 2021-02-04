@@ -22,10 +22,10 @@ function loadAttchment(str){
     try{
         let attachment = "";
         let parse = JSON.parse(str);
-        let len = parse.client_name.length;
+        let len = parse.clientName.length;
         for(let i=0; i<len; i++){
             attachment += '<li><a href="'+ parse.path[i] + '">' +
-                           parse.client_name[i] + '</a></li>';
+                           parse.clientName[i] + '</a></li>';
         }
         return attachment;
     }catch(e){
@@ -110,10 +110,10 @@ function loadNewsForWhat(what, scope, type, from, to){
             let len = data.length;
             let ret = '';
             for(let i=0; i<len; i++){
-                let isDraft = (data[i].Publish_time === 0)? true : false;
-                data[i].Create_time   = $.format.date(new Date(data[i].Create_time * 1000), "yyyy-MM-dd HH : mm");
-                data[i].Last_modified = (data[i].Last_modified === 0)? '-' : $.format.date(new Date(data[i].Last_modified * 1000), "yyyy-MM-dd HH : mm");
-                data[i].Publish_time  = (data[i].Publish_time === 0)?  '-' : $.format.date(new Date(data[i].Publish_time * 1000), "yyyy-MM-dd HH : mm");
+                let isDraft = (data[i].PublishTime === 0)? true : false;
+                data[i].CreateTime   = $.format.date(new Date(data[i].CreateTime * 1000), "yyyy-MM-dd HH : mm");
+                data[i].LastModified = (data[i].LastModified === 0)? '-' : $.format.date(new Date(data[i].LastModified * 1000), "yyyy-MM-dd HH : mm");
+                data[i].PublishTime  = (data[i].PublishTime === 0)?  '-' : $.format.date(new Date(data[i].PublishTime * 1000), "yyyy-MM-dd HH : mm");
                 let newContent = stripHtml(marked(data[i].Content));
                 if(newContent.length > 50){
                     newContent = newContent.slice(0, 80);
@@ -127,11 +127,11 @@ function loadNewsForWhat(what, scope, type, from, to){
                     <h2 class="title">${draftIcon}${data[i].Title}</h2>`;
                 ret+=`<div class="header" onclick="javascript:appendMoreInfo(this)">`;
                 ret+=`    <div class="candy-header"><span>分類</span><span>${articleTypeDecoder(data[i].Type)}</span></div>`;
-                ret+=`    <div class="candy-header"><span>最後編輯</span><span class="orange">${data[i].Last_modified}</span></div>`;
+                ret+=`    <div class="candy-header"><span>最後編輯</span><span class="orange">${data[i].LastModified}</span></div>`;
                 ret+=`</div>`;
                 ret+=`<div style="display: none;">`;
-                ret+=`  <div class="candy-header hide-less-500px"><span>建立於</span><span class="red">${data[i].Create_time}</span></div>`;
-                ret+=`  <div class="candy-header hide-less-500px"><span>發佈於</span><span class="green">${data[i].Publish_time}</span></div>`;
+                ret+=`  <div class="candy-header hide-less-500px"><span>建立於</span><span class="red">${data[i].CreateTime}</span></div>`;
+                ret+=`  <div class="candy-header hide-less-500px"><span>發佈於</span><span class="green">${data[i].PublishTime}</span></div>`;
                 ret+=`</div>`;
                 ret+=`
                     <div class="content">
@@ -156,7 +156,7 @@ function loadNewsForWhat(what, scope, type, from, to){
             let len = data.length;
             let ret = "";
             for(let i=0; i<len; i++){
-                data[i].Publish_time  = $.format.date(new Date(data[i].Publish_time * 1000), "yyyy-MM-dd");
+                data[i].PublishTime  = $.format.date(new Date(data[i].PublishTime * 1000), "yyyy-MM-dd");
                 let newContent = stripHtml(marked(data[i].Content));
                 if(newContent.length>30){
                     newContent = newContent.slice(0, 80);
@@ -167,7 +167,7 @@ function loadNewsForWhat(what, scope, type, from, to){
                 <div class="article" data-id="${data[i].Id}">
                     <h2 class="title">${data[i].Title}</h2>
                     <div class="header" onclick="javascript:appendMoreInfo(this)">
-                        <div class="candy-header"><span>發佈於</span><span>${data[i].Publish_time}</span></div>
+                        <div class="candy-header"><span>發佈於</span><span>${data[i].PublishTime}</span></div>
                     </div>
                     <div style="display:none;">
                 `;
