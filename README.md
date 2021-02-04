@@ -55,7 +55,8 @@ All of the javascript dependencies are embedded by the online resource links. If
         + style/
         + upload/ (client upload files)
 
-    + db/ (sqlite3 database)
+    + db/ (handle database)
+        + db.go
         + main.db
 
     + include/  (html files & gohtml files)
