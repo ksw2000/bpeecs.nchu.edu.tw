@@ -37,7 +37,7 @@ func main(){
     counter := 0
     go server(port, halting)
 
-    for _ = range halting{
+    for range halting{
         counter++
         log.Printf("%2d halting, try to restart... after %ds\n", counter, counter)
         time.Sleep(time.Duration(counter)*time.Second)
@@ -67,9 +67,9 @@ func server(port *int, halting chan bool){
     }()
 
     mux := http.NewServeMux()
-    static_folder := []string{"/assets", "/.well-known/pki-validation"}
+    staticFolder := []string{"/assets", "/.well-known/pki-validation"}
 
-    for _, v := range static_folder {
+    for _, v := range staticFolder {
         fileServer := http.FileServer(http.Dir("." + v))
         mux.Handle(v + "/", http.StripPrefix(v, neuter(fileServer)))
     }
