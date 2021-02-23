@@ -10,14 +10,14 @@
     "Semester": "2020-SPRING",
     "Course_description": "",
     "Prerequisites": "",
-    "Course_objectives": "",
-    "Competency_indicators": "",
+    "Course_objectives": "Know modern AI and be able to apply to simple situations",
+    "Competency_indicators": "1.運用數學、物理、科學及電機資訊領域之能力。<br>2.分析、設計與整合電機資訊相關系統之能力。<br>3.執行電機資訊實務所需之技術及相關軟硬體工具之能力。",
     "Ratio": "",
     "Teaching_methods": "",
     "Assessment_methods": "",
-    "Course_content": "",
-    "Evaluation": "",
-    "Textbook": "",
-    "Teaching_aids": "",
-    "Office_hours": ""
+    "Course_content": "1. What is AI? Using a game engine, Unity, to simulate a self-driving car, or other AI projects<br>    2. Python review<br>    3. Neural Network and Deep Learning<br>    4. Improving Deep Neural Networks<br>    5. Machine Learning Projects<br>    6. Convolutional Neural Networks<br>    7. Sequence Models<br>    8. Reinforcement Learning",
+    "Evaluation": "測驗、實習、專題、上課回答",
+    "Textbook": "Deep Learning Specialization by Andrew Ng on Coursera",
+    "Teaching_aids": "140.120.32.208",
+    "Office_hours": "Tuesdays, 2PM-3PM"
 }

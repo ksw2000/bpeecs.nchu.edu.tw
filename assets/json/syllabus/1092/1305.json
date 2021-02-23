@@ -11,13 +11,13 @@
     "Course_description": "",
     "Prerequisites": "",
     "Course_objectives": "",
-    "Competency_indicators": "",
+    "Competency_indicators": "1.運用數學、物理、科學及電機資訊領域之能力。",
     "Ratio": "",
     "Teaching_methods": "",
     "Assessment_methods": "",
-    "Course_content": "",
-    "Evaluation": "",
-    "Textbook": "",
-    "Teaching_aids": "",
+    "Course_content": "▪ Systems of Linear Equations and Matrices (Chapter 1)<br>▪ Determinants (Chapter 2)<br>▪ General Vector Spaces (Chapter 4)<br>▪ Eigenvalues and Eigenvectors (Chapter 5)<br>▪ Inner Product Spaces (Chapter 6)<br>▪ Diagonalization and Quadratic Forms (Chapter 7)<br>▪ General Linear Transformation (Chapter 8)",
+    "Evaluation": "Class attendance 10%, quizzes 30% midterm 30%, and final 30%.",
+    "Textbook": "Primary Textbook:<br>H. Anton & C. Rorres, Elementary Linear Algebra: Applications Version (12th edition), Wiley, 2021.<br><br>References:<br>G. Strang, Introduction to Linear Algebra (4th edition), Cambridge Press, 2019.<br>W. K. Nicholson, Elementary Linear Algebra (2nd edition), McGraw-Hill, 2004.<br>S. H. Friedberg, A. J. Insel, and L. E. Spence, Linear Algebra (4th edition), Prentice Hall, 2003.</TD>",
+    "Teaching_aids": "請從課程共享資料夾下載",
     "Office_hours": ""
 }
