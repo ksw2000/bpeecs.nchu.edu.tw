@@ -13,15 +13,10 @@ import (
 const syllabusDataDir = "./assets/json/syllabus/"
 const syllabusTemplate = "./include/syllabus/template.gohtml"
 
-type filesInfo struct{
-    ClientName []string `json:"client_name"`
-    ServerName []string `json:"server_name"`
-    Path []string        `json:"path"`
-}
-
 type fileInfo struct{
     ClientName string
     ServerName string
+    Mime string
     Path string
 }
 
@@ -35,6 +30,7 @@ type articleRenderInfo struct{
     Title string
     Content template.HTML
     Attachment []fileInfo
+    PhotoAttachment []fileInfo  // render photos by HTML <img>
 }
 
 func renderDate(timestamp uint64) string{
@@ -71,15 +67,23 @@ func RenderPublicArticle(artInfo *article.Format) template.HTML{
     data.LastModified = renderDate(artInfo.LastModified)
     data.Title = artInfo.Title
     data.Content = template.HTML(artInfo.Content)
+    data.PhotoAttachment = []fileInfo{}
+    data.Attachment = []fileInfo{}
 
-    res := filesInfo{}
-    json.Unmarshal([]byte(artInfo.Attachment), &res)
-    data.Attachment = make([]fileInfo, len(res.Path))
-    for i:=0; i < len(res.Path); i++{
-        data.Attachment[i] = fileInfo{
-            ClientName : res.ClientName[i],
-            ServerName : res.ServerName[i],
-            Path : res.Path[i],
+    for _, v := range artInfo.Attachment{
+        var extName string
+        matchNum, _ := fmt.Sscanf(v.Mime, "image/%s", &extName)
+        if(matchNum > 0){
+            data.PhotoAttachment = append(data.PhotoAttachment, fileInfo{
+                Path: v.Path,
+            })
+        }else{
+            data.Attachment = append(data.Attachment, fileInfo{
+                ClientName : v.ClientName,
+                ServerName : v.ServerName,
+                Mime: v.Mime,
+                Path : v.Path,
+            })
         }
     }
 
