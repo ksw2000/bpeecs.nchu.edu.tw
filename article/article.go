@@ -1,7 +1,6 @@
 package article
 import(
     "database/sql"
-    "encoding/json"
     "fmt"
     "time"
     "log"
@@ -24,14 +23,7 @@ type Format struct{
     LastModified uint64
     Title string
     Content string
-    Attachment string
-}
-
-// AttachmentFormat records attachment's information
-type AttachmentFormat struct{
-    ClientName []string `json:"client_name"`
-    Path []string `json:"path"`
-    ServerName []string `json:"server_name"`
+    Attachment []files.Files
 }
 
 // New returns new instance of Article
@@ -63,7 +55,7 @@ func (a *Article) NewArticle(user string) (uint32, error){
 }
 
 // Save article (do not change scope)
-func (a *Article) Save(artfmt Format) error{
+func (a *Article) Save(artfmt Format, serverNameList []string) error{
     d, err := db.Connect(db.Main)
     if err != nil{
         log.Println(err)
@@ -76,7 +68,7 @@ func (a *Article) Save(artfmt Format) error{
         log.Println(err)
         return err
     }
-    if err = a.UpdateAttachment(artfmt.ID, artfmt.Attachment); err != nil{
+    if err = a.UpdateAttachment(artfmt.ID, serverNameList); err != nil{
         log.Println(err)
         return err
     }
@@ -84,14 +76,13 @@ func (a *Article) Save(artfmt Format) error{
 }
 
 // UpdateAttachment handles attachment information when users publishing or saving an article
-func (a *Article) UpdateAttachment(aid uint32, attachment string) error{
-    // Parse JSON
-    format := new(AttachmentFormat)
-    json.Unmarshal([]byte(attachment), format)
-    for _, name := range format.ServerName{
-        a.LinkAttachment(name, aid)
+func (a *Article) UpdateAttachment(aid uint32, serverNameList []string) error{
+    for _, serverName := range serverNameList{
+        err := a.LinkAttachment(serverName, aid)
+        if err != nil{
+            return err
+        }
     }
-
     return nil
 }
 
@@ -106,7 +97,7 @@ func (a *Article) LinkAttachment(serverName string, aid uint32) error{
         return err
     }
     defer d.Close()
-    stmt, _ := d.Prepare("UPDATE files SET article_id=? WHERE server_name=?")
+    stmt, _ := d.Prepare("UPDATE files SET article_id = ? WHERE server_name = ?")
     _, err = stmt.Exec(aid, serverName)
     defer stmt.Close()
     if err != nil{
@@ -118,7 +109,7 @@ func (a *Article) LinkAttachment(serverName string, aid uint32) error{
 }
 
 // Publish an article (update content and change scope)
-func (a *Article) Publish(artfmt Format) error{
+func (a *Article) Publish(artfmt Format, serverNameList []string) error{
     d, err := db.Connect(db.Main)
     if err != nil{
         log.Println(err)
@@ -131,7 +122,7 @@ func (a *Article) Publish(artfmt Format) error{
         log.Println(err)
         return err
     }
-    if err := a.UpdateAttachment(artfmt.ID, artfmt.Attachment); err != nil{
+    if err := a.UpdateAttachment(artfmt.ID, serverNameList); err != nil{
         log.Println(err)
         return err
     }
@@ -271,7 +262,8 @@ func (a *Article) GetArticleBySerial(serial uint32, user string) *Format{
         return nil
     }
     defer d.Close()
-    row := d.QueryRow("SELECT `id`, `user`, `type`, `create_time`, `publish_time`, `last_modified`, `title`, `content` FROM article WHERE `id` = ?", serial)
+    row := d.QueryRow(`SELECT id, user, type, create_time, publish_time, last_modified, title, content
+                       FROM article WHERE id = ?`, serial)
 
     r := new(Format)
     err = row.Scan(&r.ID, &r.User, &r.Type, &r.CreateTime, &r.PublishTime, &r.LastModified, &r.Title, &r.Content)
@@ -309,7 +301,7 @@ func (a *Article) serialNumber(user string) (uint32, error){
     }
 
     /* 如果流水號最大的那個消息是空消息且該消息屬於你自己則刪除該消息，並回傳該消息序號 */
-    if title == "" && content == "" && a.getAttachmentByArticleID(num) == "" && dbUser == user{
+    if title == "" && content == "" && len(a.getAttachmentByArticleID(num)) == 0 && dbUser == user{
         stmt, _ := d.Prepare("DELETE FROM article WHERE `id` = ?")
         stmt.Exec(num)
         return num, nil
@@ -317,35 +309,32 @@ func (a *Article) serialNumber(user string) (uint32, error){
     return num + 1, nil
 }
 
-// getAttachmentByArticleID gets attachment info and returns JSON
-func (a *Article) getAttachmentByArticleID(id uint32) string{
+// getAttachmentByArticleID gets attachment info and returns Files list
+func (a *Article) getAttachmentByArticleID(id uint32) []files.Files{
     d, err := db.Connect(db.Main)
+    fileList := []files.Files{}
     if err != nil{
         log.Println(err)
-        return ""
+        return fileList
     }
     defer d.Close()
-    rows, err := d.Query("SELECT client_name, server_name, path FROM files WHERE article_id=?", id)
-    clientName := ""
-    serverName := ""
-    path := ""
-    format := new(AttachmentFormat)
+    rows, err := d.Query(`SELECT client_name, server_name,
+                         IFNULL(mime,"") as mime, path
+                         FROM files WHERE article_id=?`, id)
+    /*
+    type Files struct{
+        UploadTime uint64
+        ClientName string
+        ServerName string
+        Mime string
+        Path string
+    }
+    */
     defer rows.Close()
     for rows.Next(){
-        rows.Scan(&clientName, &serverName, &path)
-        format.ClientName = append(format.ClientName, clientName)
-        format.ServerName = append(format.ServerName, serverName)
-        format.Path = append(format.Path, path)
+        f := new(files.Files)
+        rows.Scan(&f.ClientName, &f.ServerName, &f.Mime, &f.Path)
+        fileList = append(fileList, *f)
     }
-
-    if len(format.ClientName) == 0{
-        return ""
-    }
-
-    ret, err := json.Marshal(format)
-    if err != nil{
-        log.Println(err, "article.go getAttachmentByArticleID() json.Marshal()")
-        return ""
-    }
-    return string(ret)
+    return fileList
 }

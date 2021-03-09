@@ -14,10 +14,10 @@ import(
 // Files handles manipulations about files
 type Files struct{
     UploadTime uint64
-    ClientName string
-    ServerName string
-    Path string
-    Hash string
+    ClientName string `json:"client_name"`
+    ServerName string `json:"server_name"`
+    Mime string
+    Path string `json:"path"`
 }
 
 // New returns new instance of Files
@@ -58,15 +58,17 @@ func (f *Files) NewFile(fh *multipart.FileHeader) error{
         return err
     }
     defer d.Close()
-    stmt, _ := d.Prepare("INSERT INTO files(upload_time, client_name, server_name, path) values(?, ?, ?, ?)")
+    stmt, _ := d.Prepare(`INSERT INTO files(upload_time, client_name, server_name, mime, path)
+                          values(?, ?, ?, ?, ?)`)
     now := time.Now().Unix()
 
     f.UploadTime = uint64(now)
     f.ClientName = fh.Filename
     f.ServerName = fileName
+    f.Mime = fh.Header.Get("Content-Type")
     f.Path = "/assets/upload/" + fileName + fileExt
 
-    _, err = stmt.Exec(now, f.ClientName, f.ServerName, f.Path)
+    _, err = stmt.Exec(now, f.ClientName, f.ServerName, f.Mime, f.Path)
     if err != nil{
         log.Println(err, "files.go NewFile() stmt.Exec() failed")
         return err
@@ -76,14 +78,14 @@ func (f *Files) NewFile(fh *multipart.FileHeader) error{
 }
 
 // Del deletes a file by server_name
-func (f *Files) Del(server_name string) error{
+func (f *Files) Del(serverName string) error{
     d, err := db.Connect(db.Main)
     if err != nil{
         log.Println(err)
         return err
     }
     defer d.Close()
-    rows := d.QueryRow("SELECT path FROM files WHERE server_name = ?", server_name)
+    rows := d.QueryRow("SELECT path FROM files WHERE server_name = ?", serverName)
 
     var path string
     if err := rows.Scan(&path); err != nil{

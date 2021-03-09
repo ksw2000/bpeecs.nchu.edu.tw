@@ -103,6 +103,7 @@ CREATE TABLE "files" (
 	"upload_time"	INTEGER,
 	"client_name"	TEXT,
 	"server_name"	TEXT,
+    "mime"  TEXT,
 	"path"	TEXT,
 	"article_id"	INTEGER,
 	FOREIGN KEY("article_id") REFERENCES "article"("id"),

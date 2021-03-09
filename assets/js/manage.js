@@ -9,12 +9,12 @@ window.onbeforeunload = function(){
 var Editor = new (function(){
     let self = this;
     this.serial = -1;
-    this.defaultAttahmentVal = () =>{
-        return {
-            client_name: [],
-            server_name: [],
-            path :[]
-        };
+    this.defaultAttahmentVal = () => {
+        return [{
+            client_name: "",
+            server_name: "",
+            path: ""
+        }];
     }
     this.editor = null;
 
@@ -149,14 +149,16 @@ function attach(e){
                     notice(data['Msg']);
                 }else{
                     for(let i=0; i<e.target.files.length; i++){
-                        Editor.attachment.client_name.push(e.target.files[i].name);
-                        Editor.attachment.server_name.push(data.Filename[i]);
-                        Editor.attachment.path.push(data.Filepath[i]);
+                        Editor.attachment.push({
+                            "client_name": e.target.files[i].name,
+                            "server_name": data[i].Filename,
+                            "path": data[i].Filepath
+                        });
 
                         $("#new-article-area #attachmentArea ul").append(
-                            `<li data-file-name="${data.Filename[i]}">
-                                <a href="${data.Filepath[i]}">${e.target.files[i].name}</a>
-                                <button class="red" onclick="delete_what(this, 'attachment', '${data.Filename[i]}')">delete</button>
+                            `<li data-file-name="${data[i].Filename}">
+                                <a href="${data[i].Filepath}">${e.target.files[i].name}</a>
+                                <button class="red" onclick="delete_what(this, 'attachment', '${data[i].Filename}')">刪除</button>
                             </li>`
                         );
                     }
@@ -168,6 +170,7 @@ function attach(e){
     }, 500);
 }
 
+/*
 function uploadPic(e){
     let form = new FormData();
 
@@ -200,6 +203,7 @@ function uploadPic(e){
         dataType: 'json'
     });
 }
+*/
 
 function save(isPrivate){
     $.post('/function/save_news',{
@@ -283,8 +287,8 @@ function real_delete_attachment(filename){
     let target = -1;
     // Generate new attachment JSON
     // Find index of this file in Editor.attachment.client_name(server_name, path)
-    for(let i=0; i<Editor.attachment.server_name.length; i++){
-        if(Editor.attachment.server_name[i] === filename){
+    for(let i=0; i<Editor.attachment.length; i++){
+        if(Editor.attachment[i].server_name === filename){
             target = i;
             break;
         }
@@ -294,9 +298,7 @@ function real_delete_attachment(filename){
         return;
     }
 
-    Editor.attachment.server_name.splice(target, 1);
-    Editor.attachment.client_name.splice(target, 1);
-    Editor.attachment.path.splice(target, 1);
+    Editor.attachment.splice(target, 1);
 
     $.ajax({
         url: '/function/del_attachment',
@@ -350,7 +352,7 @@ function real_delete_news(data_id){
                 }else{
                     $('.article[data-id="' + data_id + '"]').slideUp('slow');
                     // close news area
-                    notice('Deleted!');
+                    notice('刪除成功！');
                 }
             }
         },
@@ -394,15 +396,13 @@ function edit_news(data_id){
 
                     Editor.attachment = Editor.defaultAttahmentVal();
                     try{
-                        console.log(data.Attachment)
-                        Editor.attachment = JSON.parse(data.Attachment);
-                        let parse = Editor.attachment;
+                        Editor.attachment = data.Attachment;
                         let attachment = '';
-                        for(let i=0; i < parse.client_name.length; i++){
+                        for(let i=0; i < Editor.attachment.length; i++){
                             attachment += `
-                                <li data-file-name="${parse.server_name[i]}">
-                                    <a href="${parse.path[i]}">${parse.client_name[i]}</a>
-                                    <button class="red" onclick="delete_what(this, 'attachment', '${parse.server_name[i]}')">delete</button>
+                                <li data-file-name="${Editor.attachment[i].server_name}">
+                                    <a href="${Editor.attachment[i].path}">${Editor.attachment[i].client_name}</a>
+                                    <button class="red" onclick="delete_what(this, 'attachment', '${Editor.attachment[i].server_name}')">刪除</button>
                                 </li>
                             `;
                         }
@@ -418,7 +418,7 @@ function edit_news(data_id){
                         $('#new-article-area').insertAfter($('.article[data-id="' + data_id + '"]'));
 
                         // Step4: Rebuild buttonArea
-                        if(data.Publish_time === 0){
+                        if(data.PublishTime === 0){
                             $('#new-article-area .buttonArea').html(btnAreaForDraft);
                         }else{
                             $('#new-article-area .buttonArea').html(btnAreaForPublished);

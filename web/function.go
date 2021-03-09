@@ -12,6 +12,23 @@ import(
     "bpeecs.nchu.edu.tw/files"
 )
 
+type attachmentJSONStruct struct{
+    ClientName string `json:"client_name"`
+    Path string `json:"path"`
+    ServerName string `json:"server_name"`
+}
+
+func attachmentJSONtoClientName(attachmentJSON string) []string{
+    attachment := []attachmentJSONStruct{}
+    json.Unmarshal([]byte(attachmentJSON), &attachment)
+    serverNameList := []string{}
+    for _, v := range attachment{
+        serverNameList = append(serverNameList, v.ServerName)
+    }
+    return serverNameList
+}
+
+
 // FunctionWebHandler is a handler for handling url whose prefix is /function
 func FunctionWebHandler(w http.ResponseWriter, r *http.Request){
     r.ParseForm()
@@ -126,9 +143,7 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request){
         artType := function.GET("type", r)
         title := function.GET("title", r)
         content := function.GET("content", r)
-        attachment := function.GET("attachment", r)    //string, already convert to string in front-end
 
-        // step2: connect to database
         art := article.New();
         artFormat := article.Format{
             ID : serial,
@@ -136,15 +151,16 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request){
             Type : artType,
             Title : title,
             Content : content,
-            Attachment : attachment,
         }
+
+        serverNameList := attachmentJSONtoClientName(function.GET("attachment", r))
 
         // step3: call Save() or Publish()
         artOperationErr := error(nil)
         if path == "/function/save_news" {
-            artOperationErr = art.Save(artFormat)
+            artOperationErr = art.Save(artFormat, serverNameList)
         }else if path == "/function/publish_news" {
-            artOperationErr = art.Publish(artFormat)
+            artOperationErr = art.Publish(artFormat, serverNameList)
         }else if path == "/function/del_news" {
             artOperationErr = art.Del(serial, user)
         }
@@ -234,11 +250,10 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request){
         r.ParseMultipartForm(32 << 20) // 32MB is the default used by FormFile
         fhs := r.MultipartForm.File["files"]
 
-        ret := new(struct{
-            Err bool
-            Filename []string
-            Filepath []string
-        })
+        ret := []struct{
+            Filename string
+            Filepath string
+        }{}
 
         for _, fh := range fhs {
             f := files.New()
@@ -247,10 +262,14 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request){
                 fmt.Fprint(w, `{"err" : true , "msg" : "新增檔案失敗", "code": 4}`)
                 return
             }
-            ret.Filename = append(ret.Filepath, f.ServerName)
-            ret.Filepath = append(ret.Filepath, f.Path)
+            ret = append(ret, struct{
+                Filename string
+                Filepath string
+            }{
+                Filename: f.ServerName,
+                Filepath: f.Path,
+            })
         }
-        ret.Err = false
         json.NewEncoder(w).Encode(ret)
     }else if path == "/function/del_attachment"{
         // is login？
@@ -260,14 +279,15 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request){
             return
         }
 
-        serverName := function.GET("serverName", r)
-        serialNum  := function.GET("serialNum", r)
-        num, err    := strconv.Atoi(serialNum)
+        serverName := function.GET("server_name", r)
+        serialNum  := function.GET("serial_num", r)
+        num, err   := strconv.Atoi(serialNum)
         if err != nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "文章代碼錯誤 (GET 參數錯誤)", "code": 3}`)
             return
         }
-        newAttachment := function.GET("new_attachment", r)
+
+        serverNameList := attachmentJSONtoClientName(function.GET("new_attachment", r))
 
         // Delete file record in database and delete file in system
         f := files.New()
@@ -278,7 +298,7 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request){
 
         // Update databse article (prevent user from not storing the article)
         art := article.New()
-        if err := art.UpdateAttachment(uint32(num), newAttachment); err != nil{
+        if err := art.UpdateAttachment(uint32(num), serverNameList); err != nil{
             fmt.Fprint(w, `{"err" : true , "msg" : "Article 資料庫更新失敗", "code": 2}`)
             return
         }
