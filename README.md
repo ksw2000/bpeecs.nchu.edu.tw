@@ -2,51 +2,26 @@
 
 __NCHU BPEECS__ [https://bpeecs.nchu.edu.tw/](https://bpeecs.nchu.edu.tw/)
 
+![](https://imgur.com/OUv4VWm)
+
 ## Dependencies
 
-__Go__
++ Go 1.12
++ SQLite3
+    ```sh
+    $ sqlite3 main.db
+    ```
++ Front-end javascript
 
-Powered by Golang 1.12 (need go mod)
+    + jQuery (v3.5.1)
 
-![](https://golang.org/doc/gopher/pkg.png)
+    + Text editor: [CkEditor](https://ckeditor.com/)
 
-__SQLite3__
-
-![](https://www.sqlite.org/images/sqlite370_banner.gif)
-
-1. Install
-
-    > Today, almost all the flavours of Linux OS are being shipped with SQLite. So you just issue the following command to check if you already have SQLite installed on your machine.
-
-2. Create database
-```sh
-$ sqlite3 main.db
-```
-
-__Front-end js dependencies__
-
-All of the javascript dependencies are embedded by the online resource links. If these links are lost, replace a new one, or implemented it by yourself.
-
-1. jQuery (v3.5.1)
-
-2. Text editor: [CkEditor](https://ckeditor.com/)
-
-3. Date foramt (jQuery dependency): [jquery-dateFormat](https://github.com/phstc/jquery-dateFormat)
-
-4. Promise() for ES5: [ES6-promise](https://github.com/stefanpenner/es6-promise)
-
-### IE
-
->
-> 1. Transfer ES6 to ES5 at [Babel](https://babeljs.io/)
->
-> 2. ES5 promise() support [ES6-promise](https://github.com/stefanpenner/es6-promise)
->
+    + Date foramt (jQuery dependency): [jquery-dateFormat](https://github.com/phstc/jquery-dateFormat)
 
 ## Files
 + beepcs.nchu.edu.tw/
     + .git/
-
     + assests/  (static file)
         + fonts/
         + img/
@@ -54,34 +29,24 @@ All of the javascript dependencies are embedded by the online resource links. If
         + js/
         + style/
         + upload/ (client upload files)
-
-    + db/ (handle database)
-        + db.go
+    + db/ (sqlite database)
         + main.db
-
-    + include/  (html files & gohtml files)
-
-    + article/ (handle article/(news) add, update, delete)
+    + handler/
+        + basic.go (`./*`)
+        + error.go (`/error/*` HTTP403 & 404)
+        + function.go (`./function/*xxx*` for Ajax)
+        + manage.go (h`/manage/*`)
+        + syllabus.go (`/syllabus/*`)
+    + include/  (html files & gohtml layout files)
+    + article/ (handle `article/(news)` add, update, delete)
     + files/ (manage the uploaded files)
-
-    + function/ (some func we usually use)
-
     + login/ (handle login)
     + render/
         + dynamic.go (render some pages when requesting)
         + static.go (render some pages before requesting)
-    + web/
-        + basic.go (handle: ./xxx)
-        + error.go (hanle HTTP403 & 404)
-        + function.go (handle ./function/xxx for Ajax)
-
     + go.mod
-
     + go.sum
-
     + __main.go__ (main program)
-
-    + newAccount.go `private` (regist a new user)
 
 ## Database
 __main.db__
@@ -119,30 +84,38 @@ CREATE TABLE "user" (
 );
 ```
 
-## Quick run
+## Quick start
 
 1. Create database `./db/main.db`
 
-2. implemented pwdHash() in `package login`
+2. Create a new account
+
 ```go
-func pwdHash(pwd string, salt string)
+package main
+
+import "bpeecs.nchu.edu.tw/login"
+
+func main() {
+	l := new(login.Login)
+	l.Connect("./db/main.db")
+	l.NewAcount("user_id", "password", "userName")
+}
 ```
 
-3. use `newAccount.go` to create a new account
-
-4. go build
+3. run
 ```sh
+# build
 $ go build main.go
-```
 
-5. run
-```sh
 # run at port 9000
-./main
+$ ./main
+
 # run at port 8080 and render static page
-./main -r -p 8080
+$ ./main -r -p 8080
+
 # run at port 443
-./main -r -p 443
+$ ./main -r -p 443
+
+# -p can specify port.
+# -r can render static pages
 ```
-`-p` can specify port.
-`-r` can render static page
