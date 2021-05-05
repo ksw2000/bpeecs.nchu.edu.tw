@@ -2,7 +2,43 @@
 
 __NCHU BPEECS__ [https://bpeecs.nchu.edu.tw/](https://bpeecs.nchu.edu.tw/)
 
-![](https://imgur.com/OUv4VWm)
+![](https://imgur.com/OUv4VWm.png)
+
+## Quick start
+
+1. Create database `./db/main.db`
+
+2. Create a new account
+
+```go
+package main
+
+import "bpeecs.nchu.edu.tw/login"
+
+func main() {
+	l := new(login.Login)
+	l.Connect("./db/main.db")
+	l.NewAcount("user_id", "password", "userName")
+}
+```
+
+3. run
+```sh
+# build
+$ go build main.go
+
+# run at port 9000
+$ ./main
+
+# run at port 8080 and render static page
+$ ./main -r -p 8080
+
+# run at port 443
+$ ./main -r -p 443
+
+# -p for specifing port. (default: 9000)
+# -r for rendering static pages
+```
 
 ## Dependencies
 
@@ -17,12 +53,12 @@ __NCHU BPEECS__ [https://bpeecs.nchu.edu.tw/](https://bpeecs.nchu.edu.tw/)
 
     + Text editor: [CkEditor](https://ckeditor.com/)
 
-    + Date foramt (jQuery dependency): [jquery-dateFormat](https://github.com/phstc/jquery-dateFormat)
+    + Date format (jQuery dependency): [jquery-dateFormat](https://github.com/phstc/jquery-dateFormat)
 
 ## Files
 + beepcs.nchu.edu.tw/
     + .git/
-    + assests/  (static file)
+    + assets/  (static file)
         + fonts/
         + img/
         + json/
@@ -84,38 +120,5 @@ CREATE TABLE "user" (
 );
 ```
 
-## Quick start
 
-1. Create database `./db/main.db`
 
-2. Create a new account
-
-```go
-package main
-
-import "bpeecs.nchu.edu.tw/login"
-
-func main() {
-	l := new(login.Login)
-	l.Connect("./db/main.db")
-	l.NewAcount("user_id", "password", "userName")
-}
-```
-
-3. run
-```sh
-# build
-$ go build main.go
-
-# run at port 9000
-$ ./main
-
-# run at port 8080 and render static page
-$ ./main -r -p 8080
-
-# run at port 443
-$ ./main -r -p 443
-
-# -p can specify port.
-# -r can render static pages
-```
