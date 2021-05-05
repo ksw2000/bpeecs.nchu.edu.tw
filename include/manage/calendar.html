@@ -1,69 +1,66 @@
 <h1>行事曆管理</h1>
-<button>+ 新增事件</button>
 <style>
-
-.calendar{
-  font-size: 0rem;
-  margin: 0px auto;
-  max-width: 600px;
-  width: 100%;
+.add-event-box{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }
 
-.calendar-head, .weak{
-  display: flex;
+.add-event-box input{
+    box-sizing: border-box;
+    background-color: transparent;
+    margin: 10px 0px;
+    max-width: 300px;
+    padding: 5px;
+    width: 100%;
 }
 
-.day{
-  border: 1px solid #1c2a3d;
-  display: block;
-  font-size: 1rem;
-  line-height: 1.5rem;
-  text-align: center;
-  width: 14.28%;
+.add-event-box button{
+    margin: 10px 0px;
 }
 
-.day.mark{
-  background-color: #fe7769;
-  color: #fff;
+.calender-list{
+    align-items: center;
+    display: flex;
 }
 
+.candy-header span{
+    font-size: 1rem!important;
+}
+
+.calender-title{
+    padding-left: 10px;
+}
+
+.calender-title span, .calender-title span{
+    font-size: 1.12rem!important;
+}
 </style>
-<div class="calendar">
-  <div class="calendar-head">
-    <div class="day">日</div>
-    <div class="day">一</div>
-    <div class="day">二</div>
-    <div class="day">三</div>
-    <div class="day">四</div>
-    <div class="day">五</div>
-    <div class="day">六</div>
-  </div>
-  <div class="weak">
-    <div class="day">27</div>
-    <div class="day">28</div>
-    <div class="day">29</div>
-    <div class="day">30</div>
-    <div class="day">31</div>
-    <div class="day">1</div>
-    <div class="day">2</div>
-  </div>
-  <div class="weak">
-    <div class="day">3</div>
-    <div class="day">4</div>
-    <div class="day">5</div>
-    <div class="day">6</div>
-    <div class="day">7</div>
-    <div class="day">8</div>
-    <div class="day">9</div>
-  </div>
-  <div class="weak">
-    <div class="day">10</div>
-    <div class="day">11</div>
-    <div class="day">12</div>
-    <div class="day">13</div>
-    <div class="day">14</div>
-    <div class="day">15</div>
-    <div class="day">16</div>
-  </div>
-  <div class="weak"></div>
+<div class="add-event-box">
+    <input type="date" id="event-date"/>
+    <input type="text" id="event-title" placeholder="事件標題" autocomplete="off"/>
+    <input type="text" id="event-link" placeholder="連結" autocomplete="off"/>
+    <button id="event-add">+ 新增事件</button>
 </div>
+
+<h2>行事曆</h2>
+<div class="calender">
+    <div class="calender-list">
+        <div class="candy-header"><span class="single cyan big">01 . 30</span></div>
+        <div class="calender-title">一二三四五六七八九十</div>
+    </div>
+    <div class="calender-list">
+        <div class="candy-header"><span class="single cyan big">01 . 30</span></div>
+        <div class="calender-title"><a href="#">一二三四五六七八九十</a></div>
+    </div>
+</div>
+
+<script>
+$("#event-add").on('click', ()=>{
+    var date = $("#event-date").val();
+    var title = $("#event-title").val();
+    var link = $("#event-link").val();
+
+    console.log(date, title, link);
+});
+</script>
