@@ -61,7 +61,6 @@
   text-align: center;
   color: #d7d8e9;
   border: 0px;
-  font-szie: 18px;
   -webkit-filter: drop-shadow(8px 8px 5px #303050);
   filter: drop-shadow(8px 8px 5px #303050);
 }
@@ -179,7 +178,7 @@
 }
 
 .brief a{
-  color: rgb(11, 71, 111);
+  color: #0b476f;
   display: inline-flex;
   font-size: inherit;
   padding: 0px 0px 0px 3px;
@@ -187,6 +186,6 @@
 }
 
 .brief a:hover{
-  color: rgb(23, 145, 227);
+  color: #1791e3;
   transition: color 500ms;
 }
