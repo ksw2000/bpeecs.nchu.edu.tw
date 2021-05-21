@@ -29,12 +29,12 @@ func attachmentJSONtoClientName(attachmentJSON string) []string {
 	return serverNameList
 }
 
-// FunctionWebHandler is a handler for handling url whose prefix is /function
-func FunctionWebHandler(w http.ResponseWriter, r *http.Request) {
+// ApiHandler is a handler for handling url whose prefix is /function
+func ApiHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	path := r.URL.Path
 
-	if path == "/function/login" {
+	if path == "/api/login" {
 		l := login.New()
 
 		if err := l.Login(w, r); err != nil {
@@ -45,7 +45,7 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, `{"err" : false}`)
 
 		return
-	} else if path == "/function/reg" {
+	} else if path == "/api/reg" {
 		// only current accounts are allowed to register a new account
 		loginInfo := login.CheckLogin(w, r)
 		if loginInfo == nil {
@@ -106,47 +106,51 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		return
-	} else if path == "/function/add_news" {
-		// is login?
+	} else if path == "/api/save_news" || path == "/api/publish_news" || path == "/api/del_news" {
+		encoder := json.NewEncoder(w)
+		ret := struct {
+			Err string `json:"err"`
+			Aid uint32 `json:"aid"`
+		}{}
+
+		// step0: is login?
 		loginInfo := login.CheckLogin(w, r)
 		if loginInfo == nil {
-			fmt.Fprint(w, `{"err" : true , "msg" : "尚未登入", "code" : 1}`)
-			return
-		}
-		user := loginInfo.UserID
-		art := article.New()
-		// get serial number
-		serial, err := art.NewArticle(user)
-		if err != nil {
-			fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結成功但新增文章失敗", "code": 2}`)
-			return
-		}
-		ret := fmt.Sprintf(`{"err" : false, "msg" : %d}`, serial)
-		fmt.Fprint(w, ret)
-	} else if path == "/function/save_news" || path == "/function/publish_news" || path == "/function/del_news" {
-		// is login？
-		loginInfo := login.CheckLogin(w, r)
-		if loginInfo == nil {
-			fmt.Fprint(w, `{"err" : true , "msg" : "尚未登入", "code" : 1}`)
+			ret.Err = "尚未登入"
+			encoder.Encode(ret)
 			return
 		}
 
 		// write to database
 		// step1: fetch http POST
-		num, err := strconv.Atoi(get("serial", r))
+		getNum, err := strconv.Atoi(get("aid", r))
 		if err != nil {
-			fmt.Fprint(w, `{"err" : true , "msg" : "文章代碼錯誤 (POST參數錯誤)", "code": 3}`)
+			ret.Err = "文章代碼錯誤 (POST參數錯誤)"
+			encoder.Encode(ret)
 			return
 		}
-		serial := uint32(num)
+
+		// step2: if num == -1
+		// create new article and get aid
+		art := article.New()
+		if getNum == -1 {
+			ret.Aid, err = art.NewArticle(loginInfo.UserID)
+			if err != nil {
+				ret.Err = err.Error()
+				encoder.Encode(ret)
+				return
+			}
+		} else {
+			ret.Aid = uint32(getNum)
+		}
+
 		user := loginInfo.UserID
 		artType := get("type", r)
 		title := get("title", r)
 		content := get("content", r)
 
-		art := article.New()
 		artFormat := article.Format{
-			ID:      serial,
+			ID:      ret.Aid,
 			User:    user,
 			Type:    artType,
 			Title:   title,
@@ -156,27 +160,26 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request) {
 		serverNameList := attachmentJSONtoClientName(get("attachment", r))
 
 		// step3: call Save() or Publish()
-		artOperationErr := error(nil)
-		if path == "/function/save_news" {
-			artOperationErr = art.Save(artFormat, serverNameList)
-		} else if path == "/function/publish_news" {
-			artOperationErr = art.Publish(artFormat, serverNameList)
-		} else if path == "/function/del_news" {
-			artOperationErr = art.Del(serial, user)
+		if path == "/api/save_news" {
+			err = art.Save(artFormat, serverNameList)
+		} else if path == "/api/publish_news" {
+			err = art.Publish(artFormat, serverNameList)
+		} else if path == "/api/del_news" {
+			err = art.Del(ret.Aid, user)
 		}
 
-		if artOperationErr != nil {
-			fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結成功但操作文章失敗", "code": 2}`)
-			return
+		if err != nil {
+			ret.Err = err.Error()
 		}
-		fmt.Fprint(w, `{"err" : false}`)
-	} else if path == "/function/get_news" {
+		encoder.Encode(ret)
+		return
+	} else if path == "/api/get_news" {
 		// read news from database
 		// step1: read GET
 		scope := get("scope", r)
 		artType := get("type", r)
 		n := get("id", r)
-		var serial uint32
+		var aid uint32
 		from, to := 0, 19 // Default from = 0, to = 19
 
 		scopes := [...]string{"all", "draft", "published", "public", "public-with-type"}
@@ -199,7 +202,7 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request) {
 				fmt.Fprint(w, `{"err" : true , "msg" : "文章代碼錯誤 (GET 參數錯誤)", "code": 3}`)
 				return
 			}
-			serial = uint32(num)
+			aid = uint32(num)
 		} else {
 			if f, scope := get("from", r), get("to", r); f != "" && scope != "" {
 				var err error
@@ -224,23 +227,21 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request) {
 		// step4: call GetLatest(scope, from, to)
 		if scope != "" {
 			ret := new(struct {
-				NewsList []article.Format
-				HasNext  bool
-				Err      error
+				List    []article.Format `json:"list"`
+				HasNext bool             `json:"hasNext"`
 			})
-			ret.NewsList, ret.HasNext = art.GetLatest(scope, artType, user, int32(from), int32(to))
-			ret.Err = nil
+			ret.List, ret.HasNext = art.GetLatest(scope, artType, user, int32(from), int32(to))
 
 			// step5: encode to json
 			json.NewEncoder(w).Encode(ret)
 		} else if n != "" {
-			if ret := art.GetArticleBySerial(serial, user); ret != nil {
+			if ret := art.GetArticleByAid(aid, user); ret != nil {
 				json.NewEncoder(w).Encode(ret)
 			} else {
 				fmt.Fprint(w, `{}`)
 			}
 		}
-	} else if path == "/function/upload" {
+	} else if path == "/api/upload" {
 		// is login？
 		if login.CheckLogin(w, r) == nil {
 			fmt.Fprint(w, `{"Err" : true , "Msg" : "尚未登入", "Code" : 1}`)
@@ -251,8 +252,8 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request) {
 		fhs := r.MultipartForm.File["files"]
 
 		ret := []struct {
-			Filename string
-			Filepath string
+			FileName string `json:"fileName"`
+			FilePath string `json:"filePath"`
 		}{}
 
 		for _, fh := range fhs {
@@ -263,15 +264,15 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			ret = append(ret, struct {
-				Filename string
-				Filepath string
+				FileName string `json:"fileName"`
+				FilePath string `json:"filePath"`
 			}{
-				Filename: f.ServerName,
-				Filepath: f.Path,
+				FileName: f.ServerName,
+				FilePath: f.Path,
 			})
 		}
 		json.NewEncoder(w).Encode(ret)
-	} else if path == "/function/del_attachment" {
+	} else if path == "/api/del_attachment" {
 		// is login？
 		loginInfo := login.CheckLogin(w, r)
 		if loginInfo == nil {
@@ -280,8 +281,8 @@ func FunctionWebHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		serverName := get("server_name", r)
-		serialNum := get("serial_num", r)
-		num, err := strconv.Atoi(serialNum)
+		aidNum := get("aid_num", r)
+		num, err := strconv.Atoi(aidNum)
 		if err != nil {
 			fmt.Fprint(w, `{"err" : true , "msg" : "文章代碼錯誤 (GET 參數錯誤)", "code": 3}`)
 			return

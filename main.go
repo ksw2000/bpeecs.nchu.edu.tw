@@ -42,7 +42,7 @@ func main() {
 		mux.Handle(v+"/", http.StripPrefix(v, neuter(fileServer)))
 	}
 
-	mux.HandleFunc("/function/", handler.FunctionWebHandler)
+	mux.HandleFunc("/api/", handler.ApiHandler)
 	mux.HandleFunc("/error/", handler.ErrorWebHandler)
 	mux.HandleFunc("/manage/", handler.ManageWebHandler)
 	mux.HandleFunc("/syllabus/", handler.SyllabusWebHandler)

@@ -13,7 +13,7 @@
       $("#login #error").text("帳號或密碼不可為空！");
       return;
     }
-    $.post('/function/login',{
+    $.post('/api/login',{
       id: id,
       pwd: pwd
     }
