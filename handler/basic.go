@@ -115,7 +115,7 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 
 			if id := strings.Join(r.Form["id"], ""); id != "" {
 				//id is uint32
-				serialUint64, err := strconv.ParseUint(id, 10, 32)
+				aidUint64, err := strconv.ParseUint(id, 10, 32)
 
 				if err != nil {
 					http.Redirect(w, r, "/error/404", 302)
@@ -127,7 +127,7 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 					user = loginInfo.UserID
 				}
 
-				artInfo := art.GetArticleBySerial(uint32(serialUint64), user)
+				artInfo := art.GetArticleByAid(uint32(aidUint64), user)
 
 				// avoid /news?id=xxx
 				if artInfo == nil {
