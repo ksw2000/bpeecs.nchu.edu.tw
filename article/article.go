@@ -19,15 +19,15 @@ type Article struct {
 
 // Format records article's information
 type Format struct {
-	ID           uint32
-	User         string
-	Type         string
-	CreateTime   uint64
-	PublishTime  uint64
-	LastModified uint64
-	Title        string
-	Content      string
-	Attachment   []files.Files
+	ID           uint32        `json:"id"`
+	User         string        `json:"user"`
+	Type         string        `json:"type"`
+	CreateTime   uint64        `json:"create"`
+	PublishTime  uint64        `json:"publish"`
+	LastModified uint64        `json:"lastModified"`
+	Title        string        `json:"title"`
+	Content      string        `json:"content"`
+	Attachment   []files.Files `json:"attachment"`
 }
 
 // New returns new instance of Article
@@ -43,19 +43,20 @@ func (a *Article) NewArticle(user string) (uint32, error) {
 		return 0, err
 	}
 	defer d.Close()
-	stmt, _ := d.Prepare("INSERT INTO article(id, user, create_time, publish_time, last_modified, title, content) values(?, ?, ?, ?, ?, ?, ?)")
-	now := time.Now().Unix()
-	serialNum, err := a.serialNumber(user)
+	stmt, err := d.Prepare("INSERT INTO article(user, create_time, publish_time, last_modified, title, content) values(?, ?, ?, ?, ?, ?)")
 	if err != nil {
-		log.Println(err)
-		return 0, err
-	}
-	if _, err = stmt.Exec(serialNum, user, now, 0, 0, "", ""); err != nil {
-		log.Println(err)
-		return 0, err
+		return 0, fmt.Errorf("d.Prepare() error %v", err)
 	}
 
-	return serialNum, nil
+	res, err := stmt.Exec(user, time.Now().Unix(), 0, 0, "", "")
+	if err != nil {
+		return 0, fmt.Errorf("stmt.Exec() error %v", err)
+	}
+	aid, err := res.LastInsertId()
+	if err != nil {
+		return 0, fmt.Errorf("res.LastInsertId() error %v", err)
+	}
+	return uint32(aid), nil
 }
 
 // Save article (do not change scope)
@@ -134,7 +135,7 @@ func (a *Article) Publish(artfmt Format, serverNameList []string) error {
 }
 
 // Del deletes an article
-func (a *Article) Del(serial uint32, user string) error {
+func (a *Article) Del(aid uint32, user string) error {
 	d, err := sql.Open("sqlite3", config.MainDB)
 	if err != nil {
 		log.Println(err)
@@ -142,14 +143,14 @@ func (a *Article) Del(serial uint32, user string) error {
 	}
 	defer d.Close()
 	stmt, _ := d.Prepare("DELETE from article WHERE id=? and user=?")
-	if _, err := stmt.Exec(serial, user); err != nil {
+	if _, err := stmt.Exec(aid, user); err != nil {
 		log.Println(err, "article.go Del() DELETE from article")
 		return err
 	}
 
 	// remove attachment
 	f := files.New()
-	rows, _ := d.Query("SELECT path FROM files WHERE article_id=?", serial)
+	rows, _ := d.Query("SELECT path FROM files WHERE article_id=?", aid)
 	path := ""
 	pathList := []string{}
 	for rows.Next() {
@@ -258,8 +259,8 @@ func (a *Article) GetLatest(scope string, artType string, user string, from int3
 	return list, hasNext
 }
 
-// GetArticleBySerial gets article information by article serial
-func (a *Article) GetArticleBySerial(serial uint32, user string) *Format {
+// GetArticleByAid gets article information by aid
+func (a *Article) GetArticleByAid(aid uint32, user string) *Format {
 	d, err := sql.Open("sqlite3", config.MainDB)
 	if err != nil {
 		log.Println(err)
@@ -267,7 +268,7 @@ func (a *Article) GetArticleBySerial(serial uint32, user string) *Format {
 	}
 	defer d.Close()
 	row := d.QueryRow(`SELECT id, user, type, create_time, publish_time, last_modified, title, content
-                       FROM article WHERE id = ?`, serial)
+                       FROM article WHERE id = ?`, aid)
 
 	r := new(Format)
 	err = row.Scan(&r.ID, &r.User, &r.Type, &r.CreateTime, &r.PublishTime, &r.LastModified, &r.Title, &r.Content)
@@ -286,31 +287,6 @@ func (a *Article) GetArticleBySerial(serial uint32, user string) *Format {
 	r.Attachment = a.getAttachmentByArticleID(r.ID)
 
 	return r
-}
-
-func (a *Article) serialNumber(user string) (uint32, error) {
-	d, err := sql.Open("sqlite3", config.MainDB)
-	if err != nil {
-		log.Println(err)
-		return 0, err
-	}
-	defer d.Close()
-	rows := d.QueryRow("SELECT `user`, `id`, `title`, `content` FROM article ORDER BY `id` DESC")
-
-	var num uint32
-	var title, content, dbUser string
-	err = rows.Scan(&dbUser, &num, &title, &content)
-	if err == sql.ErrNoRows {
-		return 1, nil
-	}
-
-	/* 如果流水號最大的那個消息是空消息且該消息屬於你自己則刪除該消息，並回傳該消息序號 */
-	if title == "" && content == "" && len(a.getAttachmentByArticleID(num)) == 0 && dbUser == user {
-		stmt, _ := d.Prepare("DELETE FROM article WHERE `id` = ?")
-		stmt.Exec(num)
-		return num, nil
-	}
-	return num + 1, nil
 }
 
 // getAttachmentByArticleID gets attachment info and returns Files list
