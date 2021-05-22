@@ -35,8 +35,9 @@ func New() (l *Login) {
 }
 
 // Login is a function handle login
-func (l *Login) Login(w http.ResponseWriter, r *http.Request) (err error) {
+func (l *Login) Login(w http.ResponseWriter, r *http.Request) error {
 	id, pwd := r.FormValue("id"), r.FormValue("pwd")
+	log.Printf("%s try to login\n", id)
 
 	d, err := sql.Open("sqlite3", config.MainDB)
 	if err != nil {
@@ -49,18 +50,8 @@ func (l *Login) Login(w http.ResponseWriter, r *http.Request) (err error) {
 	var enryptedPwd, name, salt string
 	err = row.Scan(&enryptedPwd, &name, &salt)
 
-	// Check account
-	if err == sql.ErrNoRows {
-		l = nil
-		err = errors.New(`{"err" : true , "msg" : "Accound not found"}`)
-		return
-	}
-
-	// Check password
-	if pwdHash(pwd, salt) != enryptedPwd {
-		l = nil
-		err = errors.New(`{"err" : true , "msg" : "Password is wrong"}`)
-		return
+	if err == sql.ErrNoRows || pwdHash(pwd, salt) != enryptedPwd {
+		return fmt.Errorf("帳號或密碼錯誤")
 	}
 
 	l.IsLogin = true
@@ -70,21 +61,19 @@ func (l *Login) Login(w http.ResponseWriter, r *http.Request) (err error) {
 	// Session srart
 	store, err := session.Start(context.Background(), w, r)
 	if err != nil {
-		err = errors.New(`{"err" : true , "msg" : "Session start error"}`)
-		return
+		return fmt.Errorf("session.Start() error %v", err)
 	}
 
 	store.Set("isLogin", "yes")
 	store.Set("userID", l.UserID)
 	store.Set("userName", l.UserName)
-	err = store.Save()
-	if err != nil {
-		err = errors.New(`{"err" : true , "msg" : "Session store error"}`)
-		return
+
+	if err = store.Save(); err != nil {
+		return fmt.Errorf("Session store error")
 	}
 
-	err = nil
-	return
+	log.Printf("%s login success\n", id)
+	return nil
 }
 
 // NewAcount creates a new account
@@ -92,8 +81,7 @@ func (l *Login) NewAcount(id string, pwd string, name string) error {
 	// check if there are the same id in db
 	d, err := sql.Open("sqlite3", config.MainDB)
 	if err != nil {
-		log.Println(err)
-		return err
+		return fmt.Errorf("sql.Open() error %v", err)
 	}
 	defer d.Close()
 
@@ -101,8 +89,7 @@ func (l *Login) NewAcount(id string, pwd string, name string) error {
 
 	count := 0
 	if err := row.Scan(&count); err != nil {
-		fmt.Println(err)
-		return err
+		return fmt.Errorf("row.Scan() error %v", err)
 	}
 
 	// Check account
@@ -112,11 +99,10 @@ func (l *Login) NewAcount(id string, pwd string, name string) error {
 
 		stmt, err := d.Prepare("INSERT INTO user(id, password, salt, name) values(?, ?, ?, ?)")
 		if err != nil {
-			return err
+			return fmt.Errorf("d.Prepare() error %v", err)
 		}
 
 		stmt.Exec(id, pwd, salt, name)
-
 		return nil
 	}
 
@@ -136,7 +122,6 @@ func (l *Login) Logout(w http.ResponseWriter, r *http.Request) (err error) {
 func CheckLogin(w http.ResponseWriter, r *http.Request) *Login {
 	store, err := session.Start(context.Background(), w, r)
 	if err != nil {
-		fmt.Fprint(w, err)
 		return nil
 	}
 

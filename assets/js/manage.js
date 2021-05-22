@@ -145,24 +145,25 @@ function attach(e) {
             data: form,
             type: 'POST',
             success: function (data) {
-                if (data['Err']) {
-                    if (data['Code'] === 1) {
+                if (data.err) {
+                    if (data.errNotLogin) {
                         window.location = '/?notlogin';
                     }
-                    $("#new-article-area #attachmentArea").html('<span class="error">' + data['Msg'] + '</span>');
-                    notice(data['Msg']);
+                    $("#new-article-area #attachmentArea").html('<span class="error">' + data.err + '</span>');
+                    notice(data.err);
                 } else {
+                    let fl = data.fileList;
                     for (let i = 0; i < e.target.files.length; i++) {
                         Editor.attachment.push({
                             "client_name": e.target.files[i].name,
-                            "server_name": data[i].fileName,
-                            "path": data[i].filePath
+                            "server_name": fl[i].fileName,
+                            "path": fl[i].filePath
                         });
 
                         $("#new-article-area #attachmentArea ul").append(
-                            `<li data-file-name="${data[i].fileName}">
-                                <a href="${data[i].filePath}">${e.target.files[i].name}</a>
-                                <button class="red" onclick="delete_what(this, 'attachment', '${data[i].fileName}')">刪除</button>
+                            `<li data-file-name="${fl[i].fileName}">
+                                <a href="${fl[i].filePath}">${e.target.files[i].name}</a>
+                                <button class="red" onclick="delete_what(this, 'attachment', '${fl[i].fileName}')">刪除</button>
                             </li>`
                         );
                     }
@@ -183,6 +184,9 @@ function save(isPrivate) {
         attachment: JSON.stringify(Editor.attachment)
     }, (data) => {
         if (data.err) {
+            if(data.errNotLogin){
+                window.location = '/?notlogin';
+            }
             notice(data.err);
             console.log(data);
         } else if (isPrivate) {
@@ -205,8 +209,10 @@ function publish() {
         content: Editor.getEditorValue(),
         attachment: JSON.stringify(Editor.attachment)
     }, (data) => {
-        console.log(data)
         if (data.err) {
+            if (data.errNotLogin) {
+                window.location = '/?notlogin';
+            }
             notice(data.err);
             console.log(data);
         } else {
@@ -273,18 +279,18 @@ function real_delete_attachment(fileName) {
         },
         type: 'POST',
         success: function (data) {
-            if (data['err']) {
-                if (data['code'] === 1) {
+            if (data.err) {
+                if (data.errNotLogin) {
                     window.location = '/?notlogin';
                 }
-                notice(data['msg']);
+                notice(data.err);
             } else {
                 $('#new-article-area #attachmentArea ul li[data-file-name="' + fileName + '"]').slideUp('slow');
             }
         },
         error: function (err) {
             console.log(err);
-            notice('Error');
+            notice('Error' + err);
         },
         dataType: 'json'
     });

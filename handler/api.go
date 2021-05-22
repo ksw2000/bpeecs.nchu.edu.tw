@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -35,21 +36,29 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 
 	if path == "/api/login" {
+		ret := struct {
+			Err string `json:"err"`
+		}{}
 		l := login.New()
 
 		if err := l.Login(w, r); err != nil {
-			fmt.Fprint(w, err.Error())
+			ret.Err = err.Error()
+			json.NewEncoder(w).Encode(ret)
 			return
 		}
 
-		fmt.Fprint(w, `{"err" : false}`)
-
+		json.NewEncoder(w).Encode(ret)
 		return
 	} else if path == "/api/reg" {
+		ret := struct {
+			Err string `json:"err"`
+		}{}
+		encoder := json.NewEncoder(w)
 		// only current accounts are allowed to register a new account
 		loginInfo := login.CheckLogin(w, r)
 		if loginInfo == nil {
-			fmt.Fprint(w, `{"err" : true , "msg" : "必需登入才能建立新帳戶(基於網路安全)"}`)
+			ret.Err = "必需登入才能建立新帳戶"
+			encoder.Encode(ret)
 			return
 		}
 
@@ -62,61 +71,70 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 
 		match, err := regexp.MatchString("^[a-zA-Z0-9_]{5,30}$", id)
 		if err != nil || !match {
-			fmt.Fprint(w, `{"err" : true , "msg" : "帳號僅接受「英文字母、數字、-、_」且需介於 5 到 30 字元`)
+			ret.Err = "帳號僅接受「英文字母、數字、-、_」且需介於 5 到 30 字元"
+			encoder.Encode(ret)
 			return
 		}
 
 		if len(name) > 30 || len(name) < 1 {
-			fmt.Fprint(w, `{"err" : true , "msg" : "暱稱需介於 1 到 30 字元"}`)
+			ret.Err = "暱稱需介於 1 到 30 字元"
+			encoder.Encode(ret)
 			return
 		}
 
 		if pwd != rePwd {
-			fmt.Fprint(w, `{"err" : true , "msg" : "密碼與確認密碼不一致"}`)
+			ret.Err = "密碼與確認密碼不一致"
+			encoder.Encode(ret)
 			return
 		}
 
 		match, err = regexp.MatchString("^[a-zA-Z0-9_]{8,30}$", pwd)
 		if err != nil || !match {
-			fmt.Fprint(w, `{"err" : true , "msg" : "密碼僅接受「英文字母、數字、-、_」且需介於 8 到 30 字元"}`)
+			ret.Err = "密碼僅接受「英文字母、數字、-、_」且需介於 8 到 30 字元"
+			encoder.Encode(ret)
 			return
 		}
 
 		match, err = regexp.MatchString("^.*?\\d+.*?$", pwd)
 		if err != nil || !match {
-			fmt.Fprint(w, `{"err" : true , "msg" : "密碼必需含有數字"}`)
+			ret.Err = "密碼必需含有數字"
+			encoder.Encode(ret)
 			return
 		}
 
 		match, err = regexp.MatchString("^.*?[a-zA-Z]+.*?$", pwd)
 		if err != nil || !match {
-			fmt.Fprint(w, `{"err" : true , "msg" : "密碼必需含有英文字母"}`)
+			ret.Err = "密碼必需含有英文字母"
+			encoder.Encode(ret)
 			return
 		}
 
 		err = l.NewAcount(id, pwd, name)
 		if err == login.ErrorReapeatID {
-			fmt.Fprint(w, `{"err" : true , "msg" : "所申請之 ID 重複"}`)
+			ret.Err = "所申請之 ID 重複"
+			encoder.Encode(ret)
 			return
 		} else if err != nil {
-			fmt.Fprint(w, `{"err" : true , "msg" : "資料庫連結失敗", "code": 2}`)
+			ret.Err = fmt.Sprintf("資料庫錯誤 %v", err)
+			encoder.Encode(ret)
 			return
-		} else {
-			fmt.Fprint(w, `{"err" : false}`)
 		}
 
+		encoder.Encode(ret)
 		return
 	} else if path == "/api/save_news" || path == "/api/publish_news" || path == "/api/del_news" {
 		encoder := json.NewEncoder(w)
 		ret := struct {
-			Err string `json:"err"`
-			Aid uint32 `json:"aid"`
+			Err         string `json:"err"`
+			ErrNotLogin bool   `json:"errNotLogin"`
+			Aid         uint32 `json:"aid"`
 		}{}
 
 		// step0: is login?
 		loginInfo := login.CheckLogin(w, r)
 		if loginInfo == nil {
-			ret.Err = "尚未登入"
+			ret.Err = "權限不足，尚未登入"
+			ret.ErrNotLogin = true
 			encoder.Encode(ret)
 			return
 		}
@@ -174,11 +192,18 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		encoder.Encode(ret)
 		return
 	} else if path == "/api/get_news" {
-		// read news from database
-		// step1: read GET
+		// step0: prepare return format
+		ret := new(struct {
+			Err     string           `json:"err"`
+			List    []article.Format `json:"list"`
+			HasNext bool             `json:"hasNext"`
+		})
+		encoder := json.NewEncoder(w)
+
+		// step1: parse GET paramters
 		scope := get("scope", r)
 		artType := get("type", r)
-		n := get("id", r)
+		aidStr := get("id", r)
 		var aid uint32
 		from, to := 0, 19 // Default from = 0, to = 19
 
@@ -192,24 +217,27 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if !checkValidScope {
-			if n == "" {
-				fmt.Fprint(w, `{"err" : true , "msg" : "錯誤的請求 (GET 參數錯誤)", "code": 3}`)
+			if aidStr == "" {
+				ret.Err = "Invalid request @param id can not be empty"
+				encoder.Encode(ret)
 				return
 			}
 
-			num, err := strconv.Atoi(n)
+			aidInt, err := strconv.Atoi(aidStr)
 			if err != nil {
-				fmt.Fprint(w, `{"err" : true , "msg" : "文章代碼錯誤 (GET 參數錯誤)", "code": 3}`)
+				ret.Err = fmt.Sprintf("Invalid request. %v", err)
+				encoder.Encode(ret)
 				return
 			}
-			aid = uint32(num)
+			aid = uint32(aidInt)
 		} else {
 			if f, scope := get("from", r), get("to", r); f != "" && scope != "" {
 				var err error
 				from, err = strconv.Atoi(f)
 				to, err = strconv.Atoi(scope)
 				if err != nil {
-					fmt.Fprint(w, `{"err" : true , "msg" : "from to 代碼錯誤 (GET 參數錯誤)", "code": 3}`)
+					ret.Err = "Invalid request @param from and @param to"
+					encoder.Encode(ret)
 					return
 				}
 			}
@@ -221,70 +249,82 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 			user = loginInfo.UserID
 		}
 
-		// step3: connect to database
+		// step3: call GetLatest(scope, from, to)
 		art := article.New()
-
-		// step4: call GetLatest(scope, from, to)
 		if scope != "" {
-			ret := new(struct {
-				List    []article.Format `json:"list"`
-				HasNext bool             `json:"hasNext"`
-			})
 			ret.List, ret.HasNext = art.GetLatest(scope, artType, user, int32(from), int32(to))
+			encoder.Encode(ret)
+			return
+		}
 
-			// step5: encode to json
-			json.NewEncoder(w).Encode(ret)
-		} else if n != "" {
+		if aidStr != "" {
 			if ret := art.GetArticleByAid(aid, user); ret != nil {
-				json.NewEncoder(w).Encode(ret)
-			} else {
-				fmt.Fprint(w, `{}`)
+				encoder.Encode(ret)
+				return
 			}
 		}
+
+		ret.Err = "Inavalid request"
+		encoder.Encode(ret)
+		return
 	} else if path == "/api/upload" {
-		// is login？
+		type fileInfo struct {
+			FileName string `json:"fileName"`
+			FilePath string `json:"filePath"`
+		}
+		ret := struct {
+			Err         string     `json:"err"`
+			ErrNotLogin bool       `json:"errNotLogin"`
+			FileList    []fileInfo `json:"fileList"`
+		}{}
+
+		// is login?
 		if login.CheckLogin(w, r) == nil {
-			fmt.Fprint(w, `{"Err" : true , "Msg" : "尚未登入", "Code" : 1}`)
+			ret.Err = "權限不足，尚未登入"
+			ret.ErrNotLogin = true
+			json.NewEncoder(w).Encode(ret)
 			return
 		}
 
 		r.ParseMultipartForm(32 << 20) // 32MB is the default used by FormFile
 		fhs := r.MultipartForm.File["files"]
-
-		ret := []struct {
-			FileName string `json:"fileName"`
-			FilePath string `json:"filePath"`
-		}{}
-
+		ret.FileList = []fileInfo{}
 		for _, fh := range fhs {
 			f := files.New()
 
 			if err := f.NewFile(fh); err != nil {
-				fmt.Fprint(w, `{"err" : true , "msg" : "新增檔案失敗", "code": 4}`)
+				ret.Err = "新增檔案失敗"
+				json.NewEncoder(w).Encode(ret)
 				return
 			}
-			ret = append(ret, struct {
-				FileName string `json:"fileName"`
-				FilePath string `json:"filePath"`
-			}{
+
+			ret.FileList = append(ret.FileList, fileInfo{
 				FileName: f.ServerName,
 				FilePath: f.Path,
 			})
 		}
 		json.NewEncoder(w).Encode(ret)
 	} else if path == "/api/del_attachment" {
-		// is login？
+		ret := struct {
+			Err         string `json:"err"`
+			ErrNotLogin bool   `json:"errNotLogin"`
+		}{}
+		encoder := json.NewEncoder(w)
+		// is login?
 		loginInfo := login.CheckLogin(w, r)
 		if loginInfo == nil {
-			fmt.Fprint(w, `{"err" : true , "msg" : "尚未登入", "code" : 1}`)
+			ret.Err = "權限不足，尚未登入"
+			ret.ErrNotLogin = true
+			encoder.Encode(ret)
 			return
 		}
 
 		serverName := get("server_name", r)
-		aidNum := get("aid_num", r)
-		num, err := strconv.Atoi(aidNum)
+		aidStr := get("aid_num", r)
+		aidInt, err := strconv.Atoi(aidStr)
 		if err != nil {
-			fmt.Fprint(w, `{"err" : true , "msg" : "文章代碼錯誤 (GET 參數錯誤)", "code": 3}`)
+			ret.Err = "@param aid_num is invalid"
+			encoder.Encode(ret)
 			return
 		}
 
@@ -293,20 +333,22 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		// Delete file record in database and delete file in system
 		f := files.New()
 		if err := f.Del(serverName); err != nil {
-			fmt.Fprint(w, `{"err" : true , "msg" : "檔案資料庫連結失敗或檔案刪除失敗", "code": 2}`)
+			ret.Err = fmt.Sprintf("檔案資料庫連結失敗或檔案刪除失敗 %v", err)
+			encoder.Encode(ret)
 			return
 		}
 
 		// Update databse article (prevent user from not storing the article)
 		art := article.New()
-		if err := art.UpdateAttachment(uint32(num), serverNameList); err != nil {
-			fmt.Fprint(w, `{"err" : true , "msg" : "Article 資料庫更新失敗", "code": 2}`)
+		if err := art.UpdateAttachment(uint32(aidInt), serverNameList); err != nil {
+			ret.Err = fmt.Sprintf("資料庫更新失敗 art.UpdateAttachment() %v", err)
+			encoder.Encode(ret)
 			return
 		}
-
-		fmt.Fprint(w, `{"err" : false}`)
+		encoder.Encode(ret)
+		return
 	} else {
-		fmt.Println("未預期的路徑" + path)
+		log.Printf("HTTP404 %s\n", path)
 		http.Redirect(w, r, "/error/404", 302)
 	}
 }

@@ -2,7 +2,7 @@ package handler
 
 import (
 	"bytes"
-	"fmt"
+	"encoding/json"
 	"html/template"
 	"log"
 	"net/http"
@@ -62,6 +62,7 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 		"/about/enrollment":                      "招生方式",
 		"/about/feature":                         "特色",
 		"/about/future-development-direction":    "學生未來發展方向",
+		"/about/official-document":               "系務相關辦法",
 		"/about/why-establish":                   "創系緣由",
 		"/course":                                "課程內容",
 		"/course/graduation-conditions":          "畢業條件",
@@ -148,15 +149,19 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			data.Title = "登入"
 		case "/logout":
+			ret := struct {
+				Err string `json:"err"`
+			}{}
 			if err := login.New().Logout(w, r); err != nil {
-				fmt.Fprint(w, `{"err" : true, "msg" : "登出失敗"}`)
+				ret.Err = "登出失敗，重試，或清除 cookie"
+				json.NewEncoder(w).Encode(w)
 				return
 			}
 
 			http.Redirect(w, r, "/", 302)
 			return
 		default:
-			fmt.Printf("未預期的路徑 %s IP: %s\n", path, r.RemoteAddr)
+			log.Printf("訪問路徑錯誤 %s IP: %s\n", path, r.RemoteAddr)
 			http.Redirect(w, r, "/error/404", 302)
 			return
 		}
