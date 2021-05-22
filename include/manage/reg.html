@@ -10,20 +10,14 @@
 
 <script>
   function register(){
-    var id  = $("#reg #id").val();
-    var name = $("#reg #name").val();
-    var pwd = $("#reg #pwd").val();
-    var re_pwd = $("#reg #re-pwd").val();
-
     $.post('/api/reg',{
-      id: id,
-      pwd: pwd,
-      re_pwd: re_pwd,
-      name: name
-    },function(data){
-      console.log(data)
-      if(data["err"]){
-        $("#reg #error").text(data["msg"]);
+      id: $("#reg #id").val(),
+      pwd: $("#reg #pwd").val(),
+      re_pwd: $("#reg #re-pwd").val(),
+      name: $("#reg #name").val()
+    }, (data)=>{
+      if(data.err){
+        $("#reg #error").text(data.err);
       }else{
         window.location.href = "/manage/reg-done";
       }

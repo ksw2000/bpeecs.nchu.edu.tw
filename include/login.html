@@ -1,14 +1,16 @@
 <h1>登入</h1>
 <section id="login">
-  <input autocomplete="off" type="text" placeholder="帳號" id="id" onkeydown="key_enter(this)" autofocus/>
-  <input autocomplete="off" type="password" placeholder="密碼" id="pwd" onkeydown="key_enter(this)"/>
-  <input type="button" value="登入" onclick="javascript:login()"/>
+  <input autocomplete="off" type="text" placeholder="帳號" id="id"
+    onkeydown="key_enter(this)" autofocus/>
+  <input autocomplete="off" type="password" placeholder="密碼" id="pwd"
+    onkeydown="key_enter(this)" />
+  <input type="button" value="登入" onclick="javascript:login()" />
   <p id="error" class="err"></p>
 </section>
 <script>
   function login(){
-    var id  = $("#login #id").val();
-    var pwd = $("#login #pwd").val();
+    let id = $("#login #id").val();
+    let pwd = $("#login #pwd").val();
     if(id === "" || pwd === ""){
       $("#login #error").text("帳號或密碼不可為空！");
       return;
@@ -16,16 +18,13 @@
     $.post('/api/login',{
       id: id,
       pwd: pwd
-    }
-    ,function(data){
-      console.log(data);
-      console.log(data["err"]);
-      if(data["err"]){
-        $("#login #error").text(data["msg"]);
+    }, (data)=>{
+      if(data.err){
+        $("#login #error").text(data.err);
       }else{
         window.location.href="/manage";
       }
-    },'json');
+    }, 'json');
   }
 
   function key_enter(e){
