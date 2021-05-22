@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 
 	"bpeecs.nchu.edu.tw/renderer"
@@ -18,8 +19,8 @@ func SyllabusWebHandler(w http.ResponseWriter, r *http.Request) {
 	n, err := fmt.Sscanf(path, "/syllabus/%d/%d", &semester, &courseNumber)
 
 	if err != nil || n != 2 {
-		fmt.Println("未預期的路徑 /syllabus/*", path)
-		fmt.Printf("%#v\n", r)
+		log.Println("未預期的路徑 /syllabus/*", path)
+		log.Printf("%#v\n", r)
 		http.Redirect(w, r, "/error/404", 302)
 		return
 	}

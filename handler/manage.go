@@ -2,8 +2,8 @@ package handler
 
 import (
 	"bytes"
-	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 
 	"bpeecs.nchu.edu.tw/login"
@@ -32,8 +32,8 @@ func ManageWebHandler(w http.ResponseWriter, r *http.Request) {
 	data.Title, ok = manageWeb[path]
 
 	if !ok {
-		fmt.Println("未預期的路徑 /manage/*", path)
-		fmt.Printf("%#v\n", r)
+		log.Println("未預期的路徑 /manage/*", path)
+		log.Printf("%#v\n", r)
 		http.Redirect(w, r, "/error/404", 302)
 		return
 	}
