@@ -11,10 +11,10 @@
   let lnfw;
   if(type === null){
     $("h1#title").text("最新消息");
-    lnfw = new loadNewsForWhat('brief', 'public', null, 0, 19);
+    lnfw = new LoadNewsForWhat('brief', 'public', null, 0, 19);
   }else{
     $("h1#title").text(articleTypeDecoder(type) + " ／ 最新消息");
-    lnfw = new loadNewsForWhat('brief', 'public-with-type', type, 0, 19);
+    lnfw = new LoadNewsForWhat('brief', 'public-with-type', type, 0, 19);
   }
 
   lnfw.load().then(function(html_data){
