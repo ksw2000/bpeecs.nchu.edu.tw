@@ -151,13 +151,13 @@ func (a *Article) Del(aid uint32, user string) error {
 	// remove attachment
 	f := files.New()
 	rows, _ := d.Query("SELECT path FROM files WHERE article_id=?", aid)
+	defer rows.Close()
 	path := ""
 	pathList := []string{}
 	for rows.Next() {
 		rows.Scan(&path)
 		pathList = append(pathList, path)
 	}
-	rows.Close()
 	f.DelByPathList(pathList)
 
 	// auto remove
