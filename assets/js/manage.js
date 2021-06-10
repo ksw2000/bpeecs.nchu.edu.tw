@@ -1,3 +1,12 @@
+function hash(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) {
+        h = ((h << 5) - h) + str.charCodeAt(i);
+        h |= 0;
+    }
+    return h;
+}
+
 window.directlyLeave = false;
 window.onbeforeunload = function () {
     if (!leave_editing()) {
@@ -408,27 +417,79 @@ function edit_news(data_id) {
     // DO NOTHING
 }
 
-function loadNext(obj) {
-    window.lnfw.next().then((data) => {
-        $("#article-parent").append(data);
-        obj.remove();
-    }).catch((reason) => {
-        console.log(reason);
-        notice("Error " + reason.status);
-    })
+function artListRenderer(dataList){
+    if (dataList == null) return "沒有文章";
+    let ret = '';
+    dataList.forEach((data) => {
+        let isDraft = (data.publish === 0) ? true : false;
+        data.create = $.format.date(new Date(data.create * 1000), "yyyy-MM-dd HH : mm");
+        data.lastModified = (data.lastModified === 0) ? '-' : $.format.date(new Date(data.lastModified * 1000), "yyyy-MM-dd HH : mm");
+        data.publish = (data.publish === 0) ? '-' : $.format.date(new Date(data.publish * 1000), "yyyy-MM-dd HH : mm");
+        let newContent = stripHtml(data.content);
+        if (newContent.length > 50) {
+            newContent = newContent.slice(0, 80);
+            newContent += `<a href="/news?id=${data.id}">...More</a><p></p>`;
+        }
+        let attachment = loadAttchment(data.attachment);
+        let draftIcon = isDraft ? '<div class="draftIcon">draft</div>' : '';
+        let draftColor = isDraft ? 'border-color:#fe6c6c;' : 'border-color:#14a1ff;';
+
+        ret += `<div class="article" data-id="${data.id}" style="${draftColor}">
+                    <h2 class="title">${draftIcon}${data.title}</h2>`;
+        ret += `<div class="header" onclick="javascript:appendMoreInfo(this)">`;
+        ret += `    <div class="candy-header"><span>分類</span><span>${articleTypeMap[data.type]}</span></div>`;
+        ret += `    <div class="candy-header"><span>最後編輯</span><span class="orange">${data.lastModified}</span></div>`;
+        ret += `</div>`;
+        ret += `<div style="display: none;">`;
+        ret += `  <div class="candy-header hide-less-500px"><span>建立於</span><span class="red">${data.create}</span></div>`;
+        ret += `  <div class="candy-header hide-less-500px"><span>發佈於</span><span class="green">${data.publish}</span></div>`;
+        ret += `</div>`;
+        ret += `
+                    <div class="content">
+                        ${newContent}
+                    </div>
+                    <div id="attachmentArea">
+                        <ul>${attachment}</ul>
+                    </div>
+                    <div class="buttonArea" style="text-align: right;">
+                        <button id="read" onclick="window.location='/news?id=${data.id}'"" class="border">閱讀</button>
+                        <button id="delete" onclick="javascript:delete_what(this, 'news', ${data.id})" class="red">刪除</button>
+                        <button id="publish" onclick="javascript:edit_news(${data.id})" class="blue">編輯</button>
+                    </div>
+                </div>
+                `;
+    });
+    return ret;
 }
 
-function reload_news(scope) {
-    // Reload news
-    let lnfw = new LoadNewsForWhat('management', scope, 'normal', 0, 19);
-    lnfw.load().then((data) => {
-        $("#article-parent").html(data);
-    }).catch((reason) => {
-        console.log(reason);
-        $("#article-parent").html("Error " + reason.status);
+function load(from, to, scope){
+    return new Promise((resolve, reject) => {
+        loadNews(scope, 'normal', from, to).then((data)=>{
+            let content = artListRenderer(data.list);
+            if (data.hasNext) {
+                content += `<button style="margin:0px auto;" onclick="loadNext(${to + 1}, ${to + to - from + 1}, "${scope}", this)">More</button></div>`;
+            }
+            resolve(content);
+        }).catch((e)=>{
+            reject(e);
+        });
     });
+}
 
-    window.lnfw = lnfw;
+function loadNext(from, to, scope, obj) {
+    load(from, to, scope).then((text) => {
+        if (from === 0) {
+            $("#article-parent").html(text);
+        } else {
+            $("#article-parent").append(text);
+        }
+    }).catch((e) => {
+        console.log(e);
+        $("#article-parent").html("Error " + e.status);
+    });
+    if (obj) {
+        obj.remove();
+    }
 }
 
 function resetBtnColor(id) {
@@ -446,19 +507,19 @@ function restoreTopEditorArea() {
 function goToAll() {
     restoreTopEditorArea();
     resetBtnColor('all');
-    reload_news('all');
+    loadNext(0, 19, 'all');
 }
 
 function goToDraft() {
     restoreTopEditorArea();
     resetBtnColor('draft');
-    reload_news('draft');
+    loadNext(0, 19, 'draft');
 }
 
 function goToPublished() {
     restoreTopEditorArea();
     resetBtnColor('published');
-    reload_news('published');
+    loadNext(0, 19, 'published');
 }
 
 goToAll();
