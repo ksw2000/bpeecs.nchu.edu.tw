@@ -68,10 +68,10 @@ $ ./main -r -p 443
     + db/ (sqlite database)
         + main.db
     + handler/
-        + basic.go (`./*`)
+        + basic.go (`/*`)
         + error.go (`/error/*` HTTP403 & 404)
-        + function.go (`./function/*xxx*` for Ajax)
-        + manage.go (h`/manage/*`)
+        + api.go (`/api/*xxx*` for Ajax)
+        + manage.go (`/manage/*`)
         + syllabus.go (`/syllabus/*`)
     + include/  (html files & gohtml layout files)
     + article/ (handle `article/(news)` add, update, delete)
@@ -119,6 +119,3 @@ CREATE TABLE "user" (
 	PRIMARY KEY("id")
 );
 ```
-
-
-
