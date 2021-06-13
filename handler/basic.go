@@ -47,15 +47,22 @@ func getHTML(fileName string) (template.HTML, error) {
 
 // BasicWebHandler is a handler for handling url whose prefix is /
 func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	path := r.URL.Path
 
-	if path == "/favicon.ico" {
-		http.Redirect(w, r, "/assets/img/favicon.ico", 301)
-		return
+	// Handle static file
+	staticFiles := []string{"/robot.txt", "/sitemap.xml", "/favicon.ico"}
+	for _, f := range staticFiles {
+		if r.URL.Path == f {
+			//http.Redirect(w, r, "/assets/img/favicon.ico", 301)
+			http.StripPrefix("/", http.FileServer(http.Dir("./"))).ServeHTTP(w, r)
+			return
+		}
 	}
 
+	// Handle simple web and check login info
 	data := initPageData()
+
+	loginInfo := login.CheckLogin(w, r)
+	data.IsLogin = loginInfo != nil
 
 	var simpleWeb = map[string]string{
 		"/about/education-goal-and-core-ability": "教育目標及核心能力",
@@ -73,15 +80,10 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 		"/syllabus":                              "課程大綱",
 	}
 
-	// Is login?
-	loginInfo := login.CheckLogin(w, r)
-	data.IsLogin = (loginInfo != nil)
-
-	var ok bool
-	data.Title, ok = simpleWeb[path]
-
-	if !ok {
-		switch path {
+	// Handle non simple web
+	if title, ok := simpleWeb[r.URL.Path]; !ok {
+		data.Title = title
+		switch r.URL.Path {
 		case "/":
 			data.Title = "國立中興大學電機資訊學院學士班"
 			data.Isindex = true
@@ -109,8 +111,8 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 				"scholarships": "獎學金訊息",
 				"recruit":      "徵才資訊",
 			}
-			subtitle, ok := dict[artType]
-			if ok {
+
+			if subtitle, ok := dict[artType]; ok {
 				data.Title = subtitle + " | " + data.Title
 			}
 
@@ -140,7 +142,7 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 				data.Main = renderer.RenderPublicArticle(artInfo)
 			} else {
 				data.Title += " | 國立中興大學電機資訊學院學士班"
-				data.Main, _ = getHTML(path)
+				data.Main, _ = getHTML(r.URL.Path)
 			}
 		case "/login":
 			if login.CheckLogin(w, r) != nil {
@@ -161,18 +163,17 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/", 302)
 			return
 		default:
-			log.Printf("訪問路徑錯誤 %s IP: %s\n", path, r.RemoteAddr)
+			log.Printf("Error path %s IP: %s\n", r.URL.Path, r.RemoteAddr)
 			http.Redirect(w, r, "/error/404", 302)
 			return
 		}
 	}
 
-	if path != "/" && path != "/news" {
+	if r.URL.Path != "/" && r.URL.Path != "/news" {
 		data.Title += " | 國立中興大學電機資訊學院學士班"
-		data.Main, _ = getHTML(path)
+		data.Main, _ = getHTML(r.URL.Path)
 	}
 
-	// TEMPLATE
 	t, _ := template.ParseFiles("./include/layout.gohtml")
 	t.Execute(w, data)
 }

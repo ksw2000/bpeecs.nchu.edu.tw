@@ -11,15 +11,6 @@ import (
 	"bpeecs.nchu.edu.tw/renderer"
 )
 
-func redirect(w http.ResponseWriter, req *http.Request) {
-	target := "https://" + req.Host + req.URL.Path
-	if len(req.URL.RawQuery) > 0 {
-		target += "?" + req.URL.RawQuery
-	}
-	log.Printf("redirect to: %s", target)
-	http.Redirect(w, req, target, http.StatusTemporaryRedirect)
-}
-
 func main() {
 	// parse flag
 	rend := flag.Bool("r", false, "Render static page or not")
@@ -37,9 +28,9 @@ func main() {
 	mux := http.NewServeMux()
 	staticFolder := []string{"/assets", "/.well-known/pki-validation"}
 
-	for _, v := range staticFolder {
-		fileServer := http.FileServer(http.Dir("." + v))
-		mux.Handle(v+"/", http.StripPrefix(v, neuter(fileServer)))
+	for _, dir := range staticFolder {
+		fileServer := http.FileServer(http.Dir("." + dir))
+		mux.Handle(dir+"/", http.StripPrefix(dir, neuter(fileServer)))
 	}
 
 	mux.HandleFunc("/api/", handler.ApiHandler)
@@ -65,6 +56,14 @@ func main() {
 			log.Fatalln("ListenAndServe: ", err)
 		}
 	}
+}
+
+func redirect(w http.ResponseWriter, req *http.Request) {
+	target := "https://" + req.Host + req.URL.Path
+	if len(req.URL.RawQuery) > 0 {
+		target += "?" + req.URL.RawQuery
+	}
+	http.Redirect(w, req, target, http.StatusTemporaryRedirect)
 }
 
 func neuter(next http.Handler) http.Handler {
