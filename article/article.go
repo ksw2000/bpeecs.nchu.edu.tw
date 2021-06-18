@@ -170,7 +170,7 @@ func (a *Article) GetLatest(scope string, artType string, user string, from int3
 	var queryString string
 
 	switch scope {
-	// All of article that the user have
+	// All articles that the user has
 	case "all":
 		queryString = `
         SELECT id, user, type, create_time, publish_time, last_modified,
@@ -202,7 +202,7 @@ func (a *Article) GetLatest(scope string, artType string, user string, from int3
         FROM article WHERE publish_time <> 0 and type = ?
         ORDER BY publish_time DESC`
 
-	// All of article that has been published in the database
+	// All articles that has been published in the database
 	case "public":
 		queryString = `
         SELECT id, user, type, create_time, publish_time, last_modified,
