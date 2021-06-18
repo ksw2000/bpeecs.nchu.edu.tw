@@ -47,7 +47,7 @@ func getHTML(fileName string) (template.HTML, error) {
 
 // BasicWebHandler is a handler for handling url whose prefix is /
 func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
-
+	r.ParseForm()
 	// Handle static file
 	staticFiles := []string{"/robot.txt", "/sitemap.xml", "/favicon.ico"}
 	for _, f := range staticFiles {
