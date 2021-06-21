@@ -80,9 +80,11 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 		"/syllabus":                              "課程大綱",
 	}
 
-	// Handle non simple web
-	if title, ok := simpleWeb[r.URL.Path]; !ok {
+	// Handle simple web
+	if title, ok := simpleWeb[r.URL.Path]; ok {
 		data.Title = title
+	} else {
+		// Handle non simple web
 		switch r.URL.Path {
 		case "/":
 			data.Title = "國立中興大學電機資訊學院學士班"
