@@ -52,7 +52,6 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 	staticFiles := []string{"/robot.txt", "/sitemap.xml", "/favicon.ico"}
 	for _, f := range staticFiles {
 		if r.URL.Path == f {
-			//http.Redirect(w, r, "/assets/img/favicon.ico", 301)
 			http.StripPrefix("/", http.FileServer(http.Dir("./"))).ServeHTTP(w, r)
 			return
 		}
@@ -73,7 +72,6 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 		"/about/why-establish":                   "創系緣由",
 		"/course":                                "課程內容",
 		"/course/graduation-conditions":          "畢業條件",
-		"/course/109":                            "109學年度課程內容",
 		"/member/admin-staff":                    "行政人員",
 		"/member/faculty":                        "師資陣容",
 		"/member/class-teacher":                  "班主任",
@@ -123,7 +121,7 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 				aidUint64, err := strconv.ParseUint(id, 10, 32)
 
 				if err != nil {
-					http.Redirect(w, r, "/error/404", 302)
+					NotFound(w, r)
 					return
 				}
 				art := article.New()
@@ -136,7 +134,7 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 
 				// avoid /news?id=xxx
 				if artInfo == nil {
-					http.Redirect(w, r, "/error/404", 302)
+					NotFound(w, r)
 					return
 				}
 
@@ -165,8 +163,7 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/", 302)
 			return
 		default:
-			log.Printf("Error path %s IP: %s\n", r.URL.Path, r.RemoteAddr)
-			http.Redirect(w, r, "/error/404", 302)
+			NotFound(w, r)
 			return
 		}
 	}

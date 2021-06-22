@@ -2,6 +2,7 @@ package handler
 
 import (
 	"html/template"
+	"log"
 	"net/http"
 )
 
@@ -24,4 +25,10 @@ func ErrorWebHandler(w http.ResponseWriter, r *http.Request) {
 
 	t, _ := template.ParseFiles("./include/layout.gohtml")
 	t.Execute(w, data)
+}
+
+func NotFound(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Error path %s IP: %s\n", r.URL.Path, r.RemoteAddr)
+	http.Redirect(w, r, "/error/404", 302)
+	return
 }

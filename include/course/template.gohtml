@@ -1,23 +1,26 @@
-<h2>{{.Title}}</h2>
-  <table>
-  <thead>
-    <tr>
-      <th>課程名稱</th>
-      <th>必選別</th>
-      <th>授課教師</th>
-    </tr>
-  </thead>
-    <tbody>
-    {{range .Course}}
+<h1>{{.Title}}</h1>
+{{range .Unit}}
+  <h2>{{.Subtitle}}</h2>
+    <table>
+    <thead>
       <tr>
-        {{if .link}}
-          <td><a href="/syllabus/{{.semester}}/{{.number}}" title="查看課程大綱">{{.course}}</a></td>
-        {{else}}
-          <td>{{.course}}</td>
-        {{end}}
-        <td>{{.required}}</td>
-        <td>{{.teacher}}</td>
+        <th>課程名稱</th>
+        <th>必選別</th>
+        <th>授課教師</th>
       </tr>
-    {{end}}
-  </tbody>
-</table>
+    </thead>
+      <tbody>
+      {{range .Course}}
+        <tr>
+          {{if .link}}
+            <td><a href="/syllabus/{{.semester}}/{{.number}}" title="查看課程大綱">{{.course}}</a></td>
+          {{else}}
+            <td>{{.course}}</td>
+          {{end}}
+          <td>{{.required}}</td>
+          <td>{{.teacher}}</td>
+        </tr>
+      {{end}}
+    </tbody>
+  </table>
+{{end}}

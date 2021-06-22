@@ -15,29 +15,41 @@ func SyllabusWebHandler(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	data := initPageData()
 
+	// route for: /syllabus/year/109
+	var year uint
+	n, err := fmt.Sscanf(path, "/syllabus/year/%d", &year)
+	if err == nil && n == 1 {
+		data.Main, err = renderer.RenderCourseByYear(year)
+		if err != nil {
+			NotFound(w, r)
+			return
+		}
+		data.Title = fmt.Sprintf("%d學年度課程內容 | 國立中興大學電機資訊學院學士班", year)
+		t, _ := template.ParseFiles("./include/layout.gohtml")
+		t.Execute(w, data)
+		return
+	}
+
+	// route for: /syllabus/1091/1136
 	var semester, courseNumber int
-	n, err := fmt.Sscanf(path, "/syllabus/%d/%d", &semester, &courseNumber)
+	n, err = fmt.Sscanf(path, "/syllabus/%d/%d", &semester, &courseNumber)
 
-	if err != nil || n != 2 {
-		log.Println("未預期的路徑 /syllabus/*", path)
-		log.Printf("%#v\n", r)
-		http.Redirect(w, r, "/error/404", 302)
+	if err == nil && n == 2 {
+		var courseName string
+		data.Main, courseName, err = renderer.RenderSyllabus(semester, courseNumber)
+		if err != nil {
+			NotFound(w, r)
+			return
+		}
+		data.Title = fmt.Sprintf("%s | 教學大綱 | 國立中興大學電機資訊學院學士班", courseName)
+		t, _ := template.ParseFiles("./include/layout.gohtml")
+		t.Execute(w, data)
 		return
 	}
 
-	var courseName string
-
-	data.Main, courseName, err = renderer.RenderSyllabus(semester, courseNumber)
-	if err != nil {
-		fmt.Println("未預期的路徑 /syllabus/*", path)
-		fmt.Printf("%#v\n", r)
-		http.Redirect(w, r, "/error/404", 302)
-		return
-	}
-
-	data.Title = fmt.Sprintf("%s | 教學大綱 | 國立中興大學電機資訊學院學士班", courseName)
-
-	// TEMPLATE
-	t, _ := template.ParseFiles("./include/layout.gohtml")
-	t.Execute(w, data)
+	// else
+	log.Println("未預期的路徑 /syllabus/*", path)
+	log.Printf("%#v\n", r)
+	http.Redirect(w, r, "/error/404", 302)
+	return
 }

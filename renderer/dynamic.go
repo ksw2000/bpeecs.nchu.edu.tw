@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"io/ioutil"
 	"log"
+	"strings"
 	"time"
 
 	"bpeecs.nchu.edu.tw/article"
@@ -14,6 +15,14 @@ import (
 
 const syllabusDataDir = "./assets/json/syllabus/"
 const syllabusTemplate = "./include/syllabus/template.gohtml"
+const courseDataDir = "./assets/json/course/"
+const courseTemplate = "./include/course/template.gohtml"
+const courseOutput = "./include/course/"
+
+type courseInfo struct {
+	Subtitle string
+	Course   []map[string]interface{}
+}
 
 type fileInfo struct {
 	ClientName string
@@ -35,8 +44,31 @@ type articleRenderInfo struct {
 	PhotoAttachment []fileInfo // render photos by HTML <img>
 }
 
+func convertStrm(i int) string {
+	switch i {
+	case 1:
+		return "上"
+	case 2:
+		return "下"
+	}
+	return ""
+}
+
+func convertLevel(i int) string {
+	switch i {
+	case 1:
+		return "一"
+	case 2:
+		return "二"
+	case 3:
+		return "三"
+	case 4:
+		return "四"
+	}
+	return ""
+}
+
 func renderDate(timestamp uint64) string {
-	//t := time.Unix(fmt.Sprintf("%u", timestamp), 0)
 	t := time.Unix(int64(timestamp), 0)
 	return t.Format("2006-01-02")
 	//(t.Format("2006-01-02 15:04:05"))
@@ -148,4 +180,66 @@ func RenderSyllabus(semester int, courseNumber int) (template.HTML, string, erro
 	var buf bytes.Buffer
 	t.Execute(&buf, maps)
 	return template.HTML(buf.String()), courseName, nil
+}
+
+// RenderCourseByYear statically renders course page by inputing year
+func RenderCourseByYear(year uint) (template.HTML, error) {
+	path := fmt.Sprintf("%s%d.json", courseDataDir, year)
+
+	jsonData, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Println("render/dynamic.go RenderCourseByYear() can not found " + path)
+		return template.HTML(""), err
+	}
+
+	// create a template
+	unit := courseInfo{}
+	units := struct {
+		Title string
+		Unit  []courseInfo
+	}{}
+
+	// e.g. 大一上學期、大一下學期...
+	yearUnit := []map[string]interface{}{}
+
+	// Get json data
+	json.Unmarshal(jsonData, &yearUnit)
+
+	// render title e.g. 109學年度課程內容
+	units.Title = fmt.Sprintf("%d學年度課程內容", year)
+
+	for _, s := range yearUnit {
+		unit.Subtitle = "大" + convertLevel(int(s["level"].(float64))) +
+			convertStrm(int(s["strm"].(float64))) + "學期"
+		unit.Course = []map[string]interface{}{}
+		for _, v := range s["list"].([]interface{}) {
+			info := v.(map[string]interface{})
+			// ["course"] ["required"] ["prereq"] ["teacher"]
+			teacher := []string{}
+			for _, k := range info["teacher"].([]interface{}) {
+				teacher = append(teacher, k.(string))
+			}
+			info["teacher"] = strings.Join(teacher, ",")
+			if info["required"].(bool) {
+				info["required"] = "必修"
+			} else {
+				info["required"] = "選修"
+			}
+			info["link"] = (info["number"].(float64) > 0)
+			info["semester"] = fmt.Sprintf("%d%d", year, int(s["strm"].(float64)))
+			unit.Course = append(unit.Course, info)
+		}
+		units.Unit = append(units.Unit, unit)
+	}
+
+	t, err := template.ParseFiles(courseTemplate)
+	if err != nil {
+		log.Println("render/static.go RenderCourseByYear() can not found template " +
+			courseTemplate)
+		return template.HTML(""), err
+	}
+
+	var buf bytes.Buffer
+	t.Execute(&buf, units)
+	return template.HTML(buf.String()), err
 }
