@@ -5,32 +5,33 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"bpeecs.nchu.edu.tw/handler"
-	"bpeecs.nchu.edu.tw/renderer"
+
+	"github.com/tdewolff/minify/v2"
+	"github.com/tdewolff/minify/v2/css"
+	"github.com/tdewolff/minify/v2/js"
 )
 
 func main() {
 	// parse flag
-	rend := flag.Bool("r", false, "Render static page or not")
 	port := flag.Int("p", 9000, "Port number (default: 9000)")
 	flag.Parse()
-
-	// render static page
-	if *rend {
-		go func() {
-			renderer.RenderCourseByYear(109)
-		}()
-	}
 
 	// web server
 	mux := http.NewServeMux()
 	staticFolder := []string{"/assets", "/.well-known/pki-validation"}
 
+	// minify static files
+	m := minify.New()
+	m.AddFunc("text/css", css.Minify)
+	m.AddFuncRegexp(regexp.MustCompile("^(application|text)/(x-)?(java|ecma)script$"), js.Minify)
+
 	for _, dir := range staticFolder {
 		fileServer := http.FileServer(http.Dir("." + dir))
-		mux.Handle(dir+"/", http.StripPrefix(dir, neuter(fileServer)))
+		mux.Handle(dir+"/", http.StripPrefix(dir, m.Middleware(neuter(fileServer))))
 	}
 
 	mux.HandleFunc("/api/", handler.ApiHandler)
@@ -69,7 +70,7 @@ func redirect(w http.ResponseWriter, req *http.Request) {
 func neuter(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasSuffix(r.URL.Path, "/") {
-			http.NotFound(w, r)
+			http.Redirect(w, r, "/error/403", 302)
 			return
 		}
 
