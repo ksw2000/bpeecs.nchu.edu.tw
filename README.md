@@ -30,14 +30,8 @@ $ go build main.go
 # run at port 9000
 $ ./main
 
-# run at port 8080 and render static page
-$ ./main -r -p 8080
-
 # run at port 443
-$ ./main -r -p 443
-
-# -p for specifing port. (default: 9000)
-# -r for rendering static pages
+$ ./main -p 443
 ```
 
 ## Dependencies
@@ -58,7 +52,7 @@ $ ./main -r -p 443
 ## Files
 + beepcs.nchu.edu.tw/
     + .git/
-    + assets/  (static file)
+    + assets/  (static files)
         + fonts/
         + img/
         + json/
@@ -78,8 +72,6 @@ $ ./main -r -p 443
     + files/ (manage the uploaded files)
     + login/ (handle login)
     + render/
-        + dynamic.go (render some pages when requesting)
-        + static.go (render some pages before requesting)
     + go.mod
     + go.sum
     + __main.go__ (main program)
