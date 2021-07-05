@@ -28,7 +28,13 @@ func ErrorWebHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func NotFound(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Error path %s IP: %s\n", r.URL.Path, r.RemoteAddr)
+	log.Printf("HTTP404 %s IP: %s\n", r.URL.Path, r.RemoteAddr)
 	http.Redirect(w, r, "/error/404", 302)
+	return
+}
+
+func Forbidden(w http.ResponseWriter, r *http.Request) {
+	log.Printf("HTTP403 %s IP: %s\n", r.URL.Path, r.RemoteAddr)
+	http.Redirect(w, r, "/error/403", 302)
 	return
 }

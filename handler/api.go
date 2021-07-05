@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -347,10 +346,8 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		encoder.Encode(ret)
 		return
-	} else {
-		log.Printf("HTTP404 %s\n", path)
-		http.Redirect(w, r, "/error/404", 302)
 	}
+	NotFound(w, r)
 }
 
 func get(key string, r *http.Request) string {

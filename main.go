@@ -13,6 +13,7 @@ import (
 	"github.com/tdewolff/minify/v2"
 	"github.com/tdewolff/minify/v2/css"
 	"github.com/tdewolff/minify/v2/js"
+	"github.com/tdewolff/minify/v2/svg"
 )
 
 func main() {
@@ -27,6 +28,7 @@ func main() {
 	// minify static files
 	m := minify.New()
 	m.AddFunc("text/css", css.Minify)
+	m.AddFunc("image/svg+xml", svg.Minify)
 	m.AddFuncRegexp(regexp.MustCompile("^(application|text)/(x-)?(java|ecma)script$"), js.Minify)
 
 	for _, dir := range staticFolder {
@@ -70,7 +72,7 @@ func redirect(w http.ResponseWriter, req *http.Request) {
 func neuter(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasSuffix(r.URL.Path, "/") {
-			http.Redirect(w, r, "/error/403", 302)
+			handler.Forbidden(w, r)
 			return
 		}
 
