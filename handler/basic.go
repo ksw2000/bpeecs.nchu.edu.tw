@@ -9,10 +9,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"bpeecs.nchu.edu.tw/article"
-	"bpeecs.nchu.edu.tw/login"
-	"bpeecs.nchu.edu.tw/renderer"
 )
 
 // PageData is a type for filling HTML template
@@ -60,7 +56,7 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 	// Handle simple web and check login info
 	data := initPageData()
 
-	loginInfo := login.CheckLogin(w, r)
+	loginInfo := CheckLogin(w, r)
 	data.IsLogin = loginInfo != nil
 
 	var simpleWeb = map[string]string{
@@ -87,20 +83,7 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 		case "/":
 			data.Title = "國立中興大學電機資訊學院學士班"
 			data.Isindex = true
-
-			t, _ := template.ParseFiles("./include/index.html")
-			art := article.New()
-			// Default from = 0, to = 19
-			// return (list []art.Format, hasNext bool)
-			artFormatList, _ := art.GetLatest("public", "normal", "", int32(0), int32(7))
-			data2 := new(struct {
-				ArticleListBrief template.HTML
-			})
-			data2.ArticleListBrief = renderer.RenderPublicArticleBriefList(artFormatList)
-
-			var buf bytes.Buffer
-			t.Execute(&buf, data2)
-			data.Main = template.HTML(buf.String())
+			data.Main = RenderIndexPage()
 		case "/news":
 			data.Title = "最新消息"
 			artType := strings.Join(r.Form["type"], "")
@@ -117,20 +100,19 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			if id := strings.Join(r.Form["id"], ""); id != "" {
-				//id is uint32
-				aidUint64, err := strconv.ParseUint(id, 10, 32)
+				aid, err := strconv.ParseInt(id, 10, 64)
 
 				if err != nil {
 					NotFound(w, r)
 					return
 				}
-				art := article.New()
+
 				user := ""
 				if data.IsLogin {
 					user = loginInfo.UserID
 				}
 
-				artInfo := art.GetArticleByAid(uint32(aidUint64), user)
+				artInfo := GetArticleByAid(aid, user)
 
 				// avoid /news?id=xxx
 				if artInfo == nil {
@@ -139,13 +121,13 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 				}
 
 				data.Title = artInfo.Title + " | 國立中興大學電機資訊學院學士班"
-				data.Main = renderer.RenderPublicArticle(artInfo)
+				data.Main = RenderPublicArticle(artInfo)
 			} else {
 				data.Title += " | 國立中興大學電機資訊學院學士班"
 				data.Main, _ = getHTML(r.URL.Path)
 			}
 		case "/login":
-			if login.CheckLogin(w, r) != nil {
+			if CheckLogin(w, r) != nil {
 				http.Redirect(w, r, "/manage", 302)
 				return
 			}
@@ -154,7 +136,7 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 			ret := struct {
 				Err string `json:"err"`
 			}{}
-			if err := login.New().Logout(w, r); err != nil {
+			if err := NewLogin().Logout(w, r); err != nil {
 				ret.Err = "登出失敗，重試，或清除 cookie"
 				json.NewEncoder(w).Encode(w)
 				return

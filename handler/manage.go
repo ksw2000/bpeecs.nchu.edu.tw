@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"html/template"
 	"net/http"
-
-	"bpeecs.nchu.edu.tw/login"
 )
 
 // ManageWebHandler is a handler for handling url whose prefix is /manage
@@ -16,7 +14,7 @@ func ManageWebHandler(w http.ResponseWriter, r *http.Request) {
 	data := initPageData()
 
 	// Is login?
-	loginInfo := login.CheckLogin(w, r)
+	loginInfo := CheckLogin(w, r)
 	data.IsLogin = (loginInfo != nil)
 
 	var manageWeb = map[string]string{

@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-
-	"bpeecs.nchu.edu.tw/renderer"
 )
 
 // SyllabusWebHandler is a handler for handling url whose prefix is /syllabus
@@ -18,7 +16,7 @@ func SyllabusWebHandler(w http.ResponseWriter, r *http.Request) {
 	var year uint
 	n, err := fmt.Sscanf(path, "/syllabus/year/%d", &year)
 	if err == nil && n == 1 {
-		data.Main, err = renderer.RenderCourseByYear(year)
+		data.Main, err = RenderCourseByYear(year)
 		if err != nil {
 			NotFound(w, r)
 			return
@@ -35,7 +33,7 @@ func SyllabusWebHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err == nil && n == 2 {
 		var courseName string
-		data.Main, courseName, err = renderer.RenderSyllabus(semester, courseNumber)
+		data.Main, courseName, err = RenderSyllabus(semester, courseNumber)
 		if err != nil {
 			NotFound(w, r)
 			return
