@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"database/sql"
-	"errors"
 	"fmt"
 	"log"
 	"math/rand"
@@ -18,24 +17,13 @@ import (
 )
 
 // Login handles manipulations about login
-type Login struct {
-	IsLogin  bool
-	UserID   string
-	UserName string
-}
-
-// ErrorReapeatID is returned when the user want to sign up an account which has already existed
-var ErrorReapeatID error
-
-// New returns new instance of Login
-func NewLogin() (l *Login) {
-	l = new(Login)
-	ErrorReapeatID = errors.New("ID-Repeat")
-	return
+type User struct {
+	ID   string
+	Name string
 }
 
 // Login is a function handle login
-func (l *Login) Login(w http.ResponseWriter, r *http.Request) error {
+func Login(w http.ResponseWriter, r *http.Request) error {
 	id, pwd := r.FormValue("id"), r.FormValue("pwd")
 	log.Printf("%s try to login\n", id)
 
@@ -54,19 +42,14 @@ func (l *Login) Login(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("帳號或密碼錯誤")
 	}
 
-	l.IsLogin = true
-	l.UserID = id
-	l.UserName = name
-
 	// Session srart
 	store, err := session.Start(context.Background(), w, r)
 	if err != nil {
 		return fmt.Errorf("session.Start() error %v", err)
 	}
 
-	store.Set("isLogin", "yes")
-	store.Set("userID", l.UserID)
-	store.Set("userName", l.UserName)
+	store.Set("userID", id)
+	store.Set("userName", name)
 
 	if err = store.Save(); err != nil {
 		return fmt.Errorf("Session store error")
@@ -77,7 +60,7 @@ func (l *Login) Login(w http.ResponseWriter, r *http.Request) error {
 }
 
 // NewAcount creates a new account
-func (l *Login) NewAcount(id string, pwd string, name string) error {
+func NewAcount(id string, pwd string, name string) error {
 	// check if there are the same id in db
 	d, err := sql.Open("sqlite3", config.MainDB)
 	if err != nil {
@@ -106,41 +89,34 @@ func (l *Login) NewAcount(id string, pwd string, name string) error {
 		return nil
 	}
 
-	return ErrorReapeatID
+	return fmt.Errorf("所申請之 ID 已重複")
 }
 
 // Logout is a function deal with sign out
-func (l *Login) Logout(w http.ResponseWriter, r *http.Request) (err error) {
+func Logout(w http.ResponseWriter, r *http.Request) (err error) {
 	store, err := session.Start(context.Background(), w, r)
-	store.Set("isLogin", "no")
 	store.Set("userID", "")
 	store.Set("userName", "")
 	return err
 }
 
 // CheckLogin checks if ID and Password is match
-func CheckLogin(w http.ResponseWriter, r *http.Request) *Login {
+func CheckLogin(w http.ResponseWriter, r *http.Request) *User {
 	store, err := session.Start(context.Background(), w, r)
 	if err != nil {
 		return nil
 	}
 
-	isLogin, ok1 := store.Get("isLogin")
 	userID, ok2 := store.Get("userID")
 	userName, ok3 := store.Get("userName")
 
-	if !(ok1 && ok2 && ok3) {
+	if !(ok2 && ok3) {
 		return nil
 	}
 
-	if isLogin != "yes" {
-		return nil
-	}
-
-	return &Login{
-		IsLogin:  true,
-		UserID:   userID.(string),
-		UserName: userName.(string),
+	return &User{
+		ID:   userID.(string),
+		Name: userName.(string),
 	}
 }
 

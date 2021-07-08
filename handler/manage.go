@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"bytes"
 	"html/template"
 	"net/http"
 )
@@ -14,8 +13,8 @@ func ManageWebHandler(w http.ResponseWriter, r *http.Request) {
 	data := initPageData()
 
 	// Is login?
-	loginInfo := CheckLogin(w, r)
-	data.IsLogin = (loginInfo != nil)
+	user := CheckLogin(w, r)
+	data.IsLogin = user != nil
 
 	var manageWeb = map[string]string{
 		"/manage/":         "歡迎進入後台管理系統",
@@ -33,23 +32,11 @@ func ManageWebHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !data.IsLogin {
+	if user == nil {
 		http.Redirect(w, r, "/?notlogin", 302)
 		return
-	}
-
-	if path == "/manage/" {
-		manageTemplate, _ := template.ParseFiles("./include/manage.gohtml")
-		var manageTemplateByte bytes.Buffer
-		manageTemplateData := struct {
-			UserID   string
-			UserName string
-		}{
-			UserID:   loginInfo.UserID,
-			UserName: loginInfo.UserName,
-		}
-		manageTemplate.Execute(&manageTemplateByte, manageTemplateData)
-		data.Main = template.HTML(manageTemplateByte.String())
+	} else if path == "/manage/" {
+		data.Main = RenderMangePage(user)
 	} else {
 		data.Main, _ = getHTML(path)
 	}

@@ -37,9 +37,8 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		ret := struct {
 			Err string `json:"err"`
 		}{}
-		l := NewLogin()
 
-		if err := l.Login(w, r); err != nil {
+		if err := Login(w, r); err != nil {
 			ret.Err = err.Error()
 			json.NewEncoder(w).Encode(ret)
 			return
@@ -53,14 +52,12 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		}{}
 		encoder := json.NewEncoder(w)
 		// only current accounts are allowed to register a new account
-		loginInfo := CheckLogin(w, r)
-		if loginInfo == nil {
+		user := CheckLogin(w, r)
+		if user == nil {
 			ret.Err = "必需登入才能建立新帳戶"
 			encoder.Encode(ret)
 			return
 		}
-
-		l := NewLogin()
 
 		id := get("id", r)
 		pwd := get("pwd", r)
@@ -107,13 +104,8 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = l.NewAcount(id, pwd, name)
-		if err == ErrorReapeatID {
-			ret.Err = "所申請之 ID 重複"
-			encoder.Encode(ret)
-			return
-		} else if err != nil {
-			ret.Err = fmt.Sprintf("資料庫錯誤 %v", err)
+		if err := NewAcount(id, pwd, name); err != nil {
+			ret.Err = err.Error()
 			encoder.Encode(ret)
 			return
 		}
@@ -133,8 +125,8 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		}{}
 
 		// step0: check login
-		loginInfo := CheckLogin(w, r)
-		if loginInfo == nil {
+		user := CheckLogin(w, r)
+		if user == nil {
 			ret.Err = "權限不足，尚未登入"
 			ret.ErrNotLogin = true
 			encoder.Encode(ret)
@@ -155,7 +147,7 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		art := new(Article)
 		if save || publish {
 			if getNum == -1 {
-				err = art.Create(loginInfo.UserID)
+				err = art.Create(user.ID)
 				ret.Aid = art.ID
 				if err != nil {
 					ret.Err = err.Error()
@@ -168,7 +160,7 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 
 			art = &Article{
 				ID:      ret.Aid,
-				User:    loginInfo.UserID,
+				User:    user.ID,
 				Type:    get("type", r),
 				Title:   get("title", r),
 				Content: get("content", r),
@@ -185,7 +177,7 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 				ID: getNum,
 			}
 			// delete
-			art.Del(loginInfo.UserID)
+			art.Del(user.ID)
 		}
 
 		if err != nil {
@@ -245,20 +237,20 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// step2: some request need user id
-		user := ""
-		if loginInfo := CheckLogin(w, r); loginInfo != nil {
-			user = loginInfo.UserID
+		uid := ""
+		if user := CheckLogin(w, r); user != nil {
+			uid = user.ID
 		}
 
 		// step3: call GetLatesetArticles(scope, from, to)
 		if scope != "" {
-			ret.List, ret.HasNext = GetLatesetArticles(scope, artType, user, from, to)
+			ret.List, ret.HasNext = GetLatesetArticles(scope, artType, uid, from, to)
 			encoder.Encode(ret)
 			return
 		}
 
 		if aidStr != "" {
-			if ret := GetArticleByAid(aid, user); ret != nil {
+			if ret := GetArticleByAid(aid, uid); ret != nil {
 				encoder.Encode(ret)
 				return
 			}
@@ -312,8 +304,8 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		}{}
 		encoder := json.NewEncoder(w)
 		// check login
-		loginInfo := CheckLogin(w, r)
-		if loginInfo == nil {
+		user := CheckLogin(w, r)
+		if user == nil {
 			ret.Err = "權限不足，尚未登入"
 			ret.ErrNotLogin = true
 			encoder.Encode(ret)
@@ -355,8 +347,8 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		}{}
 		encoder := json.NewEncoder(w)
 		// check login
-		loginInfo := CheckLogin(w, r)
-		if loginInfo == nil {
+		user := CheckLogin(w, r)
+		if user == nil {
 			ret.Err = "權限不足，尚未登入"
 			ret.ErrNotLogin = true
 			encoder.Encode(ret)

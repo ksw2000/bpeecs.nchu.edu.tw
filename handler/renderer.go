@@ -20,6 +20,7 @@ const courseDataDir = "./assets/json/course/"
 const courseTemplate = "./include/course/template.gohtml"
 
 const calendarTemplate = "./include/calendar_layout.gohtml"
+const manageTemplate = "./include/manage.gohtml"
 const indexTemplate = "./include/index.gohtml"
 
 type courseInfo struct {
@@ -298,5 +299,22 @@ func RenderIndexPage() template.HTML {
 		ArticleListBrief: RenderPublicArticleBriefList(artList),
 		CalendarList:     RenderCalendarList(calendarList, true),
 	})
+	return template.HTML(buf.String())
+}
+
+func RenderMangePage(user *User) template.HTML {
+	if user == nil {
+		log.Println("handler/renderer.go RenderManagePage() variable user is nil")
+		return template.HTML("")
+	}
+
+	t, err := template.ParseFiles(manageTemplate)
+	if err != nil {
+		log.Println("handler/renderer.go RenderManagePage() template error " + err.Error())
+		return template.HTML("")
+	}
+	var buf bytes.Buffer
+
+	t.Execute(&buf, user)
 	return template.HTML(buf.String())
 }

@@ -56,8 +56,8 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 	// Handle simple web and check login info
 	data := initPageData()
 
-	loginInfo := CheckLogin(w, r)
-	data.IsLogin = loginInfo != nil
+	user := CheckLogin(w, r)
+	data.IsLogin = user != nil
 
 	var simpleWeb = map[string]string{
 		"/about/education-goal-and-core-ability": "教育目標及核心能力",
@@ -107,12 +107,12 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 
-				user := ""
+				uid := ""
 				if data.IsLogin {
-					user = loginInfo.UserID
+					uid = user.ID
 				}
 
-				artInfo := GetArticleByAid(aid, user)
+				artInfo := GetArticleByAid(aid, uid)
 
 				// avoid /news?id=xxx
 				if artInfo == nil {
@@ -136,7 +136,7 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 			ret := struct {
 				Err string `json:"err"`
 			}{}
-			if err := NewLogin().Logout(w, r); err != nil {
+			if err := Logout(w, r); err != nil {
 				ret.Err = "登出失敗，重試，或清除 cookie"
 				json.NewEncoder(w).Encode(w)
 				return

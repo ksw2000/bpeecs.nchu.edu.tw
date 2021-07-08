@@ -13,12 +13,15 @@ __NCHU BPEECS__ [https://bpeecs.nchu.edu.tw/](https://bpeecs.nchu.edu.tw/)
 ```go
 package main
 
-import "bpeecs.nchu.edu.tw/login"
+import (
+    "bpeecs.nchu.edu.tw/handler"
+    "log"
+)
 
 func main() {
-	l := new(login.Login)
-	l.Connect("./db/main.db")
-	l.NewAcount("user_id", "password", "userName")
+    if err := handler.NewAcount("user_id", "password", "userName"); err != nil{
+        log.Println(err)
+    }
 }
 ```
 
@@ -64,14 +67,15 @@ $ ./main -p 443
     + handler/
         + basic.go (`/*`)
         + error.go (`/error/*` HTTP403 & 404)
-        + api.go (`/api/*xxx*` for Ajax)
+        + api.go (`/api/*` for Ajax)
         + manage.go (`/manage/*`)
         + syllabus.go (`/syllabus/*`)
+        + article.go
+        + calendar.go
+        + login.go
+        + renderer.go
     + include/  (html files & gohtml layout files)
-    + article/ (handle `article/(news)` add, update, delete)
     + files/ (manage the uploaded files)
-    + login/ (handle login)
-    + render/
     + go.mod
     + go.sum
     + __main.go__ (main program)
