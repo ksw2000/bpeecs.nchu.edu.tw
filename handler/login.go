@@ -1,4 +1,4 @@
-package login
+package handler
 
 import (
 	"context"
@@ -28,7 +28,7 @@ type Login struct {
 var ErrorReapeatID error
 
 // New returns new instance of Login
-func New() (l *Login) {
+func NewLogin() (l *Login) {
 	l = new(Login)
 	ErrorReapeatID = errors.New("ID-Repeat")
 	return
