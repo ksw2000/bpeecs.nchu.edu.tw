@@ -1,4 +1,4 @@
-package renderer
+package handler
 
 import (
 	"bytes"
@@ -9,15 +9,18 @@ import (
 	"log"
 	"strings"
 	"time"
-
-	"bpeecs.nchu.edu.tw/article"
 )
+
+const articleTemplate = "./include/article_layout.gohtml"
 
 const syllabusDataDir = "./assets/json/syllabus/"
 const syllabusTemplate = "./include/syllabus/template.gohtml"
+
 const courseDataDir = "./assets/json/course/"
 const courseTemplate = "./include/course/template.gohtml"
-const courseOutput = "./include/course/"
+
+const calendarTemplate = "./include/calendar_layout.gohtml"
+const indexTemplate = "./include/index.gohtml"
 
 type courseInfo struct {
 	Subtitle string
@@ -32,7 +35,7 @@ type fileInfo struct {
 }
 
 type articleRenderInfo struct {
-	ID              uint32
+	ID              int64
 	User            string
 	Type            string
 	CreateTime      string
@@ -42,6 +45,12 @@ type articleRenderInfo struct {
 	Content         template.HTML
 	Attachment      []fileInfo
 	PhotoAttachment []fileInfo // render photos by HTML <img>
+}
+
+type calendarRenderInfo struct {
+	Calendar
+	HaveLink bool
+	ReadOnly bool
 }
 
 func convertStrm(i int) string {
@@ -91,7 +100,7 @@ func renderArticleType(key string) string {
 }
 
 // RenderPublicArticle renders an article at url: /news/[articleID]
-func RenderPublicArticle(artInfo *article.Format) template.HTML {
+func RenderPublicArticle(artInfo *Article) template.HTML {
 	data := new(articleRenderInfo)
 	data.ID = artInfo.ID
 	data.User = artInfo.User
@@ -122,13 +131,19 @@ func RenderPublicArticle(artInfo *article.Format) template.HTML {
 	}
 
 	var buf bytes.Buffer
-	t, _ := template.ParseFiles("./include/article_layout.gohtml")
+	t, err := template.ParseFiles(articleTemplate)
+
+	if err != nil {
+		log.Println("handler/renderer.go RenderPublicArticle() template error " + err.Error())
+		return template.HTML("")
+	}
+
 	t.Execute(&buf, data)
 	return template.HTML(buf.String())
 }
 
 // RenderPublicArticleBriefList dynamically renders article list an home page
-func RenderPublicArticleBriefList(artInfoList []article.Format) template.HTML {
+func RenderPublicArticleBriefList(artInfoList []Article) template.HTML {
 	data := new(articleRenderInfo)
 	ret := ""
 	for _, artInfo := range artInfoList {
@@ -154,7 +169,7 @@ func RenderSyllabus(semester int, courseNumber int) (template.HTML, string, erro
 
 	jsonData, err := ioutil.ReadFile(path)
 	if err != nil {
-		log.Println("render/dynamic.go RenderSyllabus() can not found " + path)
+		log.Printf("handler/renderer.go RenderSyllabus() template error %s %v\n", path, err)
 		return template.HTML(""), "", err
 	}
 
@@ -172,8 +187,7 @@ func RenderSyllabus(semester int, courseNumber int) (template.HTML, string, erro
 
 	t, err := template.ParseFiles(syllabusTemplate)
 	if err != nil {
-		log.Println("render/dynamic.go RenderSyllabus() can not found template " +
-			syllabusTemplate)
+		log.Println("handler/renderer.go RenderSyllabus() template error " + err.Error())
 		return template.HTML(""), "", err
 	}
 
@@ -188,7 +202,7 @@ func RenderCourseByYear(year uint) (template.HTML, error) {
 
 	jsonData, err := ioutil.ReadFile(path)
 	if err != nil {
-		log.Println("render/dynamic.go RenderCourseByYear() can not found " + path)
+		log.Printf("handler/renderer.go RenderCourseByYear() template error %s %v\n", path, err)
 		return template.HTML(""), err
 	}
 
@@ -234,12 +248,55 @@ func RenderCourseByYear(year uint) (template.HTML, error) {
 
 	t, err := template.ParseFiles(courseTemplate)
 	if err != nil {
-		log.Println("render/static.go RenderCourseByYear() can not found template " +
-			courseTemplate)
+		log.Println("handler/renderer.go RenderCourseByYear() template error " + err.Error())
 		return template.HTML(""), err
 	}
 
 	var buf bytes.Buffer
 	t.Execute(&buf, units)
-	return template.HTML(buf.String()), err
+	return template.HTML(buf.String()), nil
+}
+
+func RenderCalendarList(calendarList []Calendar, readOnly bool) template.HTML {
+	dataList := []calendarRenderInfo{}
+	for _, calendar := range calendarList {
+		data := calendarRenderInfo{
+			Calendar: calendar,
+			HaveLink: calendar.Link != "",
+			ReadOnly: readOnly,
+		}
+		dataList = append(dataList, data)
+	}
+	t, err := template.ParseFiles(calendarTemplate)
+	if err != nil {
+		log.Println("handler/renderer.go RenderCalendarList() template error " + err.Error())
+		return template.HTML("")
+	}
+
+	var buf bytes.Buffer
+	t.Execute(&buf, dataList)
+	return template.HTML(buf.String())
+}
+
+func RenderIndexPage() template.HTML {
+	t, err := template.ParseFiles(indexTemplate)
+	if err != nil {
+		log.Println("handler/renderer.go RenderIndexPage() template error " + err.Error())
+		return template.HTML("")
+	}
+
+	// GetLatesetArticles() returns (list []Article, hasNext bool)
+	artList, _ := GetLatesetArticles("public", "normal", "", 0, 7)
+	// GetLatestCalendar() returns (list []Calendar, hasNext bool)
+	calendarList, _ := GetLatestCalendar(0, 9)
+
+	var buf bytes.Buffer
+	t.Execute(&buf, struct {
+		ArticleListBrief template.HTML
+		CalendarList     template.HTML
+	}{
+		ArticleListBrief: RenderPublicArticleBriefList(artList),
+		CalendarList:     RenderCalendarList(calendarList, true),
+	})
+	return template.HTML(buf.String())
 }
