@@ -1,4 +1,4 @@
-package article
+package handler
 
 import (
 	"database/sql"
@@ -14,12 +14,7 @@ import (
 
 // Article handles manipulations about article
 type Article struct {
-	artList []Format
-}
-
-// Format records article's information
-type Format struct {
-	ID           uint32        `json:"id"`
+	ID           int64         `json:"id"`
 	User         string        `json:"user"`
 	Type         string        `json:"type"`
 	CreateTime   uint64        `json:"create"`
@@ -30,37 +25,33 @@ type Format struct {
 	Attachment   []files.Files `json:"attachment"`
 }
 
-// New returns new instance of Article
-func New() *Article {
-	return new(Article)
-}
-
 // NewArticle is used to initialize an editor when user want to add new article
-func (a *Article) NewArticle(user string) (uint32, error) {
+func (a *Article) Create(user string) error {
 	d, err := sql.Open("sqlite3", config.MainDB)
 	if err != nil {
 		log.Println(err)
-		return 0, err
+		return err
 	}
 	defer d.Close()
 	stmt, err := d.Prepare("INSERT INTO article(user, create_time, publish_time, last_modified, title, content) values(?, ?, ?, ?, ?, ?)")
 	if err != nil {
-		return 0, fmt.Errorf("d.Prepare() error %v", err)
+		return fmt.Errorf("d.Prepare() error %v", err)
 	}
 
 	res, err := stmt.Exec(user, time.Now().Unix(), 0, 0, "", "")
 	if err != nil {
-		return 0, fmt.Errorf("stmt.Exec() error %v", err)
+		return fmt.Errorf("stmt.Exec() error %v", err)
 	}
-	aid, err := res.LastInsertId()
+	a.ID, err = res.LastInsertId()
 	if err != nil {
-		return 0, fmt.Errorf("res.LastInsertId() error %v", err)
+		return fmt.Errorf("res.LastInsertId() error %v", err)
 	}
-	return uint32(aid), nil
+	a.User = user
+	return nil
 }
 
 // Save article (do not change scope)
-func (a *Article) Save(artfmt Format, serverNameList []string) error {
+func (a *Article) Save(serverNameList []string) error {
 	d, err := sql.Open("sqlite3", config.MainDB)
 	if err != nil {
 		log.Println(err)
@@ -69,11 +60,11 @@ func (a *Article) Save(artfmt Format, serverNameList []string) error {
 	defer d.Close()
 	stmt, _ := d.Prepare("UPDATE article SET title=?, type=?, content=?, last_modified=? WHERE id=? and user=?")
 	now := time.Now().Unix()
-	if _, err = stmt.Exec(artfmt.Title, artfmt.Type, artfmt.Content, now, artfmt.ID, artfmt.User); err != nil {
+	if _, err = stmt.Exec(a.Title, a.Type, a.Content, now, a.ID, a.User); err != nil {
 		log.Println(err)
 		return err
 	}
-	if err = a.UpdateAttachment(artfmt.ID, serverNameList); err != nil {
+	if err = a.UpdateAttachment(serverNameList); err != nil {
 		log.Println(err)
 		return err
 	}
@@ -81,9 +72,9 @@ func (a *Article) Save(artfmt Format, serverNameList []string) error {
 }
 
 // UpdateAttachment handles attachment information when users publishing or saving an article
-func (a *Article) UpdateAttachment(aid uint32, serverNameList []string) error {
+func (a *Article) UpdateAttachment(serverNameList []string) error {
 	for _, serverName := range serverNameList {
-		err := a.LinkAttachment(serverName, aid)
+		err := a.LinkAttachment(serverName, a.ID)
 		if err != nil {
 			return err
 		}
@@ -95,7 +86,7 @@ func (a *Article) UpdateAttachment(aid uint32, serverNameList []string) error {
 // We handle files by two steps
 // 1. record information on file table
 // 2. article table link the file information
-func (a *Article) LinkAttachment(serverName string, aid uint32) error {
+func (a *Article) LinkAttachment(serverName string, aid int64) error {
 	d, err := sql.Open("sqlite3", config.MainDB)
 	if err != nil {
 		log.Println(err)
@@ -114,7 +105,7 @@ func (a *Article) LinkAttachment(serverName string, aid uint32) error {
 }
 
 // Publish an article (update content and change scope)
-func (a *Article) Publish(artfmt Format, serverNameList []string) error {
+func (a *Article) Publish(serverNameList []string) error {
 	d, err := sql.Open("sqlite3", config.MainDB)
 	if err != nil {
 		log.Println(err)
@@ -123,11 +114,11 @@ func (a *Article) Publish(artfmt Format, serverNameList []string) error {
 	defer d.Close()
 	stmt, _ := d.Prepare("UPDATE article SET title=?, type=?, content=?, publish_time=?, last_modified=?  WHERE id=? and user=?")
 	now := time.Now().Unix()
-	if _, err := stmt.Exec(artfmt.Title, artfmt.Type, artfmt.Content, now, now, artfmt.ID, artfmt.User); err != nil {
+	if _, err := stmt.Exec(a.Title, a.Type, a.Content, now, now, a.ID, a.User); err != nil {
 		log.Println(err)
 		return err
 	}
-	if err := a.UpdateAttachment(artfmt.ID, serverNameList); err != nil {
+	if err := a.UpdateAttachment(serverNameList); err != nil {
 		log.Println(err)
 		return err
 	}
@@ -135,7 +126,7 @@ func (a *Article) Publish(artfmt Format, serverNameList []string) error {
 }
 
 // Del deletes an article
-func (a *Article) Del(aid uint32, user string) error {
+func (a *Article) Del(user string) error {
 	d, err := sql.Open("sqlite3", config.MainDB)
 	if err != nil {
 		log.Println(err)
@@ -143,14 +134,14 @@ func (a *Article) Del(aid uint32, user string) error {
 	}
 	defer d.Close()
 	stmt, _ := d.Prepare("DELETE from article WHERE id=? and user=?")
-	if _, err := stmt.Exec(aid, user); err != nil {
+	if _, err := stmt.Exec(a.ID, user); err != nil {
 		log.Println(err, "article.go Del() DELETE from article")
 		return err
 	}
 
 	// remove attachment
 	f := files.New()
-	rows, _ := d.Query("SELECT path FROM files WHERE article_id=?", aid)
+	rows, _ := d.Query("SELECT path FROM files WHERE article_id=?", a.ID)
 	defer rows.Close()
 	path := ""
 	pathList := []string{}
@@ -165,8 +156,8 @@ func (a *Article) Del(aid uint32, user string) error {
 	return nil
 }
 
-// GetLatest will get the lastest article
-func (a *Article) GetLatest(scope string, artType string, user string, from int32, to int32) (list []Format, hasNext bool) {
+// GetLatesetArticles will get the lastest article
+func GetLatesetArticles(scope string, artType string, user string, from int, to int) (list []Article, hasNext bool) {
 	var queryString string
 
 	switch scope {
@@ -242,12 +233,12 @@ func (a *Article) GetLatest(scope string, artType string, user string, from int3
 	}
 
 	defer rows.Close()
-	for i := int32(0); rows.Next(); i++ {
-		var r Format
+	for i := 0; rows.Next(); i++ {
+		var r Article
 		rows.Scan(&r.ID, &r.User, &r.Type, &r.CreateTime, &r.PublishTime, &r.LastModified, &r.Title, &r.Content)
 
 		// Load attachment list
-		r.Attachment = a.getAttachmentByArticleID(r.ID)
+		r.Attachment = getAttachmentByArticleID(r.ID)
 
 		if i == to-from+1 {
 			hasNext = true
@@ -260,7 +251,7 @@ func (a *Article) GetLatest(scope string, artType string, user string, from int3
 }
 
 // GetArticleByAid gets article information by aid
-func (a *Article) GetArticleByAid(aid uint32, user string) *Format {
+func GetArticleByAid(aid int64, user string) *Article {
 	d, err := sql.Open("sqlite3", config.MainDB)
 	if err != nil {
 		log.Println(err)
@@ -270,7 +261,7 @@ func (a *Article) GetArticleByAid(aid uint32, user string) *Format {
 	row := d.QueryRow(`SELECT id, user, type, create_time, publish_time, last_modified, title, content
                        FROM article WHERE id = ?`, aid)
 
-	r := new(Format)
+	r := new(Article)
 	err = row.Scan(&r.ID, &r.User, &r.Type, &r.CreateTime, &r.PublishTime, &r.LastModified, &r.Title, &r.Content)
 
 	if err == sql.ErrNoRows {
@@ -284,13 +275,13 @@ func (a *Article) GetArticleByAid(aid uint32, user string) *Format {
 	}
 
 	// Load attachment list
-	r.Attachment = a.getAttachmentByArticleID(r.ID)
+	r.Attachment = getAttachmentByArticleID(r.ID)
 
 	return r
 }
 
 // getAttachmentByArticleID gets attachment info and returns Files list
-func (a *Article) getAttachmentByArticleID(id uint32) []files.Files {
+func getAttachmentByArticleID(id int64) []files.Files {
 	d, err := sql.Open("sqlite3", config.MainDB)
 	fileList := []files.Files{}
 	if err != nil {
