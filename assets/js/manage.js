@@ -93,25 +93,6 @@ function newArticle() {
     if ($("#new-article-area").css("display") === "none") {
         openNewArticleArea();
         $("#new-article-area .buttonArea").html(btnAreaForDraft);
-        /*
-        if(Editor.aid === -1){
-            $.post('/api/add_news',{}
-            ,function(data){
-                if(data.err){
-                    if(data.code === 1){
-                        window.location = "/?notlogin"
-                    }
-                    notice(data.msg)
-                }else{
-                    $("#new-article-area .buttonArea").html(btnAreaForDraft);
-                    Editor.aid = Number(data.msg);
-                    openNewArticleArea();
-                }
-            },'json');
-        }else{
-            openNewArticleArea();
-        }
-        */
     } else {
         closeNewArticleArea();
     }
@@ -185,7 +166,7 @@ function attach(e) {
 }
 
 function save(isPrivate) {
-    $.post('/api/save_news', {
+    $.post('/api/news?save', {
         aid: Editor.aid,
         title: Editor.getTitle(),
         type: Editor.getType(),
@@ -211,7 +192,7 @@ function save(isPrivate) {
 }
 
 function publish() {
-    $.post('/api/publish_news', {
+    $.post('/api/news?publish', {
         aid: Editor.aid,
         title: Editor.getTitle(),
         type: Editor.getType(),
@@ -309,7 +290,7 @@ function real_delete_news(data_id) {
     // If user delete the news which is editing
     // Refresh website instead of .slideUp()
     $.ajax({
-        url: '/api/del_news',
+        url: '/api/news?del',
         data: {
             'aid': data_id
         },

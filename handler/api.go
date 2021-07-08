@@ -3,14 +3,13 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
 
-	"bpeecs.nchu.edu.tw/article"
 	"bpeecs.nchu.edu.tw/files"
-	"bpeecs.nchu.edu.tw/login"
 )
 
 type attachmentJSONStruct struct {
@@ -38,7 +37,7 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		ret := struct {
 			Err string `json:"err"`
 		}{}
-		l := login.New()
+		l := NewLogin()
 
 		if err := l.Login(w, r); err != nil {
 			ret.Err = err.Error()
@@ -54,14 +53,14 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		}{}
 		encoder := json.NewEncoder(w)
 		// only current accounts are allowed to register a new account
-		loginInfo := login.CheckLogin(w, r)
+		loginInfo := CheckLogin(w, r)
 		if loginInfo == nil {
 			ret.Err = "必需登入才能建立新帳戶"
 			encoder.Encode(ret)
 			return
 		}
 
-		l := login.New()
+		l := NewLogin()
 
 		id := get("id", r)
 		pwd := get("pwd", r)
@@ -109,7 +108,7 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = l.NewAcount(id, pwd, name)
-		if err == login.ErrorReapeatID {
+		if err == ErrorReapeatID {
 			ret.Err = "所申請之 ID 重複"
 			encoder.Encode(ret)
 			return
@@ -121,16 +120,20 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 
 		encoder.Encode(ret)
 		return
-	} else if path == "/api/save_news" || path == "/api/publish_news" || path == "/api/del_news" {
+	} else if path == "/api/news" {
+		save := exist("save", r)
+		publish := exist("publish", r)
+		del := exist("del", r)
+
 		encoder := json.NewEncoder(w)
 		ret := struct {
 			Err         string `json:"err"`
 			ErrNotLogin bool   `json:"errNotLogin"`
-			Aid         uint32 `json:"aid"`
+			Aid         int64  `json:"aid"`
 		}{}
 
-		// step0: is login?
-		loginInfo := login.CheckLogin(w, r)
+		// step0: check login
+		loginInfo := CheckLogin(w, r)
 		if loginInfo == nil {
 			ret.Err = "權限不足，尚未登入"
 			ret.ErrNotLogin = true
@@ -140,7 +143,7 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 
 		// write to database
 		// step1: fetch http POST
-		getNum, err := strconv.Atoi(get("aid", r))
+		getNum, err := strconv.ParseInt(get("aid", r), 10, 64)
 		if err != nil {
 			ret.Err = "文章代碼錯誤 (POST參數錯誤)"
 			encoder.Encode(ret)
@@ -149,40 +152,40 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 
 		// step2: if num == -1
 		// create new article and get aid
-		art := article.New()
-		if getNum == -1 {
-			ret.Aid, err = art.NewArticle(loginInfo.UserID)
-			if err != nil {
-				ret.Err = err.Error()
-				encoder.Encode(ret)
-				return
+		art := new(Article)
+		if save || publish {
+			if getNum == -1 {
+				err = art.Create(loginInfo.UserID)
+				ret.Aid = art.ID
+				if err != nil {
+					ret.Err = err.Error()
+					encoder.Encode(ret)
+					return
+				}
+			} else {
+				ret.Aid = getNum
 			}
-		} else {
-			ret.Aid = uint32(getNum)
-		}
 
-		user := loginInfo.UserID
-		artType := get("type", r)
-		title := get("title", r)
-		content := get("content", r)
+			art = &Article{
+				ID:      ret.Aid,
+				User:    loginInfo.UserID,
+				Type:    get("type", r),
+				Title:   get("title", r),
+				Content: get("content", r),
+			}
 
-		artFormat := article.Format{
-			ID:      ret.Aid,
-			User:    user,
-			Type:    artType,
-			Title:   title,
-			Content: content,
-		}
-
-		serverNameList := attachmentJSONtoClientName(get("attachment", r))
-
-		// step3: call Save() or Publish()
-		if path == "/api/save_news" {
-			err = art.Save(artFormat, serverNameList)
-		} else if path == "/api/publish_news" {
-			err = art.Publish(artFormat, serverNameList)
-		} else if path == "/api/del_news" {
-			err = art.Del(ret.Aid, user)
+			serverNameList := attachmentJSONtoClientName(get("attachment", r))
+			if save {
+				err = art.Save(serverNameList)
+			} else if publish {
+				err = art.Publish(serverNameList)
+			}
+		} else if del {
+			art = &Article{
+				ID: getNum,
+			}
+			// delete
+			art.Del(loginInfo.UserID)
 		}
 
 		if err != nil {
@@ -193,9 +196,9 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 	} else if path == "/api/get_news" {
 		// step0: prepare return format
 		ret := new(struct {
-			Err     string           `json:"err"`
-			List    []article.Format `json:"list"`
-			HasNext bool             `json:"hasNext"`
+			Err     string    `json:"err"`
+			List    []Article `json:"list"`
+			HasNext bool      `json:"hasNext"`
 		})
 		encoder := json.NewEncoder(w)
 
@@ -203,11 +206,11 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		scope := get("scope", r)
 		artType := get("type", r)
 		aidStr := get("id", r)
-		var aid uint32
 		from, to := 0, 19 // Default from = 0, to = 19
-
 		scopes := [...]string{"all", "draft", "published", "public", "public-with-type"}
 		checkValidScope := false
+		var aid int64
+		var err error
 		for _, v := range scopes {
 			if v == scope {
 				checkValidScope = true
@@ -222,13 +225,12 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			aidInt, err := strconv.Atoi(aidStr)
+			aid, err = strconv.ParseInt(aidStr, 10, 64)
 			if err != nil {
 				ret.Err = fmt.Sprintf("Invalid request. %v", err)
 				encoder.Encode(ret)
 				return
 			}
-			aid = uint32(aidInt)
 		} else {
 			if f, scope := get("from", r), get("to", r); f != "" && scope != "" {
 				var err error
@@ -244,20 +246,19 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 
 		// step2: some request need user id
 		user := ""
-		if loginInfo := login.CheckLogin(w, r); loginInfo != nil {
+		if loginInfo := CheckLogin(w, r); loginInfo != nil {
 			user = loginInfo.UserID
 		}
 
-		// step3: call GetLatest(scope, from, to)
-		art := article.New()
+		// step3: call GetLatesetArticles(scope, from, to)
 		if scope != "" {
-			ret.List, ret.HasNext = art.GetLatest(scope, artType, user, int32(from), int32(to))
+			ret.List, ret.HasNext = GetLatesetArticles(scope, artType, user, from, to)
 			encoder.Encode(ret)
 			return
 		}
 
 		if aidStr != "" {
-			if ret := art.GetArticleByAid(aid, user); ret != nil {
+			if ret := GetArticleByAid(aid, user); ret != nil {
 				encoder.Encode(ret)
 				return
 			}
@@ -277,8 +278,8 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 			FileList    []fileInfo `json:"fileList"`
 		}{}
 
-		// is login?
-		if login.CheckLogin(w, r) == nil {
+		// check login
+		if CheckLogin(w, r) == nil {
 			ret.Err = "權限不足，尚未登入"
 			ret.ErrNotLogin = true
 			json.NewEncoder(w).Encode(ret)
@@ -303,14 +304,15 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 			})
 		}
 		json.NewEncoder(w).Encode(ret)
+		return
 	} else if path == "/api/del_attachment" {
 		ret := struct {
 			Err         string `json:"err"`
 			ErrNotLogin bool   `json:"errNotLogin"`
 		}{}
 		encoder := json.NewEncoder(w)
-		// is login?
-		loginInfo := login.CheckLogin(w, r)
+		// check login
+		loginInfo := CheckLogin(w, r)
 		if loginInfo == nil {
 			ret.Err = "權限不足，尚未登入"
 			ret.ErrNotLogin = true
@@ -320,7 +322,7 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 
 		serverName := get("server_name", r)
 		aidStr := get("aid_num", r)
-		aidInt, err := strconv.Atoi(aidStr)
+		aid, err := strconv.ParseInt(aidStr, 10, 64)
 		if err != nil {
 			ret.Err = "@param aid_num is invalid"
 			encoder.Encode(ret)
@@ -338,18 +340,143 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Update databse article (prevent user from not storing the article)
-		art := article.New()
-		if err := art.UpdateAttachment(uint32(aidInt), serverNameList); err != nil {
+		art := Article{ID: aid}
+		if err := art.UpdateAttachment(serverNameList); err != nil {
 			ret.Err = fmt.Sprintf("資料庫更新失敗 art.UpdateAttachment() %v", err)
 			encoder.Encode(ret)
 			return
 		}
 		encoder.Encode(ret)
 		return
+	} else if path == "/api/calendar" {
+		ret := struct {
+			Err         string `json:"err"`
+			ErrNotLogin bool   `json:"errNotLogin"`
+		}{}
+		encoder := json.NewEncoder(w)
+		// check login
+		loginInfo := CheckLogin(w, r)
+		if loginInfo == nil {
+			ret.Err = "權限不足，尚未登入"
+			ret.ErrNotLogin = true
+			encoder.Encode(ret)
+			return
+		}
+
+		// step1: parse action type (add, edit, del)
+		add := exist("add", r)
+		edit := exist("edit", r)
+		del := exist("del", r)
+
+		// step2: parse GET or POST param
+		var date, event, link string
+		var year, month, day uint64
+		var id int64
+		var err, err2, err3 error
+
+		if add || edit {
+			date = get("date", r)
+			event = get("event", r)
+			link = get("link", r)
+
+			if date == "" || event == "" {
+				ret.Err = "日期及事件標題不可為空"
+				encoder.Encode(ret)
+				return
+			}
+
+			dateParts := strings.Split(date, "-")
+			if len(dateParts) != 3 {
+				ret.Err = "日期格式錯誤"
+				encoder.Encode(ret)
+				return
+			}
+
+			year, err = strconv.ParseUint(dateParts[0], 10, 12)
+			month, err2 = strconv.ParseUint(dateParts[1], 10, 4)
+			day, err3 = strconv.ParseUint(dateParts[2], 10, 5)
+
+			if err != nil || err2 != nil || err3 != nil {
+				ret.Err = "日期格式錯誤"
+				encoder.Encode(ret)
+				return
+			}
+		}
+
+		if edit || del {
+			id, err = strconv.ParseInt(get("id", r), 10, 64)
+			if err != nil {
+				ret.Err = "ID 錯誤"
+				encoder.Encode(ret)
+				return
+			}
+		}
+
+		cal := Calendar{
+			ID:    id,
+			Year:  uint(year),
+			Month: uint(month),
+			Day:   uint(day),
+			Event: event,
+			Link:  link,
+		}
+
+		if add {
+			if err := cal.Add(); err != nil {
+				ret.Err = err.Error()
+			}
+		} else if edit {
+			if err := cal.Update(); err != nil {
+				ret.Err = err.Error()
+			}
+		} else if del {
+			if err := cal.Del(); err != nil {
+				ret.Err = err.Error()
+			}
+		}
+		encoder.Encode(ret)
+		return
+	} else if path == "/api/get_calendar" {
+		// 本 API 僅供行事曆檢視，不檢查是否登入
+		ret := struct {
+			InfoList     []Calendar `json:"infoList"`
+			RenderResult string     `json:"renderResult"`
+			Err          string     `json:"err"`
+		}{}
+		encoder := json.NewEncoder(w)
+
+		// if true return edit button
+		needEdit := exist("needEdit", r)
+		// if true retrun text after rendering
+		useRenderer := exist("useRender", r)
+
+		year, err1 := strconv.ParseUint(get("year", r), 10, 12)
+		month, err2 := strconv.ParseUint(get("month", r), 10, 8)
+
+		if err1 != nil || err2 != nil {
+			log.Println(err1)
+			log.Println(err2)
+			ret.Err = "年份、月份格式錯誤"
+			encoder.Encode(ret)
+			return
+		}
+
+		ret.InfoList = GetCalendarByYearMonth(uint(year), uint(month))
+		if useRenderer {
+			ret.RenderResult = string(RenderCalendarList(ret.InfoList, !needEdit))
+		}
+		encoder.Encode(ret)
+		return
+	} else {
+		NotFound(w, r)
 	}
-	NotFound(w, r)
 }
 
 func get(key string, r *http.Request) string {
 	return strings.Join(r.Form[key], "")
+}
+
+func exist(key string, r *http.Request) bool {
+	_, ok := r.Form[key]
+	return ok
 }

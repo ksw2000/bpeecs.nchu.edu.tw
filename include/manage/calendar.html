@@ -6,61 +6,217 @@
     flex-direction: column;
 }
 
-.add-event-box input{
+.add-event-box input, input[type="month"]{
     box-sizing: border-box;
     background-color: transparent;
-    margin: 10px 0px;
+    margin: 10px auto;
     max-width: 300px;
     padding: 5px;
     width: 100%;
 }
 
-.add-event-box button{
-    margin: 10px 0px;
-}
-
-.calender-list{
-    align-items: center;
+.add-event-box .button-area{
     display: flex;
+    justify-content: center;
+    margin: 0px auto;
+    width: 100%;
 }
 
-.candy-header span{
-    font-size: 1rem!important;
+.add-event-box .button-area button{
+    margin: 10px;
 }
 
-.calender-title{
-    padding-left: 10px;
-}
-
-.calender-title span, .calender-title span{
-    font-size: 1.12rem!important;
+#load-calendar{
+    max-width: 500px;
+    margin: 0px auto;
 }
 </style>
 <div class="add-event-box">
-    <input type="date" id="event-date"/>
-    <input type="text" id="event-title" placeholder="事件標題" autocomplete="off"/>
-    <input type="text" id="event-link" placeholder="連結" autocomplete="off"/>
-    <button id="event-add">+ 新增事件</button>
+    <input type="date" id="event-date" />
+    <input type="text" id="event-title" placeholder="事件標題(不可為空)"
+        autocomplete="off" />
+    <input type="text" id="event-link" placeholder="連結(可為空)" autocomplete="off"
+        />
+    <div class="button-area" id="add-event-button-area">
+        <button id="event-add" onclick="addEvent()">+ 新增事件</button>
+    </div>
+    <div class="button-area" id="edit-event-button-area" style="display: none;">
+        <button id="event-cancel" onclick="closeEditMode()" class="border">取消</button>
+        <button id="event-save" onclick="addEvent()" class="black">儲存</button>
+    </div>
 </div>
 
 <h2>行事曆</h2>
-<div class="calender">
-    <div class="calender-list">
-        <div class="candy-header"><span class="single cyan big">01 . 30</span></div>
-        <div class="calender-title">一二三四五六七八九十</div>
-    </div>
-    <div class="calender-list">
-        <div class="candy-header"><span class="single cyan big">01 . 30</span></div>
-        <div class="calender-title"><a href="#">一二三四五六七八九十</a></div>
-    </div>
-</div>
+<input type="month" id="select-calendar-range" />
+<div id="load-calendar"></div>
 
 <script>
-$("#event-add").on('click', ()=>{
-    var date = $("#event-date").val();
-    var title = $("#event-title").val();
-    var link = $("#event-link").val();
+function loadCalender(date, callback){
+    $('#load-calendar').fadeOut('fast', ()=>{
+        $('#load-calendar').fadeIn('fast', ()=>{
+                $.get('/api/get_calendar?needEdit&useRender', {
+                    "year": date.getFullYear(),
+                    "month": Number(date.getMonth())+1 // javascript month [0, 12)
+                }, (data)=>{
+                    window.calendar = data;
 
-    console.log(date, title, link);
+                    if(data.err){
+                        notice(data.err);
+                        console.log(data);
+                        return;
+                    }
+                        if(data.infoList){
+                            $('#load-calendar').html(data.renderResult);
+                        }else{
+                            $('#load-calendar').html('無資料');
+                        }
+                }, 'json');
+        });
+    });
+}
+
+function loadCalenderBasedOnDOM($dom){
+    try{
+        var yearMonthParts = $dom.val().split('-');
+        var year = parseInt(yearMonthParts[0]);
+        var month = parseInt(yearMonthParts[1]);
+    }catch(e){
+        return
+    }
+    loadCalender(new Date(year, month - 1));
+}
+
+$('#select-calendar-range').on('change', ()=>{
+    loadCalenderBasedOnDOM($('#select-calendar-range'));
 });
+
+var storage = new Object();
+var focusCalendarID = -1;   // -1 for adding new event, otherwise, for editing mode
+
+function storeAddEventBox(){
+    storage.date = $('#event-date').val();
+    storage.event = $('#event-title').val();
+    storage.link = $('#event-link').val();
+}
+
+function restoreAddEventBox(){
+    $('#event-title').val(storage.event);
+    $('#event-date').val(storage.date);
+    $('#event-link').val(storage.link);
+}
+
+function closeEditMode(){
+    focusCalendarID = -1;
+    $('#edit-event-button-area').hide();
+    $('#add-event-button-area').show();
+    restoreAddEventBox();
+}
+
+function activateEditMode(id){
+    focusCalendarID = id;
+    $('#edit-event-button-area').show();
+    $('#add-event-button-area').hide();
+    storeAddEventBox();
+}
+
+// add new event or update existed event by `focusCalendarID`
+function addEvent(){
+    var date = $('#event-date').val();
+    var event = $('#event-title').val();
+    var link = $('#event-link').val();
+    
+    if(date === ''){
+        notice('日期不可為空！');
+        return;
+    }
+
+    // add mode, else edit mode
+    if(focusCalendarID === -1){
+        $.post('/api/calendar?add', {
+            'date': date,
+            'event': event,
+            'link': link
+        }, (data)=>{
+            if(data.err){
+                if (data.errNotLogin) {
+                    window.location = '/?notlogin';
+                }
+                notice(data.err);
+            }else{
+                notice('新增成功');
+                // load new calendar
+                loadCalenderBasedOnDOM($('#select-calendar-range'));
+                // and reset event title and event link
+                $('#event-title').val('');
+                $('#event-link').val('');
+                storeAddEventBox();
+            }
+        }, 'json');
+    }else{
+        $.post('/api/calendar?edit', {
+            'id': focusCalendarID,
+            'date': date,
+            'event': event,
+            'link': link
+        }, (data)=>{
+            if(data.err){
+                if (data.errNotLogin) {
+                    window.location = '/?notlogin';
+                }
+                notice(data.err);
+            }else{
+                notice('修改成功');
+                // load new calendar
+                loadCalenderBasedOnDOM($('#select-calendar-range'));
+                // and reset event title and event link
+                closeEditMode();
+            }
+        }, 'json');
+    }   
+}
+
+function btnEditCalendar(id){
+    if(window.calendar){
+        window.calendar.infoList.forEach(e => {
+            if(e.id === id){
+                activateEditMode(e.id);
+                // javascript month [0, 12)
+                $('#event-date').val($.format.date(new Date(e.year, e.month-1, e.day), "yyyy-MM-dd"));
+                $('#event-title').val(e.event);
+                $('#event-link').val(e.link);
+                return;
+            }
+        });
+    }else{
+        notice('無法編輯，重新整理，再試一次！');
+    }
+}
+
+function btnDelCalendar(id){
+    $.post('/api/calendar?del', {
+            'id': id,
+    }, (data)=>{
+        if(data.err){
+            if (data.errNotLogin) {
+                window.location = '/?notlogin';
+            }
+            notice(data.err);
+            console.log(data);
+        }else{
+            notice('刪除成功');
+            loadCalenderBasedOnDOM($('#select-calendar-range'));
+        }
+    }, 'json');
+}
+
+// get current date
+var ymd = $.format.date(new Date(), "yyyy-MM-dd");
+var ym  = $.format.date(new Date(), "yyyy-MM");
+
+// automatically set default value
+$('#select-calendar-range').val(ym);
+$('#event-date').val(ymd);
+
+// automatically get when loading page
+loadCalender(new Date());
 </script>
