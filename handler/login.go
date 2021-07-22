@@ -70,6 +70,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("%s login success\n", id)
+	encoder.Encode(ret)
 	return
 }
 
@@ -178,8 +179,8 @@ func NewAcount(id string, pwd string, name string) error {
 // Logout is a function deal with sign out
 func Logout(w http.ResponseWriter, r *http.Request) (err error) {
 	store, err := session.Start(context.Background(), w, r)
-	store.Set("userID", "")
-	store.Set("userName", "")
+	store.Delete("userID")
+	store.Delete("userName")
 	return err
 }
 
