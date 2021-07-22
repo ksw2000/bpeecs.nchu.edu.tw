@@ -51,43 +51,32 @@
 <div id="load-calendar"></div>
 
 <script>
-function loadCalender(date, callback){
-    $('#load-calendar').fadeOut('fast', ()=>{
-        $('#load-calendar').fadeIn('fast', ()=>{
-                $.get('/api/get_calendar?needEdit&useRender', {
-                    "year": date.getFullYear(),
-                    "month": Number(date.getMonth())+1 // javascript month [0, 12)
-                }, (data)=>{
-                    window.calendar = data;
+window.onload = () => {
+    // set default value
+    $('#select-calendar-range').val($.format.date(new Date(), "yyyy-MM"));
+    $('#event-date').val($.format.date(new Date(), "yyyy-MM-dd"));
 
-                    if(data.err){
-                        notice(data.err);
-                        console.log(data);
-                        return;
-                    }
-                        if(data.infoList){
-                            $('#load-calendar').html(data.renderResult);
-                        }else{
-                            $('#load-calendar').html('無資料');
-                        }
-                }, 'json');
-        });
-    });
+    // get calendar when loading page
+    loadCalendarBasedOnDOM($('#select-calendar-range'));
 }
 
-function loadCalenderBasedOnDOM($dom){
-    try{
+function loadCalendarBasedOnDOM($dom) {
+    try {
         var yearMonthParts = $dom.val().split('-');
         var year = parseInt(yearMonthParts[0]);
         var month = parseInt(yearMonthParts[1]);
-    }catch(e){
+    } catch (e) {
         return
     }
-    loadCalender(new Date(year, month - 1));
+    loadCalendar(new Date(year, month - 1), (data)=>{
+        console.log(data);
+        window.calendar = data;
+         $('#load-calendar').html(renderCalendar(data.infoList, true));
+    });
 }
 
 $('#select-calendar-range').on('change', ()=>{
-    loadCalenderBasedOnDOM($('#select-calendar-range'));
+    loadCalendarBasedOnDOM($('#select-calendar-range'));
 });
 
 var storage = new Object();
@@ -145,7 +134,7 @@ function addEvent(){
             }else{
                 notice('新增成功');
                 // load new calendar
-                loadCalenderBasedOnDOM($('#select-calendar-range'));
+                loadCalendarBasedOnDOM($('#select-calendar-range'));
                 // and reset event title and event link
                 $('#event-title').val('');
                 $('#event-link').val('');
@@ -167,7 +156,7 @@ function addEvent(){
             }else{
                 notice('修改成功');
                 // load new calendar
-                loadCalenderBasedOnDOM($('#select-calendar-range'));
+                loadCalendarBasedOnDOM($('#select-calendar-range'));
                 // and reset event title and event link
                 closeEditMode();
             }
@@ -204,19 +193,8 @@ function btnDelCalendar(id){
             console.log(data);
         }else{
             notice('刪除成功');
-            loadCalenderBasedOnDOM($('#select-calendar-range'));
+            loadCalendarBasedOnDOM($('#select-calendar-range'));
         }
     }, 'json');
 }
-
-// get current date
-var ymd = $.format.date(new Date(), "yyyy-MM-dd");
-var ym  = $.format.date(new Date(), "yyyy-MM");
-
-// automatically set default value
-$('#select-calendar-range').val(ym);
-$('#event-date').val(ymd);
-
-// automatically get when loading page
-loadCalender(new Date());
 </script>

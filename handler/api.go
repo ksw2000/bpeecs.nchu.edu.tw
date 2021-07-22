@@ -52,7 +52,7 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		}{}
 		encoder := json.NewEncoder(w)
 		// only current accounts are allowed to register a new account
-		user := CheckLogin(w, r)
+		user := CheckLoginBySession(w, r)
 		if user == nil {
 			ret.Err = "必需登入才能建立新帳戶"
 			encoder.Encode(ret)
@@ -125,7 +125,7 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		}{}
 
 		// step0: check login
-		user := CheckLogin(w, r)
+		user := CheckLoginBySession(w, r)
 		if user == nil {
 			ret.Err = "權限不足，尚未登入"
 			ret.ErrNotLogin = true
@@ -238,7 +238,7 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 
 		// step2: some request need user id
 		uid := ""
-		if user := CheckLogin(w, r); user != nil {
+		if user := CheckLoginBySession(w, r); user != nil {
 			uid = user.ID
 		}
 
@@ -271,7 +271,7 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		}{}
 
 		// check login
-		if CheckLogin(w, r) == nil {
+		if CheckLoginBySession(w, r) == nil {
 			ret.Err = "權限不足，尚未登入"
 			ret.ErrNotLogin = true
 			json.NewEncoder(w).Encode(ret)
@@ -304,7 +304,7 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		}{}
 		encoder := json.NewEncoder(w)
 		// check login
-		user := CheckLogin(w, r)
+		user := CheckLoginBySession(w, r)
 		if user == nil {
 			ret.Err = "權限不足，尚未登入"
 			ret.ErrNotLogin = true
@@ -347,7 +347,7 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		}{}
 		encoder := json.NewEncoder(w)
 		// check login
-		user := CheckLogin(w, r)
+		user := CheckLoginBySession(w, r)
 		if user == nil {
 			ret.Err = "權限不足，尚未登入"
 			ret.ErrNotLogin = true
@@ -431,16 +431,10 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 	} else if path == "/api/get_calendar" {
 		// 本 API 僅供行事曆檢視，不檢查是否登入
 		ret := struct {
-			InfoList     []Calendar `json:"infoList"`
-			RenderResult string     `json:"renderResult"`
-			Err          string     `json:"err"`
+			InfoList []Calendar `json:"infoList"`
+			Err      string     `json:"err"`
 		}{}
 		encoder := json.NewEncoder(w)
-
-		// if true return edit button
-		needEdit := exist("needEdit", r)
-		// if true retrun text after rendering
-		useRenderer := exist("useRender", r)
 
 		year, err1 := strconv.ParseUint(get("year", r), 10, 12)
 		month, err2 := strconv.ParseUint(get("month", r), 10, 8)
@@ -454,9 +448,6 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		ret.InfoList = GetCalendarByYearMonth(uint(year), uint(month))
-		if useRenderer {
-			ret.RenderResult = string(RenderCalendarList(ret.InfoList, !needEdit))
-		}
 		encoder.Encode(ret)
 		return
 	} else {

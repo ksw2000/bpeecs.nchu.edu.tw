@@ -70,3 +70,55 @@ function notice(msg) {
 function slideToggole(id) {
     $('#' + id).slideToggle();
 }
+
+/**
+ * interface calender{
+ *      id: number
+ *      day: number
+ *      month: number
+ *      year: number     
+ *      event: string
+ *      link: string
+ * } 
+ */
+function renderCalendar(infoList, editMode){
+    if(infoList && infoList.length > 0){
+        let ret = '<div class="calender">';
+        infoList.forEach(e => {
+            ret += '<div class="calender-list">'
+            ret += `<div class="candy-header"><span class="single cyan big">${e.month} / ${e.day}</span></div>`;
+            ret += (e.link) ? `<div class="calender-title"><a href="${e.link}">${e.event}</a></div>` : '';
+            ret += `<div class="calender-title">${e.event}</div>`
+            if(editMode){
+                ret += ' <div class="calender-tail">';
+                ret += `<i class="material-icons" onclick="btnEditCalendar(${e.id})" title="編輯">edit</i>`;
+                ret += `<i class="material-icons delete" onclick="btnDelCalendar(${e.id})" title="刪除">close</i>`;
+                ret += '</div>';
+            }
+            ret+= '</div>';
+        });
+        ret += '</div>';
+        return ret;
+    }
+
+    return '無行程';
+}
+
+function loadCalendar(date, callback) {
+    $('#load-calendar').fadeOut('fast', () => {
+        $('#load-calendar').fadeIn('fast', () => {
+            $.get('/api/get_calendar', {
+                'year': date.getFullYear(),
+                'month': Number(date.getMonth()) + 1 // javascript month [0, 12)
+            }, (data) => {
+                if (data.err) {
+                    notice(data.err);
+                    console.log(data);
+                    return;
+                }
+                if(callback) callback(data);
+            }, 'json');
+        });
+    });
+}
+

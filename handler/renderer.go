@@ -258,27 +258,6 @@ func RenderCourseByYear(year uint) (template.HTML, error) {
 	return template.HTML(buf.String()), nil
 }
 
-func RenderCalendarList(calendarList []Calendar, readOnly bool) template.HTML {
-	dataList := []calendarRenderInfo{}
-	for _, calendar := range calendarList {
-		data := calendarRenderInfo{
-			Calendar: calendar,
-			HaveLink: calendar.Link != "",
-			ReadOnly: readOnly,
-		}
-		dataList = append(dataList, data)
-	}
-	t, err := template.ParseFiles(calendarTemplate)
-	if err != nil {
-		log.Println("handler/renderer.go RenderCalendarList() template error " + err.Error())
-		return template.HTML("")
-	}
-
-	var buf bytes.Buffer
-	t.Execute(&buf, dataList)
-	return template.HTML(buf.String())
-}
-
 func RenderIndexPage() template.HTML {
 	t, err := template.ParseFiles(indexTemplate)
 	if err != nil {
@@ -289,15 +268,12 @@ func RenderIndexPage() template.HTML {
 	// GetLatesetArticles() returns (list []Article, hasNext bool)
 	artList, _ := GetLatesetArticles("public", "normal", "", 0, 7)
 	// GetLatestCalendar() returns (list []Calendar, hasNext bool)
-	calendarList, _ := GetLatestCalendar(0, 9)
 
 	var buf bytes.Buffer
 	t.Execute(&buf, struct {
 		ArticleListBrief template.HTML
-		CalendarList     template.HTML
 	}{
 		ArticleListBrief: RenderPublicArticleBriefList(artList),
-		CalendarList:     RenderCalendarList(calendarList, true),
 	})
 	return template.HTML(buf.String())
 }
