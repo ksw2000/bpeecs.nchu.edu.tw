@@ -1,0 +1,11 @@
+BEGIN TRANSACTION;
+CREATE TABLE IF NOT EXISTS "calendar" (
+	"id"	INTEGER,
+	"year"	INTEGER,
+	"month"	INTEGER,
+	"day"	INTEGER,
+	"event"	TEXT,
+	"link"	TEXT,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
+COMMIT;
