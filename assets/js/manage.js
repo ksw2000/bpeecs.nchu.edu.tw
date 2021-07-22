@@ -139,7 +139,6 @@ function attach(e) {
                     if (data.errNotLogin) {
                         window.location = '/?notlogin';
                     }
-                    $("#new-article-area #attachmentArea").html('<span class="error">' + data.err + '</span>');
                     notice(data.err);
                 } else {
                     let fl = data.fileList;
@@ -411,7 +410,7 @@ function artListRenderer(dataList){
             newContent = newContent.slice(0, 80);
             newContent += `<a href="/news?id=${data.id}">...More</a><p></p>`;
         }
-        let attachment = loadAttchment(data.attachment);
+        let attachment = renderAttachment(data.attachment);
         let draftIcon = isDraft ? '<div class="draftIcon">draft</div>' : '';
         let draftColor = isDraft ? 'border-color:#fe6c6c;' : 'border-color:#14a1ff;';
 
