@@ -1,31 +1,8 @@
 <h1>註冊新用戶</h1>
 <section id="reg">
-  <input autocomplete="off" type="text" placeholder="帳號 6 ~ 30" id="id" onkeydown="key_enter(this)" autofocus/>
-  <input autocomplete="off" type="text" placeholder="暱稱" id="name" onkeydown="key_enter(this)"/>
-  <input autocomplete="off" type="password" placeholder="密碼 8 ~ 30" id="pwd" onkeydown="key_enter(this)"/>
-  <input autocomplete="off" type="password" placeholder="確認密碼" id="re-pwd" onkeydown="key_enter(this)"/>
+  <input autocomplete="off" type="text" placeholder="帳號 6 ~ 30" id="id" onkeydown="keyEnter(this, register)" autofocus/>
+  <input autocomplete="off" type="text" placeholder="暱稱" id="name" onkeydown="keyEnter(this, register)"/>
+  <input autocomplete="off" type="password" placeholder="密碼 8 ~ 30" id="pwd" onkeydown="keyEnter(this, register)"/>
+  <input autocomplete="off" type="password" placeholder="確認密碼" id="re-pwd" onkeydown="keyEnter(this, register)"/>
   <input type="button" value="註冊" onclick="javascript: register()"/>
-  <p id="error" class="err"></p>
 </section>
-
-<script>
-  function register(){
-    $.post('/api/reg',{
-      id: $("#reg #id").val(),
-      pwd: $("#reg #pwd").val(),
-      re_pwd: $("#reg #re-pwd").val(),
-      name: $("#reg #name").val()
-    }, (data)=>{
-      if(data.err){
-        $("#reg #error").text(data.err);
-      }else{
-        window.location.href = "/manage/reg-done";
-      }
-    },'json');
-  }
-
-  function key_enter(e){
-    let keycode = (window.event)? window.event.keyCode : e.which;
-    if(keycode === 13) register();
-  }
-</script>

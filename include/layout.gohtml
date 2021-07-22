@@ -5,11 +5,11 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <link rel="shortcut icon" href="/favicon.ico"/>
-    <link rel="stylesheet" href="/assets/style/main.css?{{.Time}}">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <meta property="og:title" content="{{.Title}}"/>
     <meta property="og:description" content="{{.Title}}"/>
     <meta property="og:image" content="/assets/img/logo.png"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="/assets/style/main.css?{{.Time}}">
     {{if .Isindex}}
     <link rel="stylesheet" type="text/css" href="/assets/style/for-index.css?{{.Time}}">
     {{end}}
@@ -44,10 +44,7 @@
       <div id="fix-1200">
         <div id="logo"><a href="/"><img id="logo-over-450px" src="/assets/img/logo.svg" style="height:100%;"><img id="logo-less-450px" src="/assets/img/favicon.ico" style="height:100%;"></a></div>
         <div id="button-less-900px">
-          <a href="javascript:void(0);"
-             onclick="slideToggole('button-over-900px')">
-             <img src="/assets/img/menu.png">
-          </a>
+          <a href="javascript:void(0);" onclick="openSideBar()"><i class="material-icons">menu</i></a>
         </div>
         <div id="button-over-900px">
           <ul>
@@ -90,6 +87,7 @@
               <ul>
                 <li><a href="/manage">歡迎</a></li>
                 <li><a href="/manage/article">文章管理</a></li>
+                <li><a href="/manage/calendar">行事曆管理</a></li>
                 <li><a href="/manage/reg">註冊新用戶</a></li>
                 <li><a href="/logout">登出</a></li>
               </ul>
@@ -176,13 +174,13 @@
           <tr>
             <td>
               <li>國立中興大學 National Chung Hsing University</li>
-              <li><i class="material-icons" style="vertical-align: middle; font-size: 1em;">map</i> <a href="https://goo.gl/maps/PVbB8YebuPfXP2qeA">402 台中市南區興大路 145 號 電機大樓 3 樓</a></li>
-              <li><i class="material-icons" style="vertical-align: middle; font-size: 1em;">map</i> <a href="https://goo.gl/maps/PVbB8YebuPfXP2qeA">145 Xinda Rd., South Dist., Taichung City 402</a></li>
+              <li><i class="material-icons">map</i> <a href="https://goo.gl/maps/PVbB8YebuPfXP2qeA">402 台中市南區興大路 145 號 電機大樓 3 樓</a></li>
+              <li><i class="material-icons">map</i> <a href="https://goo.gl/maps/PVbB8YebuPfXP2qeA">145 Xinda Rd., South Dist., Taichung City 402</a></li>
             </td>
             <td>
-              <li><i class="material-icons" style="vertical-align: middle; font-size: 1em;">call</i> +886-4-22840120</li>
-              <li><i class="material-icons" style="vertical-align: middle; font-size: 1em;">print</i> +886-4-22854662</li>
-              <li><i class="material-icons" style="vertical-align: middle; font-size: 1em;">email</i> <a href="mailto:eecs@nchu.edu.tw">eecs@nchu.edu.tw</a></li>
+              <li><i class="material-icons">call</i> +886-4-22840120</li>
+              <li><i class="material-icons">print</i> +886-4-22854662</li>
+              <li><i class="material-icons">email</i> <a href="mailto:eecs@nchu.edu.tw">eecs@nchu.edu.tw</a></li>
             </td>
           </tr>
         </table>

@@ -1,6 +1,6 @@
 <h1 id="title"></h1>
 <div id="article-parent">
-  <div class="loader" style="margin:30px 0px"></div>
+  <div class="loader" style="margin:30px auto"></div>
 </div>
 
 <script>
@@ -46,14 +46,14 @@
   function artListRenderer(dataList){
     if (dataList == null) return "沒有文章";
     let ret = '';
-    dataList.forEach((data)=>{  
+    dataList.forEach((data)=>{
       data.publish = $.format.date(new Date(data.publish * 1000), "yyyy-MM-dd");
       let newContent = stripHtml(data.content);
       if (newContent.length > 30) {
         newContent = newContent.slice(0, 80);
         newContent += `...<a href="/news?id=${data.id}">略</a>`;
       }
-      let attachment = loadAttchment(data.attachment);
+      let attachment = renderAttachment(data.attachment);
       ret +=`
         <div class="article" data-id="${data.id}">
           <h2 class="title">${data.title}</h2>
