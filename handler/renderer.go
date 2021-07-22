@@ -153,7 +153,7 @@ func RenderPublicArticleBriefList(artInfoList []Article) template.HTML {
 		data.Title = artInfo.Title
 		var buf bytes.Buffer
 		t, _ := template.New("article_list_brief").Parse(`
-        <div class="article brief">
+        <div class="article">
             <div class="candy-header"><span class="single">{{.PublishTime}}</span></div>
             <a href="/news?id={{.ID}}">{{.Title}}</a>
         </div>`)
@@ -267,8 +267,6 @@ func RenderIndexPage() template.HTML {
 
 	// GetLatesetArticles() returns (list []Article, hasNext bool)
 	artList, _ := GetLatesetArticles("public", "normal", "", 0, 7)
-	// GetLatestCalendar() returns (list []Calendar, hasNext bool)
-
 	var buf bytes.Buffer
 	t.Execute(&buf, struct {
 		ArticleListBrief template.HTML
