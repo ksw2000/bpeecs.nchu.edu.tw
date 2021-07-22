@@ -100,8 +100,8 @@ func Logout(w http.ResponseWriter, r *http.Request) (err error) {
 	return err
 }
 
-// CheckLogin checks if ID and Password is match
-func CheckLogin(w http.ResponseWriter, r *http.Request) *User {
+// CheckLoginBySession checks if ID and Password is match
+func CheckLoginBySession(w http.ResponseWriter, r *http.Request) *User {
 	store, err := session.Start(context.Background(), w, r)
 	if err != nil {
 		return nil

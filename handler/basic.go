@@ -56,7 +56,7 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 	// Handle simple web and check login info
 	data := initPageData()
 
-	user := CheckLogin(w, r)
+	user := CheckLoginBySession(w, r)
 	data.IsLogin = user != nil
 
 	var simpleWeb = map[string]string{
@@ -127,7 +127,7 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 				data.Main, _ = getHTML(r.URL.Path)
 			}
 		case "/login":
-			if CheckLogin(w, r) != nil {
+			if CheckLoginBySession(w, r) != nil {
 				http.Redirect(w, r, "/manage", 302)
 				return
 			}

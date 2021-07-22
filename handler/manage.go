@@ -13,7 +13,7 @@ func ManageWebHandler(w http.ResponseWriter, r *http.Request) {
 	data := initPageData()
 
 	// Is login?
-	user := CheckLogin(w, r)
+	user := CheckLoginBySession(w, r)
 	data.IsLogin = user != nil
 
 	var manageWeb = map[string]string{
