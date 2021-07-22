@@ -4,10 +4,12 @@ import (
 	"context"
 	"crypto/sha256"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
+	"regexp"
 	"time"
 
 	"bpeecs.nchu.edu.tw/config"
@@ -23,14 +25,20 @@ type User struct {
 }
 
 // Login is a function handle login
-func Login(w http.ResponseWriter, r *http.Request) error {
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	ret := struct {
+		Err string `json:"err"`
+	}{}
+	encoder := json.NewEncoder(w)
+
 	id, pwd := r.FormValue("id"), r.FormValue("pwd")
 	log.Printf("%s try to login\n", id)
 
 	d, err := sql.Open("sqlite3", config.MainDB)
 	if err != nil {
-		log.Println(err)
-		return err
+		ret.Err = err.Error()
+		encoder.Encode(ret)
+		return
 	}
 	defer d.Close()
 	row := d.QueryRow("SELECT `password`, `name`, `salt` FROM user WHERE `id` = ?", id)
@@ -39,24 +47,99 @@ func Login(w http.ResponseWriter, r *http.Request) error {
 	err = row.Scan(&enryptedPwd, &name, &salt)
 
 	if err == sql.ErrNoRows || pwdHash(pwd, salt) != enryptedPwd {
-		return fmt.Errorf("帳號或密碼錯誤")
+		ret.Err = "帳號或密碼錯誤"
+		encoder.Encode(ret)
+		return
 	}
 
 	// Session srart
 	store, err := session.Start(context.Background(), w, r)
 	if err != nil {
-		return fmt.Errorf("session.Start() error %v", err)
+		ret.Err = fmt.Sprintf("session.Start() error %v", err)
+		encoder.Encode(ret)
+		return
 	}
 
 	store.Set("userID", id)
 	store.Set("userName", name)
 
 	if err = store.Save(); err != nil {
-		return fmt.Errorf("Session store error")
+		ret.Err = "Session store error"
+		encoder.Encode(ret)
+		return
 	}
 
 	log.Printf("%s login success\n", id)
-	return nil
+	return
+}
+
+func RegHandler(w http.ResponseWriter, r *http.Request) {
+	encoder := json.NewEncoder(w)
+	ret := struct {
+		Err string `json:"err"`
+	}{}
+
+	// only current accounts are allowed to register a new account
+	user := CheckLoginBySession(w, r)
+	if user == nil {
+		ret.Err = "必需登入才能建立新帳戶"
+		encoder.Encode(ret)
+		return
+	}
+
+	id := get("id", r)
+	pwd := get("pwd", r)
+	rePwd := get("re_pwd", r)
+	name := get("name", r)
+
+	match, err := regexp.MatchString("^[a-zA-Z0-9_]{5,30}$", id)
+	if err != nil || !match {
+		ret.Err = "帳號僅接受「英文字母、數字、-、_」且需介於 5 到 30 字元"
+		encoder.Encode(ret)
+		return
+	}
+
+	if len(name) > 30 || len(name) < 1 {
+		ret.Err = "暱稱需介於 1 到 30 字元"
+		encoder.Encode(ret)
+		return
+	}
+
+	if pwd != rePwd {
+		ret.Err = "密碼與確認密碼不一致"
+		encoder.Encode(ret)
+		return
+	}
+
+	match, err = regexp.MatchString("^[a-zA-Z0-9_]{8,30}$", pwd)
+	if err != nil || !match {
+		ret.Err = "密碼僅接受「英文字母、數字、-、_」且需介於 8 到 30 字元"
+		encoder.Encode(ret)
+		return
+	}
+
+	match, err = regexp.MatchString("^.*?\\d+.*?$", pwd)
+	if err != nil || !match {
+		ret.Err = "密碼必需含有數字"
+		encoder.Encode(ret)
+		return
+	}
+
+	match, err = regexp.MatchString("^.*?[a-zA-Z]+.*?$", pwd)
+	if err != nil || !match {
+		ret.Err = "密碼必需含有英文字母"
+		encoder.Encode(ret)
+		return
+	}
+
+	if err := NewAcount(id, pwd, name); err != nil {
+		ret.Err = err.Error()
+		encoder.Encode(ret)
+		return
+	}
+
+	encoder.Encode(ret)
+	return
 }
 
 // NewAcount creates a new account

@@ -5,21 +5,18 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"regexp"
 	"strconv"
 	"strings"
 
 	"bpeecs.nchu.edu.tw/files"
 )
 
-type attachmentJSONStruct struct {
-	ClientName string `json:"client_name"`
-	Path       string `json:"path"`
-	ServerName string `json:"server_name"`
-}
-
 func attachmentJSONtoClientName(attachmentJSON string) []string {
-	attachment := []attachmentJSONStruct{}
+	attachment := []struct {
+		ClientName string `json:"client_name"`
+		Path       string `json:"path"`
+		ServerName string `json:"server_name"`
+	}{}
 	json.Unmarshal([]byte(attachmentJSON), &attachment)
 	serverNameList := []string{}
 	for _, v := range attachment {
@@ -32,92 +29,17 @@ func attachmentJSONtoClientName(attachmentJSON string) []string {
 func ApiHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	path := r.URL.Path
+	encoder := json.NewEncoder(w)
 
 	if path == "/api/login" {
-		ret := struct {
-			Err string `json:"err"`
-		}{}
-
-		if err := Login(w, r); err != nil {
-			ret.Err = err.Error()
-			json.NewEncoder(w).Encode(ret)
-			return
-		}
-
-		json.NewEncoder(w).Encode(ret)
-		return
+		LoginHandler(w, r)
 	} else if path == "/api/reg" {
-		ret := struct {
-			Err string `json:"err"`
-		}{}
-		encoder := json.NewEncoder(w)
-		// only current accounts are allowed to register a new account
-		user := CheckLoginBySession(w, r)
-		if user == nil {
-			ret.Err = "必需登入才能建立新帳戶"
-			encoder.Encode(ret)
-			return
-		}
-
-		id := get("id", r)
-		pwd := get("pwd", r)
-		rePwd := get("re_pwd", r)
-		name := get("name", r)
-
-		match, err := regexp.MatchString("^[a-zA-Z0-9_]{5,30}$", id)
-		if err != nil || !match {
-			ret.Err = "帳號僅接受「英文字母、數字、-、_」且需介於 5 到 30 字元"
-			encoder.Encode(ret)
-			return
-		}
-
-		if len(name) > 30 || len(name) < 1 {
-			ret.Err = "暱稱需介於 1 到 30 字元"
-			encoder.Encode(ret)
-			return
-		}
-
-		if pwd != rePwd {
-			ret.Err = "密碼與確認密碼不一致"
-			encoder.Encode(ret)
-			return
-		}
-
-		match, err = regexp.MatchString("^[a-zA-Z0-9_]{8,30}$", pwd)
-		if err != nil || !match {
-			ret.Err = "密碼僅接受「英文字母、數字、-、_」且需介於 8 到 30 字元"
-			encoder.Encode(ret)
-			return
-		}
-
-		match, err = regexp.MatchString("^.*?\\d+.*?$", pwd)
-		if err != nil || !match {
-			ret.Err = "密碼必需含有數字"
-			encoder.Encode(ret)
-			return
-		}
-
-		match, err = regexp.MatchString("^.*?[a-zA-Z]+.*?$", pwd)
-		if err != nil || !match {
-			ret.Err = "密碼必需含有英文字母"
-			encoder.Encode(ret)
-			return
-		}
-
-		if err := NewAcount(id, pwd, name); err != nil {
-			ret.Err = err.Error()
-			encoder.Encode(ret)
-			return
-		}
-
-		encoder.Encode(ret)
-		return
+		RegHandler(w, r)
 	} else if path == "/api/news" {
 		save := exist("save", r)
 		publish := exist("publish", r)
 		del := exist("del", r)
 
-		encoder := json.NewEncoder(w)
 		ret := struct {
 			Err         string `json:"err"`
 			ErrNotLogin bool   `json:"errNotLogin"`
@@ -192,7 +114,6 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 			List    []Article `json:"list"`
 			HasNext bool      `json:"hasNext"`
 		})
-		encoder := json.NewEncoder(w)
 
 		// step1: parse GET paramters
 		scope := get("scope", r)
@@ -302,7 +223,7 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 			Err         string `json:"err"`
 			ErrNotLogin bool   `json:"errNotLogin"`
 		}{}
-		encoder := json.NewEncoder(w)
+
 		// check login
 		user := CheckLoginBySession(w, r)
 		if user == nil {
@@ -345,7 +266,7 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 			Err         string `json:"err"`
 			ErrNotLogin bool   `json:"errNotLogin"`
 		}{}
-		encoder := json.NewEncoder(w)
+
 		// check login
 		user := CheckLoginBySession(w, r)
 		if user == nil {
@@ -434,7 +355,6 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 			InfoList []Calendar `json:"infoList"`
 			Err      string     `json:"err"`
 		}{}
-		encoder := json.NewEncoder(w)
 
 		year, err1 := strconv.ParseUint(get("year", r), 10, 12)
 		month, err2 := strconv.ParseUint(get("month", r), 10, 8)
