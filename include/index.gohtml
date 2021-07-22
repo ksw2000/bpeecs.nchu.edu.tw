@@ -1,6 +1,6 @@
 <div class="double-side-parent">
   <div class="double-side">
-    <h2>最新消息</h2>
+    <h2><i class="material-icons">article</i> 最新消息</h2>
     <div id="article-parent">{{.ArticleListBrief}}</div>
   </div>
   <div class="double-side">
@@ -11,7 +11,38 @@
       <li>專業核心必選修</li>
       <li>跨領域選修</li>
     </ol>
-    <h2>行事曆</h2>
-    <div id="calendar-parent"></div>
+    <h2><i class="material-icons">event</i> 行事曆</h2>
+    <div id="calendar-month-choose">
+      <div><i class="material-icons" id="calendar-goto-prev">keyboard_arrow_left</i></div>
+      <div id="calendar-title"></div>
+      <div><i class="material-icons" id="calendar-goto-next">keyboard_arrow_right</i></div>
+    </div>
+    <div id="calendar-parent">
+      <div class="loader" style="margin:30px auto"></div>
+    </div>
   </div>
 </div>
+
+<script>
+var current = new Date();
+window.onload = () => {
+  loadCalendarOnIndexPage(current);
+}
+
+function loadCalendarOnIndexPage(date){
+  document.querySelector('#calendar-title').innerHTML = $.format.date(date, "yyyy / MM");;
+  loadCalendar(date, (data)=>{
+    document.querySelector('#calendar-parent').innerHTML = renderCalendar(data.infoList, /*editMode= */ false);
+  });
+}
+
+document.getElementById("calendar-goto-prev").addEventListener('click', ()=>{
+  current = new Date(current.getFullYear(), current.getMonth()-1)
+  loadCalendarOnIndexPage(current);
+});
+
+document.getElementById("calendar-goto-next").addEventListener('click', ()=>{
+  current = new Date(current.getFullYear(), current.getMonth()+1)
+  loadCalendarOnIndexPage(current);
+});
+</script>

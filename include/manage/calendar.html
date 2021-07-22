@@ -61,17 +61,13 @@ window.onload = () => {
 }
 
 function loadCalendarBasedOnDOM($dom) {
-    try {
-        var yearMonthParts = $dom.val().split('-');
-        var year = parseInt(yearMonthParts[0]);
-        var month = parseInt(yearMonthParts[1]);
-    } catch (e) {
-        return
-    }
-    loadCalendar(new Date(year, month - 1), (data)=>{
-        console.log(data);
-        window.calendar = data;
-         $('#load-calendar').html(renderCalendar(data.infoList, true));
+    $('#load-calendar').fadeOut('fast', () => {
+        $('#load-calendar').fadeIn('fast', () => {
+            loadCalendar(new Date($dom.val()), (data)=>{
+                window.calendar = data;
+                $('#load-calendar').html(renderCalendar(data.infoList, /*editMode =*/ true));
+            });
+        });
     });
 }
 
