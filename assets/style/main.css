@@ -23,6 +23,7 @@
   --light-blue: #40dcff;
   --gray-blue: #898f92;
   --blue-green: #208e95;
+  --gray: #414141;
 }
 
 :focus {
@@ -172,35 +173,15 @@ h3 {
 }
 
 table {
-  border-radius: 5px;
   border-collapse: collapse;
   margin: 0px auto;
   max-width: 800px;
   width: 100%;
 }
 
-table thead, table tbody {
-  border-width: 0px 1px;
-  border-style: solid;
-  border-color: var(--gray);
-}
-
-tr {
-  border-width: 1px 0px 0px;
-  border-style: solid;
-  border-color: var(--gray);
-}
-
 table td, table th {
+  border: 1px solid var(--gray);
   padding: 10px 15px;
-}
-
-table tr:last-child {
-  border-bottom-width: 1px;
-}
-
-table tbody tr:hover {
-  background-color: #c4c4c4;
 }
 
 table.customize {
@@ -210,7 +191,7 @@ table.customize {
 /*----------------------------------------------footer----------------------------------------------*/
 
 footer {
-  background-color: rgb(65, 65, 65);
+  background-color: var(--gray);
   color: #fff;
   display: block;
   font-size: 15px;
@@ -247,7 +228,7 @@ footer table {
   width: 100%;
 }
 
-footer table tr:last-child, footer table tr, footer table tr:hover {
+footer table td, footer table th {
   border: 0px;
   background-color: transparent;
 }
