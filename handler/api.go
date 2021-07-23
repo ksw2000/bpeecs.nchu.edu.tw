@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-
-	"bpeecs.nchu.edu.tw/files"
 )
 
 func attachmentJSONtoClientName(attachmentJSON string) []string {
@@ -203,9 +201,8 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		fhs := r.MultipartForm.File["files"]
 		ret.FileList = []fileInfo{}
 		for _, fh := range fhs {
-			f := files.New()
-
-			if err := f.NewFile(fh); err != nil {
+			f, err := NewFile(fh)
+			if err != nil {
 				ret.Err = "新增檔案失敗"
 				json.NewEncoder(w).Encode(ret)
 				return
@@ -245,8 +242,8 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 		serverNameList := attachmentJSONtoClientName(get("new_attachment", r))
 
 		// Delete file record in database and delete file in system
-		f := files.New()
-		if err := f.Del(serverName); err != nil {
+		f := Files{ServerName: serverName}
+		if err := f.Del(); err != nil {
 			ret.Err = fmt.Sprintf("檔案資料庫連結失敗或檔案刪除失敗 %v", err)
 			encoder.Encode(ret)
 			return

@@ -7,22 +7,21 @@ import (
 	"time"
 
 	"bpeecs.nchu.edu.tw/config"
-	"bpeecs.nchu.edu.tw/files"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
 // Article handles manipulations about article
 type Article struct {
-	ID           int64         `json:"id"`
-	User         string        `json:"user"`
-	Type         string        `json:"type"`
-	CreateTime   uint64        `json:"create"`
-	PublishTime  uint64        `json:"publish"`
-	LastModified uint64        `json:"lastModified"`
-	Title        string        `json:"title"`
-	Content      string        `json:"content"`
-	Attachment   []files.Files `json:"attachment"`
+	ID           int64   `json:"id"`
+	User         string  `json:"user"`
+	Type         string  `json:"type"`
+	CreateTime   uint64  `json:"create"`
+	PublishTime  uint64  `json:"publish"`
+	LastModified uint64  `json:"lastModified"`
+	Title        string  `json:"title"`
+	Content      string  `json:"content"`
+	Attachment   []Files `json:"attachment"`
 }
 
 // NewArticle is used to initialize an editor when user want to add new article
@@ -140,7 +139,6 @@ func (a *Article) Del(user string) error {
 	}
 
 	// remove attachment
-	f := files.New()
 	rows, _ := d.Query("SELECT path FROM files WHERE article_id=?", a.ID)
 	defer rows.Close()
 	path := ""
@@ -149,10 +147,10 @@ func (a *Article) Del(user string) error {
 		rows.Scan(&path)
 		pathList = append(pathList, path)
 	}
-	f.DelByPathList(pathList)
+	DelFilesByPathList(pathList)
 
 	// auto remove
-	f.AutoDel()
+	AutoCleanFiles()
 	return nil
 }
 
@@ -281,9 +279,9 @@ func GetArticleByAid(aid int64, user string) *Article {
 }
 
 // getAttachmentByArticleID gets attachment info and returns Files list
-func getAttachmentByArticleID(id int64) []files.Files {
+func getAttachmentByArticleID(id int64) []Files {
 	d, err := sql.Open("sqlite3", config.MainDB)
-	fileList := []files.Files{}
+	fileList := []Files{}
 	if err != nil {
 		log.Println(err)
 		return fileList
@@ -303,7 +301,7 @@ func getAttachmentByArticleID(id int64) []files.Files {
 	*/
 	defer rows.Close()
 	for rows.Next() {
-		f := new(files.Files)
+		f := new(Files)
 		rows.Scan(&f.ClientName, &f.ServerName, &f.Mime, &f.Path)
 		fileList = append(fileList, *f)
 	}

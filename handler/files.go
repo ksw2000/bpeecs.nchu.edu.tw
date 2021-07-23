@@ -1,9 +1,8 @@
-package files
+package handler
 
 import (
 	"io"
 	"log"
-	"math/rand"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -25,13 +24,8 @@ type Files struct {
 	Path       string `json:"path"`
 }
 
-// New returns new instance of Files
-func New() *Files {
-	return new(Files)
-}
-
 // NewFile creates new file by FileHeader
-func (f *Files) NewFile(fh *multipart.FileHeader) error {
+func NewFile(fh *multipart.FileHeader) (*Files, error) {
 	filePath := "./assets/upload/"
 	fileExt := filepath.Ext(fh.Filename)
 
@@ -41,56 +35,58 @@ func (f *Files) NewFile(fh *multipart.FileHeader) error {
 		fileName = randomString(10)
 	}
 
-	newFile, err := os.OpenFile(filePath+string(fileName)+fileExt, os.O_WRONLY|os.O_CREATE, 0666)
-	defer newFile.Close()
+	destFile, err := os.OpenFile(filePath+string(fileName)+fileExt, os.O_WRONLY|os.O_CREATE, 0666)
+	defer destFile.Close()
 	if err != nil {
 		log.Println(err, "files.go NewFile() os.OpenFile() failed")
-		return err
+		return nil, err
 	}
 
-	oriFile, _ := fh.Open()
-	defer oriFile.Close()
+	srcFile, _ := fh.Open()
+	defer srcFile.Close()
 
-	_, err = io.Copy(newFile, oriFile)
+	_, err = io.Copy(destFile, srcFile)
 	if err != nil {
 		log.Println(err, "files.go NewFile() io.Copy() failed")
-		return err
+		return nil, err
 	}
 
 	d, err := sql.Open("sqlite3", config.MainDB)
 	if err != nil {
 		log.Println(err)
-		return err
+		return nil, err
 	}
 	defer d.Close()
 	stmt, _ := d.Prepare(`INSERT INTO files(upload_time, client_name, server_name, mime, path)
                           values(?, ?, ?, ?, ?)`)
 	now := time.Now().Unix()
 
-	f.UploadTime = uint64(now)
-	f.ClientName = fh.Filename
-	f.ServerName = fileName
-	f.Mime = fh.Header.Get("Content-Type")
-	f.Path = "/assets/upload/" + fileName + fileExt
+	f := Files{
+		UploadTime: uint64(now),
+		ClientName: fh.Filename,
+		ServerName: fileName,
+		Mime:       fh.Header.Get("Content-Type"),
+		Path:       "/assets/upload/" + fileName + fileExt,
+	}
 
 	_, err = stmt.Exec(now, f.ClientName, f.ServerName, f.Mime, f.Path)
 	if err != nil {
 		log.Println(err, "files.go NewFile() stmt.Exec() failed")
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &f, nil
 }
 
 // Del deletes a file by server_name
-func (f *Files) Del(serverName string) error {
+func (f *Files) Del() error {
 	d, err := sql.Open("sqlite3", config.MainDB)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 	defer d.Close()
-	rows := d.QueryRow("SELECT path FROM files WHERE server_name = ?", serverName)
+	rows := d.QueryRow("SELECT path FROM files WHERE server_name = ?", f.ServerName)
 
 	var path string
 	if err := rows.Scan(&path); err != nil {
@@ -98,11 +94,41 @@ func (f *Files) Del(serverName string) error {
 		return err
 	}
 
-	return f.DelByPathList([]string{path})
+	return DelFilesByPathList([]string{path})
 }
 
-// DelByPathList deletes files by path list
-func (f *Files) DelByPathList(pathList []string) error {
+// AutoCleanFiles deletes files do not be used anymore
+// i.e., delete the file where it's aid is null
+func AutoCleanFiles() {
+	d, err := sql.Open("sqlite3", config.MainDB)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer d.Close()
+
+	rows, err := d.Query(`
+        SELECT path FROM files
+        WHERE article_id is null and upload_time < ?`,
+		time.Now().Unix()-12*60*60)
+	defer rows.Close()
+
+	if err != nil {
+		log.Println(err, "files.go AutoCleanFiles() db.Query failed")
+		return
+	}
+
+	path := ""
+	pathList := []string{}
+	for rows.Next() {
+		rows.Scan(&path)
+		pathList = append(pathList, path)
+	}
+
+	DelFilesByPathList(pathList)
+}
+
+func DelFilesByPathList(pathList []string) error {
 	d, err := sql.Open("sqlite3", config.MainDB)
 	if err != nil {
 		log.Println(err)
@@ -119,41 +145,11 @@ func (f *Files) DelByPathList(pathList []string) error {
 		stmt, _ := d.Prepare("DELETE FROM files WHERE path=?")
 		_, err = stmt.Exec(v)
 		if err != nil {
-			log.Println(err, "files.go Remove() stmt.Exec() failed")
+			log.Println(err, "files.go DelFilesByPathList() stmt.Exec() failed")
 			return err
 		}
 	}
 	return nil
-}
-
-// AutoDel deletes files do not be used anymore
-func (f *Files) AutoDel() {
-	d, err := sql.Open("sqlite3", config.MainDB)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	defer d.Close()
-
-	rows, err := d.Query(`
-        SELECT path FROM files
-        WHERE article_id is null and upload_time < ?`,
-		time.Now().Unix()-12*60*60)
-	defer rows.Close()
-
-	if err != nil {
-		log.Println(err, "files.go Automremove() db.Query failed")
-		return
-	}
-
-	path := ""
-	pathList := []string{}
-	for rows.Next() {
-		rows.Scan(&path)
-		pathList = append(pathList, path)
-	}
-
-	f.DelByPathList(pathList)
 }
 
 func fileExists(filename string) bool {
@@ -162,14 +158,4 @@ func fileExists(filename string) bool {
 		return false
 	}
 	return !info.IsDir()
-}
-
-func randomString(length int) string {
-	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789~@!"
-	var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
-	b := make([]byte, length)
-	for i := range b {
-		b[i] = charset[seededRand.Intn(len(charset))]
-	}
-	return string(b)
 }
