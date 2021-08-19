@@ -130,6 +130,7 @@ function addEvent(){
             }else{
                 notice('新增成功');
                 // load new calendar
+                $('#select-calendar-range').val(date.split('-')[0]+'-'+date.split('-')[1]);
                 loadCalendarBasedOnDOM($('#select-calendar-range'));
                 // and reset event title and event link
                 $('#event-title').val('');

@@ -825,32 +825,41 @@ nav #button-over-900px>ul>li>ul>li>a:hover {
   width: 0px;
 }
 
-.calender-list {
+.calendar-list {
   align-items: center;
   display: flex;
   width: 100%;
 }
 
-.calender-title {
+.calendar-head span {
+  width: 42px;
+  text-align: center;
+}
+
+.calendar-title {
   padding-left: 10px;
   flex-grow: 1;
 }
 
-.calender-title span, .calender-title span {
+.calendar-title span, .calendar-title span {
   font-size: 1.12rem!important;
 }
 
-.calender-tail i {
+.calendar-tail {
+  white-space: nowrap;
+}
+
+.calendar-tail i {
   cursor: pointer;
   font-size: 1.12rem;
   margin: 0px 3px;
   transition: color 500ms;
 }
 
-.calender-tail i:hover {
+.calendar-tail i:hover {
   color: #02b79e;
 }
 
-.calender-tail i.delete:hover {
+.calendar-tail i.delete:hover {
   color: #fe6c6c;
 }

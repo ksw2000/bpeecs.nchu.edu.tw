@@ -20,7 +20,7 @@ function renderAttachment(list) {
 }
 
 /**
- * interface calender{
+ * interface calendar{
  *      id: number
  *      day: number
  *      month: number
@@ -31,17 +31,17 @@ function renderAttachment(list) {
  */
 function renderCalendar(infoList, editMode) {
     if (infoList && infoList.length > 0) {
-        let ret = '<div class="calender">';
+        let ret = '<div class="calendar">';
         infoList.forEach(e => {
-            ret += '<div class="calender-list">'
-            ret += `<div class="candy-header"><span class="single cyan big">${e.month} / ${e.day}</span></div>`;
+            ret += '<div class="calendar-list">'
+            ret += `<div class="calendar-head candy-header"><span class="single cyan big">${e.month} / ${e.day}</span></div>`;
             if (e.link) {
-                ret += `<div class="calender-title"><a href="${e.link}">${e.event}</a></div>`;
+                ret += `<div class="calendar-title"><a href="${e.link}">${e.event}</a></div>`;
             } else {
-                ret += `<div class="calender-title">${e.event}</div>`;
+                ret += `<div class="calendar-title">${e.event}</div>`;
             }
             if (editMode) {
-                ret += ' <div class="calender-tail">';
+                ret += ' <div class="calendar-tail">';
                 ret += `<i class="material-icons" onclick="btnEditCalendar(${e.id})" title="編輯">edit</i>`;
                 ret += `<i class="material-icons delete" onclick="btnDelCalendar(${e.id})" title="刪除">close</i>`;
                 ret += '</div>';
