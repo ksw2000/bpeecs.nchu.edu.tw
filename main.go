@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"time"
 
 	"bpeecs.nchu.edu.tw/handler"
 
@@ -46,6 +47,10 @@ func main() {
 		Addr:    fmt.Sprintf(":%d", *port),
 		Handler: mux,
 	}
+
+	// https://stackoverflow.com/questions/32325343/go-tcp-too-many-open-files-debug
+	// try to solve "too many open files debug" bug
+	http.DefaultClient.Timeout = time.Minute * 10
 
 	if *port == 443 {
 		fmt.Println("https://localhost")
