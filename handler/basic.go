@@ -67,7 +67,7 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 		"/about/official-document":               "系務相關辦法",
 		"/about/why-establish":                   "創系緣由",
 		"/course":                                "課程內容",
-		"/course/graduation-conditions":          "畢業條件",
+		"/course/graduation-conditions":          "畢業條件及輔系雙主修",
 		"/member/admin-staff":                    "行政人員",
 		"/member/faculty":                        "師資陣容",
 		"/member/class-teacher":                  "班主任",
