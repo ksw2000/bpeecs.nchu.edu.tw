@@ -29,7 +29,7 @@ __NCHU BPEECS__ [https://bpeecs.nchu.edu.tw/](https://bpeecs.nchu.edu.tw/)
         + json/
         + js/
         + style/
-        + upload/ (client upload files)
+        + upload/ (client's uploaded files)
     + config/
     + db/ (sqlite database)
         + calendar.db
@@ -44,11 +44,10 @@ __NCHU BPEECS__ [https://bpeecs.nchu.edu.tw/](https://bpeecs.nchu.edu.tw/)
         + syllabus.go (`/syllabus/*`)
         + article.go
         + calendar.go
-        + files.go
+        + files.go (manage the uploaded files)
         + login.go
         + renderer.go
     + include/  (html files & gohtml layout files)
-    + files/ (manage the uploaded files)
     + go.mod
     + go.sum
     + __main.go__ (main program)
