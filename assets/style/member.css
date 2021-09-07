@@ -16,9 +16,7 @@
 
 @keyframes rainbow{
   0%   {background-color: #e5edee;}
-  25%  {background-image: #eceded;}
-  50%  {background-image: #dfdfd4;}
-  100% {background-image: #dad4df;}
+  100% {background-color: transparent;}
 }
 
 .card #name{
@@ -34,7 +32,7 @@
 }
 
 .card #separate{
-  background-color: #ff9600;
+  background-color: #021a45;
   height: 2px;
   float: right;
   margin: 10px 0px;
