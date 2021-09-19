@@ -21,6 +21,8 @@ func ErrorWebHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(403)
 		data.Title = "HTTP 403 Forbidden"
 		data.Main, _ = getHTML("/http403")
+	default:
+		NotFound(w, r)
 	}
 
 	t, _ := template.ParseFiles("./include/layout.gohtml")
