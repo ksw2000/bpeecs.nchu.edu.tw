@@ -20,10 +20,23 @@
 :root {
   --deep-blue: #0b476f;
   --blue: #0391e0;
-  --light-blue: #40dcff;
+  --aqua: #40dcff;
+  --light-blue: #b0dff6;
+  --deep-gray-blue: #5d637d;
   --gray-blue: #898f92;
+  --light-blue-green: #11d2cd;
   --blue-green: #208e95;
+  --dark-gray: #343434;
+  --light-gray: #505050;
   --gray: #414141;
+  --cyan: #02b79e;
+  --pink: #fe6c6c;
+  --dark-pink: #f01d1d;
+  --yellow: #ffff00;
+  --orange: #ff7a00;
+  --red: #c92d2d;
+  --green: #36b349;
+  --nav-height: 80px;
 }
 
 :focus {
@@ -36,7 +49,7 @@ body {
   color: #5a5a5a;
   height: 100%;
   padding: 0px;
-  padding-top: 80px;
+  padding-top: var(--nav-height);
   margin: 0px;
 }
 
@@ -90,7 +103,7 @@ li {
 .loader {
   animation: spin 400ms cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
   border: 3px solid transparent;
-  border-top: 3px solid var(--light-blue);
+  border-top: 3px solid var(--aqua);
   border-radius: 50%;
   margin: 0px auto;
   width: 30px;
@@ -155,13 +168,13 @@ h1 {
 */
 
 h2 {
-  color: rgb(11, 71, 111);
+  color: var(--deep-blue);
   font-size: 23px;
   font-weight: normal;
 }
 
 h3 {
-  color: rgb(93, 99, 125);
+  color: var(--deep-gray-blue);
   font-size: 20px;
   font-weight: normal;
 }
@@ -169,7 +182,7 @@ h3 {
 /*CkEditor*/
 
 .marker {
-  background-color: #ffff00;
+  background-color: var(--yello);
 }
 
 table {
@@ -202,12 +215,12 @@ footer {
 
 footer a {
   text-decoration: none;
-  color: var(--light-blue);
+  color: var(--aqua);
   transition: color 500ms;
 }
 
 footer a:hover {
-  color: #b0dff6;
+  color: var(--light-blue);
 }
 
 footer li {
@@ -282,7 +295,7 @@ section {
 }
 
 input {
-  border: 1px solid #343434;
+  border: 1px solid var(--dark-gray);
   border-radius: 8px;
   box-sizing: border-box;
   color: inherit;
@@ -312,7 +325,7 @@ input[type="button"] {
 select {
   background-color: transparent;
   border-width: 0px 0px 2px;
-  border-color: transparent transparent #343434;
+  border-color: transparent transparent var(--dark-gray);
   border-radius: 0px;
   box-sizing: border-box;
   color: inherit;
@@ -327,7 +340,7 @@ select {
 
 button {
   background-color: transparent;
-  border: 1px solid #343434;
+  border: 1px solid var(--dark-gray);
   border-radius: 8px;
   box-sizing: border-box;
   color: inherit;
@@ -340,66 +353,66 @@ button {
 }
 
 button.border {
-  border-color: #343434;
+  border-color: var(--dark-gray);
   background-color: transparent;
-  color: #343434;
+  color: var(--dark-gray);
 }
 
 button.border:hover {
-  background-color: #343434;
+  background-color: var(--dark-gray);
 }
 
 button.blue {
-  border-color: #14a1ff;
-  background-color: #14a1ff;
+  border-color: var(--blue);
+  background-color: var(--blue);
   color: #fff;
 }
 
 button.blue:hover {
-  border-color: #307eb3;
-  background-color: #307eb3;
+  border-color: var(--deep-blue);
+  background-color: var(--deep-blue);
   color: #fff;
 }
 
 button.red {
-  border-color: #fe6c6c;
-  background-color: #fe6c6c;
+  border-color: var(--pink);
+  background-color: var(--pink);
   color: #fff;
 }
 
 button.red:hover {
-  border-color: #f01d1d;
-  background-color: #f01d1d;
+  border-color: var(--dark-pink);
+  background-color: var(--dark-pink);
   color: #fff;
 }
 
 button.blue-green {
-  border-color: #11d2cd;
-  background-color: #11d2cd;
+  border-color: var(--light-blue-green);
+  background-color: var(--light-blue-green);
   color: #fff;
 }
 
 button.blue-green:hover {
-  border-color: #347e7c;
-  background-color: #347e7c;
+  border-color: var(--blue-green);
+  background-color: var(--blue-green);
   color: #fff;
 }
 
 button.black {
-  border-color: #333;
-  background-color: #333;
+  border-color: var(dark-gray);
+  background-color: var(dark-gray);
   color: #fff;
 }
 
 button.black:hover {
-  border-color: #505050;
-  background-color: #505050;
+  border-color: var(--light-gray);
+  background-color: var(--light-gray);
   color: #fff;
 }
 
 input[type="button"]:hover, button:hover {
-  background-color: #343434;
-  border-color: #343434;
+  background-color: var(--dark-gray);
+  border-color: var(--dark-gray);
   color: #fff;
   transition: background-color 500ms, color 500ms, border-color 500ms;
 }
@@ -452,7 +465,7 @@ input[type="button"]:hover, button:hover {
 }
 
 .candy-header span:nth-child(1) {
-  background-color: #626262;
+  background-color: var(--light-gray);
   border-radius: 5px 0px 0px 5px;
 }
 
@@ -466,19 +479,23 @@ input[type="button"]:hover, button:hover {
 }
 
 .candy-header span.orange {
-  background-color: #ff7a00;
+  background-color: var(--orange);
 }
 
 .candy-header span.red {
-  background-color: #c92d2d;
+  background-color: var(--red);
 }
 
 .candy-header span.green {
-  background-color: #36b349;
+  background-color: var(--green);
 }
 
 .candy-header span.cyan {
-  background-color: #02b79e;
+  background-color: var(--cyan);
+}
+
+.candy-header span.blue {
+  background-color: var(--blue);
 }
 
 .article .content {
@@ -494,9 +511,9 @@ input[type="button"]:hover, button:hover {
 
 .article .draftIcon {
   background-color: transparent;
-  border: 2px solid #fb3e3e;
+  border: 2px solid var(--dark-pink);
   border-radius: 5px;
-  color: #fb3e3e;
+  color: var(--dark-pink);
   display: inline-block;
   font-size: 0.8em;
   height: fit-content;
@@ -525,7 +542,7 @@ input[type="button"]:hover, button:hover {
 nav {
   background-color: rgba(255, 255, 255, .95);
   box-sizing: border-box;
-  height: 80px;
+  height: var(--nav-height);
   position: fixed;
   top: 0px;
   width: 100%;
@@ -535,7 +552,7 @@ nav {
 nav #logo {
   box-sizing: border-box;
   display: inline-block;
-  height: 80px;
+  height: var(--nav-height);
   padding: 10px 0px 10px 10px;
   z-index: 11;
 }
@@ -565,7 +582,7 @@ nav #fix-1200 {
 nav #button-over-900px {
   box-sizing: border-box;
   float: right;
-  height: 80px;
+  height: var(--nav-height);
   padding: 25px 10px 25px 0px;
 }
 
@@ -628,7 +645,7 @@ nav #button-over-900px>ul>li:last-child>ul {
 nav #button-over-900px>ul>li>ul>li {
   /*--2F--*/
   box-sizing: border-box;
-  border-bottom: 1px dashed #b9b9b9;
+  border-bottom: 1px dashed var(--light-gray);
   display: block;
   margin: 0px;
   width: 100%;
@@ -647,8 +664,8 @@ nav #button-over-900px>ul li:hover ul {
 
 nav #button-over-900px>ul>li>a {
   box-sizing: border-box;
-  border-bottom: 2px solid #4e4e4e;
-  color: #4e4e4e;
+  border-bottom: 2px solid var(--dark-gray);
+  color: var(--dark-gray);
   display: block;
   font-size: 15px;
   height: 32px;
@@ -659,7 +676,7 @@ nav #button-over-900px>ul>li>a {
 }
 
 nav #button-over-900px>ul>li>ul>li>a {
-  color: #4e4e4e;
+  color: var(--dark-gray);
   display: block;
   font-size: 13px;
   height: 30px;
@@ -692,9 +709,9 @@ nav #button-over-900px>ul>li>ul>li>a:hover {
     left: -200px;
     margin: 0px;
     opacity: 0;
-    padding: 0px 0px 80px 0px;
+    padding: 0px 0px var(--nav-height) 0px;
     position: fixed;
-    top: 80px;
+    top: var(--nav-height);
     transition: left 500ms, opacity 500ms;
     width: 100%;
     max-width: 200px;
@@ -755,7 +772,7 @@ nav #button-over-900px>ul>li>ul>li>a:hover {
     color: inherit!important;
   }
   nav #button-over-900px>ul>li>ul>li>a:hover {
-    background-color: #4e4e4e;
+    background-color: var(--dark-gray);
     color: #fff!important;
     transition: unset!important;
   }
@@ -816,7 +833,7 @@ nav #button-over-900px>ul>li>ul>li>a:hover {
 }
 
 .arrow-down {
-  border-color: #4e4e4e transparent transparent transparent;
+  border-color: var(--dark-gray) transparent transparent transparent;
   border-style: solid;
   border-width: 3px;
   display: inline-block;
@@ -857,9 +874,9 @@ nav #button-over-900px>ul>li>ul>li>a:hover {
 }
 
 .calendar-tail i:hover {
-  color: #02b79e;
+  color: var(--cyan);
 }
 
 .calendar-tail i.delete:hover {
-  color: #fe6c6c;
+  color: var(--pink);
 }
