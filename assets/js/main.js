@@ -34,7 +34,7 @@ function renderCalendar(infoList, editMode) {
         let ret = '<div class="calendar">';
         infoList.forEach(e => {
             ret += '<div class="calendar-list">'
-            ret += `<div class="calendar-head candy-header"><span class="single cyan big">${e.month} / ${e.day}</span></div>`;
+            ret += `<div class="calendar-head candy-header"><span class="single blue big">${e.month} / ${e.day}</span></div>`;
             if (e.link) {
                 ret += `<div class="calendar-title"><a href="${e.link}">${e.event}</a></div>`;
             } else {
