@@ -1,0 +1,23 @@
+{
+	"Course_name_zh": "常微分方程",
+	"Course_name_en": "Differential Equations",
+	"Offering_dept": "電資學士",
+	"Course_type": "必修",
+	"Credits": "3",
+	"Teacher": "蔡清池",
+	"Department": "電資學士  / 學士班",
+	"Language": "中文",
+	"Semester": "1101",
+	"Course_description": " 建立常微分方程式的基礎理論，最重要求解方法，數值解法及其應用。學習一階，二階，以及高階常微分方程式，常微分方程式系統的一般基礎理論，學習積分因子，分離變數法，恰當微分方程，齊次與非齊次解法，聯立常微分方程式系統解法，級數解法，拉普拉斯解法等最重要求解方法，以及探討傅立葉分析與轉換，及其重要應用案例。",
+	"Prerequisites": "<br>",
+	"Course_objectives": "學習常微分方程式的基礎理論，最重要求解方法，數值解法及其應用。學習一階，二階，高階常微分方程式與聯立微分方程系統的基礎理論，學習積分因子，分離變數法，恰當微分方程，齊次與非齊次解法，聯立微分方程系統，級數解法，拉普拉斯解法等最重要求解方法，探討傅立葉分析與轉換，及其重要應用案例。",
+	"Competency_indicators": "",
+	"Ratio": "",
+	"Teaching_methods": "網路/遠距教學<br>習作<br>討論<br>其他<br>講授",
+	"Assessment_methods": "出席狀況<br>作業<br>測驗<br>其他",
+	"Course_content": "【 內容綱目 】<br>\r\n(1)  Introduction :problem formulations, modeling  and Examples (9/27)<br>\r\n(2)  First-Order ordinary differential equations (ODEs) (9/27,10/4, 10/18)<br>\r\n(3)  Second-Order ODEs (10/18,10/25)<br>\r\n(4)  High Order ODEs  (11/1, 11/8)<br>\r\n      (First Examination) (11/15)(examination time:2 hours<br>\r\n(5)   Systems of ODEs (11/8, 11/15, 11/22<br>\r\n(6)   Series Solutions  of ODEs(11/29, 12/6)<br>\r\n(Second  Examination) (12/13) (examination time:2 hours<br>\r\n(7)   Laplace Transform and its applications to ODEs (12/13,12/20, 12/27)           <br>\r\n(8)   Fourier Analysis and Transforms  (1/3, 1/10) <br>\r\n              (Third Examination) (2022/1/17) (examination time: 3 hours)",
+	"Evaluation": "【 評分方式 】<br>\r\n          (1) 作業                                   10%         <br>\r\n          (2) 第一次考試                        30%<br>\r\n          (3) 第二次考試                        30%<br>\r\n          (4) 第三次考試                        30%<br>\r\n          (5)  點名與課堂表現                5%(額外加分)     <br>\r\n",
+	"Textbook": "【 教科書 】<br>\r\n E. Kreyszig, Advanced Engineering Mathematics, 10th Edition Update, John Wiely, 2018<br>\r\n【 參考書籍 】<br>\r\n(1)   講義 (Handouts) in 2021 (See http://aecl.ee.nchu.edu.tw or LINE group)<br>\r\n(2)  D. G. Zill and W. S. Wright, Differential Equations with Boundary-Value Problems, 8th Edition, Brooks/Cole Cengage Learning, 2018.<br>\r\n(3) P. V. O’Neil, Advanced Engineering Mathematics , 7th Edition, Thomson Learning, Inc, 2007.  <br>\r\n",
+	"Teaching_aids": "See http://aecl.ee.nchu.edu.tw or LINE Group",
+	"Office_hours": "星期一上午10:00-12:00"
+}

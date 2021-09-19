@@ -1,0 +1,23 @@
+{
+	"Course_name_zh": "離散數學",
+	"Course_name_en": "Discrete Mathematics",
+	"Offering_dept": "電資學士",
+	"Course_type": "必修",
+	"Credits": "3",
+	"Teacher": "高勝助",
+	"Department": "電資學士  / 學士班",
+	"Language": "中文",
+	"Semester": "1101",
+	"Course_description": "從數理邏輯入門，集合論，數論，數學論證方法，以至於資料結構上的工具，如樹、圖，並涵蓋一些演算法的基本概念。",
+	"Prerequisites": "<br>",
+	"Course_objectives": "熟悉在資訊科學上需要的基礎數學背景知識，為進一步資訊應用或研究領域發展作準備。",
+	"Competency_indicators": "",
+	"Ratio": "",
+	"Teaching_methods": "講授",
+	"Assessment_methods": "作業<br>測驗",
+	"Course_content": "9/28        --  chap1    (lecture 0,1) <br>\r\n10/5        --  chap1    (lecture 1,2)<br>\r\n10/12      --  chap1    (lecture 2,3)<br>\r\n10/19      --  chap2    (lecture 4)<br>\r\n10/26      --  chap2    (lecture 5)<br>\r\n11/02      --  chap3    (lecture 6)<br>\r\n11/09      --  chap4    (lecture 7)<br>\r\n11/16      --  Midterm<br>\r\n11/23      --  chap4    (lecture 7)<br>\r\n11/30      --  chap5    (lecture 8)<br>\r\n12/07      --  chap6    (lecture 9)<br>\r\n12/14      --  chap7,8 (lecture 10)<br>\r\n12/21      --  chap9    (lecture 11)<br>\r\n12/28      --  chap10  (lecture 12)<br>\r\n1/04        --  chap10  (lecture 13)<br>\r\n1/11        --  chap11  (lecture 14)<br>\r\n1/18        --  Final Exam<br>\r\n",
+	"Evaluation": "                 1. HM & Quizzes  30% <br>\r\n                 2. Midterm       30%  (Nov. 16)<br>\r\n                 3. Final         40%  (Jan. 18)<br>\r\n",
+	"Textbook": "教科書:Discrete Mathematics and its Applications, 8th annotated edition, Kenneth H. Rosen, McGraw-Hill, 2019<br>\r\n<br>\r\n參考書:Discree and Combinatorial Mathematics An Applied Introduction, Ralph Grimaldi, 5th edition, Peason, 2014.<br>\r\n",
+	"Teaching_aids": "http://snmlab.cs.nchu.edu.tw/course.asp 點選\"Discrete Mathematics 2021_09\" ",
+	"Office_hours": "Friday 10-12"
+}

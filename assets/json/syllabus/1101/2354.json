@@ -1,0 +1,23 @@
+{
+	"Course_name_zh": "資料結構",
+	"Course_name_en": "Data Structures",
+	"Offering_dept": "電資學士",
+	"Course_type": "必修",
+	"Credits": "3",
+	"Teacher": "蔡曉萍",
+	"Department": "電資學士  / 學士班",
+	"Language": "中文",
+	"Semester": "1101",
+	"Course_description": "本課程介紹各種資料結構及其應用，使學生對於資料結構在解決計算問題上之重要性有一認識。本課程內容包含算法分析、表列、樹、搜尋、排序、圖等。本課程需在計算機上設計數個程式。<br>\r\nThis course introduces various data structures and their applications, so that the students will learn the importance of the data sturctures in solving computation problems. The course content covers algorithm analysis, lists, trees, searching, sorting and graphs. The students need design several programs on computer. ",
+	"Prerequisites": "<br>",
+	"Course_objectives": "本課程旨在使學生對於資料結構在解決計算問題上之重要性有一瞭解，並經由實際在計算機上設計數個程式，瞭解電腦內資料的儲存方式，並對於資料如何被有效的應用、處理和維護，並提供評估方法。使學生在設計程式時能夠有效地運用電腦資源，得到使用資料結構以解決問題之能力。 This course will let the students understand the importance of the data structures in solving computation problems, and obtain the ability of using data structures to solve problems through practicing the design of several programs on computer.",
+	"Competency_indicators": "",
+	"Ratio": "",
+	"Teaching_methods": "習作<br>講授",
+	"Assessment_methods": "出席狀況<br>作業<br>測驗",
+	"Course_content": "1. 資料結構簡介<br>\r\n2. 迴圈(Loop)，陣列(Array)與結構(Structure)<br>\r\n3. 堆疊(Stack)與佇列(Queue)<br>\r\n4. 鏈結串列(Linked List)<br>\r\n5. 樹形(Tree)結構<br>\r\n6. 資料排序(Sorting)與搜尋(Searching)<br>\r\n7. 雜湊(Hashing)與其應用<br>\r\n8. 圖(Graph)結構與應用",
+	"Evaluation": "Midterm 30%<br>\r\nFinal 30%<br>\r\nHomework 40%",
+	"Textbook": "Fundamentals of Data Structures in C++, E. Horowitz, S. Sahni and D. Mehta, 2nd/E.  ",
+	"Teaching_aids": "NCHU ilearning 3",
+	"Office_hours": "<br>"
+}

@@ -1,0 +1,23 @@
+{
+	"Course_name_zh": "機率",
+	"Course_name_en": "Probability",
+	"Offering_dept": "電資學士",
+	"Course_type": "必修",
+	"Credits": "3",
+	"Teacher": "陳後守",
+	"Department": "電資學士  / 學士班",
+	"Language": "中文",
+	"Semester": "1101",
+	"Course_description": "In this course, the students will learn the basic concept of probability and its application to the advanced courses. The contents of this course is consisting of<br>\r\n<br>\r\n　　　　<br>\r\n(1) The axioms of probability<br>\r\n(2) Discrete random variable: PMF<br>\r\n(3) Continuous random variable: CDF and PDF<br>\r\n(4) Vector random variables: joint PMF, CDF, and PDF <br>\r\n(5) Sum of random variables",
+	"Prerequisites": "<br>",
+	"Course_objectives": "1. Learn the basic concept of probability theory. <br>\r\n2. Use the probability knowledge for advanced courses.",
+	"Competency_indicators": "",
+	"Ratio": "",
+	"Teaching_methods": "講授",
+	"Assessment_methods": "作業<br>測驗",
+	"Course_content": "1st week: syllabus, Introduction to probability (Chapter 1)<br>\r\n2nd week: Probability axioms, sample space, event, permutation, (Chapter 2)<br>\r\n3rd week: Conditional probability, independent events, total probability, Bayes’rule <br>\r\n4th week: Discrete random variable (RV) and PMF (Chapter 3) <br>\r\n5th week: Expected and Variance of RV, conditional PMF (HW #1, due)<br>\r\n6th week: Some important discrete random variable<br>\r\n7th week: Continuous RV, CDF, and PDF (Chapter 4, HW #2, due)<br>\r\n8th week: Some important RV, Gaussian RV (HW #3, due)<br>\r\n9th week: Midterm exam. (Chapter 2, 3, and 4)<br>\r\n10th week: Function of a random variable<br>\r\n11th week: Markov and Chebyshev inequality, and transform method<br>\r\n12th week: Two random variables and joint CDF and PDF (Chapter 5, HW #4, due), <br>\r\n13th week: Conditional CDF and PDF, independence<br>\r\n14th week: Functions of two RVs, Gaussian RVs ( HW #5, due)<br>\r\n15th week: Vector random variables (Chapter 6<br>\r\n16th week: Functions of RV, jointly Gaussian (HW #6, due)<br>\r\n17th week: no class on 1/1<br>\r\n18th week: Final exam. (Chapter 4, 5, 6)",
+	"Evaluation": "Homework 30% <br>\r\nMidterm exam. 35%<br>\r\nFinal exam. 35%",
+	"Textbook": "Alberto Leon-Garica, Probability and Random Processes for Electrical Engineering, 2nd ed. Addison-Wesley.",
+	"Teaching_aids": "iLearning3",
+	"Office_hours": "Wed: 12:00-13:00, 16:00-17:00"
+}

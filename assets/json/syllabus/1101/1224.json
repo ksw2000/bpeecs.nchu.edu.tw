@@ -1,0 +1,23 @@
+{
+	"Course_name_zh": "普通物理學",
+	"Course_name_en": "General Physics",
+	"Offering_dept": "物理系",
+	"Course_type": "必修",
+	"Credits": "3",
+	"Teacher": "孫允武",
+	"Department": "電資學士  / 學士班",
+	"Language": "中文",
+	"Semester": "1101",
+	"Course_description": "This one-semester general physics is specially designed for students whose future career interests are programming, AI, or interdisciplinary. The course will have an emphasis on simulation and calculation with the computer language \"Python.\"",
+	"Prerequisites": "<br>",
+	"Course_objectives": "<br>",
+	"Competency_indicators": "",
+	"Ratio": "",
+	"Teaching_methods": "專題探討/製作<br>習作<br>討論<br>講授",
+	"Assessment_methods": "書面報告<br>出席狀況<br>口頭報告<br>作業<br>作品<br>測驗",
+	"Course_content": "1.\tMechanics<br>\r\nMotion and Vectors<br>\r\nIntroduction of Calculus<br>\r\nNewton's Laws<br>\r\nConservation Laws: Momentum and Energy<br>\r\nOscillations<br>\r\n2.\tWaves<br>\r\nDescription of a Wave<br>\r\nWave Equation<br>\r\nInterference and Superposition<br>\r\nPhasors and Complex Numbers<br>\r\nSound<br>\r\nDoppler Effect<br>\r\n3.\tElectricity<br>\r\nCharge and Coulomb's Law<br>\r\nElectric Fields and Gauss' Law<br>\r\nElectric Potential and Electric Potential Energy<br>\r\nCapacitance and Electric Energy<br>\r\nCurrent<br>\r\nOhm's Law<br>\r\nResistor Network<br>\r\nRC Circuit<br>\r\n4.\tMagnetism<br>\r\nMagnetic Fields<br>\r\nMagnetic Forces on Charges and Currents<br>\r\nMagnetic Fields Due to Currents<br>\r\nFaraday's Law<br>\r\nInduction and Inductors<br>\r\nMagnetic Energy<br>\r\nLC Circuits<br>\r\nRLC Circuits<br>\r\nTransformers<br>\r\n5.\tMaxwell Equation and Light<br>\r\nMaxwell Equation<br>\r\nElectromagnetic Waves and Lights<br>\r\n6.\tOptics<br>\r\nImages and Lenses<br>\r\nDouble-Slit Experiments<br>\r\nMichelson's Interferometer<br>\r\n<br>\r\n7.\tComputation Related Physics<br>\r\nData and Noise<br>\r\nTwo-States Systems: 0 and 1<br>\r\nSwitches and Logics<br>\r\nInformation<br>\r\nQuantum Computers: Quantum States<br>\r\n",
+	"Evaluation": "Midterm + Final Exams 50 %<br>\r\nPython Simulation 20 %<br>\r\nFinal Report and Presentation 15 % (Group Project)<br>\r\nQuiz and Class Performance 15 %<br>\r\n<br>\r\n",
+	"Textbook": "Halliday & Resnick’s Principles of Physics, based on the 11th Edition, Global Edition<br>\r\n<br>\r\nAny Python programming guide",
+	"Teaching_aids": "<br>",
+	"Office_hours": "10:00-11:30 Tue"
+}

@@ -1,0 +1,99 @@
+[{
+    "strm": 1,
+    "level": 1,
+    "list":[
+        {
+            "course": "服務學習(一)：勞作教育",
+            "number": 1136,
+            "required": true,
+            "teacher": [
+                "全體教師"
+            ]
+        },
+        {
+            "course": "微積分(一)",
+            "number": 1208,
+            "required": true,
+            "teacher": [
+                "戴佳原"
+            ]
+        },
+        {
+            "course": "普通物理學",
+            "number": 1224,
+            "required": true,
+            "teacher": [
+                "孫允武"
+            ]
+        },
+        {
+            "course": "普通物理學實驗",
+            "number": 1262,
+            "required": true,
+            "teacher": [
+                "陳建宇"
+            ]
+        },
+        {
+            "course": "計算機程式設計",
+            "number": 1302,
+            "required": true,
+            "teacher": [
+                "吳國光"
+            ]
+        },
+        {
+            "course": "離散數學",
+            "number": 1306,
+            "required": true,
+            "teacher": [
+                "高勝助"
+            ]
+        }
+    ]
+},{
+    "strm": 1,
+    "level": 2,
+    "list": [
+        {
+            "course": "電路學概論",
+            "number": 2352,
+            "required": false,
+            "teacher": [
+                "林泓均"
+            ]
+        },
+        {
+            "course": "常微分方程",
+            "number": 2353,
+            "required": true,
+            "teacher": [
+                "蔡清池"
+            ]
+        },
+        {
+            "course": "資料結構",
+            "number": 2354,
+            "required": true,
+            "teacher": [
+                "蔡曉萍"
+            ]
+        },
+        {
+            "course": "機率",
+            "number": 2355,
+            "required": true,
+            "teacher": [
+                "陳建宇"
+            ]
+        },
+        {
+            "course": "硬體描述語言設計",
+            "number": 2356,
+            "required": false,
+            "teacher": [
+                "黃穎聰"
+            ]
+        }
+    ]
+}]

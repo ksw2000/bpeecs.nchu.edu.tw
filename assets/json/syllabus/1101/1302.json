@@ -1,0 +1,23 @@
+{
+	"Course_name_zh": "計算機程式設計",
+	"Course_name_en": "Computer Programming",
+	"Offering_dept": "電資學士",
+	"Course_type": "必修",
+	"Credits": "3",
+	"Teacher": "吳國光",
+	"Department": "電資學士  / 學士班",
+	"Language": "中文",
+	"Semester": "1101",
+	"Course_description": "介紹C程式語言與程式設計",
+	"Prerequisites": "<br>",
+	"Course_objectives": "養成閱讀、理解與撰寫C語言程式的能力",
+	"Competency_indicators": "",
+	"Ratio": "",
+	"Teaching_methods": "",
+	"Assessment_methods": "",
+	"Course_content": "1. C程式概觀<br>\r\n2. 基本資料型態<br>\r\n3. 格式化輸入輸出<br>\r\n4. 運算子<br>\r\n5. 選擇敘述<br>\r\n6. 迴圈<br>\r\n7. 函式與儲存類別<br>\r\n8. 陣列<br>\r\n9. 指標<br>\r\n10. 字串<br>\r\n11. 結構與聯集<br>\r\n12. 檔案",
+	"Evaluation": "1. Homework (20%)<br>\r\n2. Midterm (30%), Final (30%)<br>\r\n3. Learning exercise (20%)",
+	"Textbook": "書名: C programming<br>\r\n作者：King, K. N.<br>\r\n出版社：W W Norton & Co Inc",
+	"Teaching_aids": "<br>",
+	"Office_hours": "Tuesday: 2:00pm~4:00pm"
+}

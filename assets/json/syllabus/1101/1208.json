@@ -1,0 +1,23 @@
+{
+	"Course_name_zh": "微積分(一)",
+	"Course_name_en": "Calculus(I)",
+	"Offering_dept": "應數系",
+	"Course_type": "必修",
+	"Credits": "3",
+	"Teacher": "戴佳原",
+	"Department": "電資學士  / 學士班",
+	"Language": "中文",
+	"Semester": "1101",
+	"Course_description": "本課程中文授課，板書英文為主（必要時提供中文翻譯）。 <br>\r\n<br>\r\n我們將學習單變數函數微分與積分的概念與運算，以及關鍵的「微積分基本定理」。微分方面涵蓋極限定義、連續性，微分計算和極值問題等。積分方面，引入積分的觀念和定義後，我們證明微積分基本定理（原來微分跟積分是「反運算」！），然後介紹積分技巧，求積問題，以及基礎的微分方程等。<br>\r\n",
+	"Prerequisites": "<br>",
+	"Course_objectives": "掌握微積分的重要概念、了解微積分發展的歷史、熟悉微分與積分運算，透過微積分解析各學科的實際問題。另外，本課程將奠定工程數學、微分方程和數學分析等進階課程的基礎。",
+	"Competency_indicators": "",
+	"Ratio": "",
+	"Teaching_methods": "習作<br>討論<br>實習<br>講授",
+	"Assessment_methods": "作業<br>測驗",
+	"Course_content": "請見 PDF 檔（請完整複製連結）：<br>\r\nhttps://www.dropbox.com/s/03x9t8pnjupzx6u/%E8%AA%B2%E7%A8%8B%E5%A4%A7%E7%B6%B1_%E5%BE%AE%E7%A9%8D%E5%88%86%28%E4%B8%80%29.pdf?dl=0",
+	"Evaluation": "作業 24 %、隨堂小考 11 %、期中考 25 %、會考 15 %、期末考 25 %<br>\r\n詳細資訊請見 PDF 檔（請完整複製連結）：https://www.dropbox.com/s/glx0egu4v6nvoy9/%E8%A9%95%E9%87%8F%E6%96%B9%E5%BC%8F.pdf?dl=0",
+	"Textbook": "教科書<br>\r\nCalculus, Metric Edition, 9th Edition. (ISBN: 9780357113462)<br>\r\n<br>\r\n微積分歷史參考用書<br>\r\n1. 蔡聰明，微積分的歷史步道，三民出版社，2013 <br>\r\n2. S. Strogatz，無限的力量，旗標出版社，2020<br>\r\n3. E. Hairer, G. Wanner: Analysis by its History, Springer, 2000 <br>\r\n<br>\r\n相關網站<br>\r\n1. 中興大學微積分教學網 http://amath2.nchu.edu.tw/cal/<br>\r\n2. 數學知識網站 http://episte.math.ntu.edu.tw/cgi/mathfield.pl?fld=cal <br>\r\n3. 線上繪圖 https://www.desmos.com/calculator <br>\r\n4. 線上計算 https://www.wolframalpha.com",
+	"Teaching_aids": "教科書、課程講義（請至 iLearning 3.0 課程網頁下載）",
+	"Office_hours": "演習課<br>\r\n莊立勝助教　<br>\r\n若實體教學　時間：星期三第 8 節　地點：應用科技大樓 241 教室<br>\r\n若遠距教學　時間：星期三第 8 節　請至 https://meet.google.com/qkw-yrey-xht<br>\r\n<br>\r\nOffice Hour<br>\r\n戴佳原老師　<br>\r\n若實體教學　時間：星期一 1200～1400　地點：資訊科學大樓 617<br>\r\n若遠距教學　時間：星期三 1310～1440  請至 https://meet.google.com/iem-ypyf-gwm<br>\r\n<br>\r\n莊立勝助教　<br>\r\n若實體教學　時間：星期一 1000～1200　地點：資訊科學大樓 406<br>\r\n若遠距教學　時間：星期一 1000～1200　請至 https://meet.google.com/qkw-yrey-xht<br>\r\n<br>\r\n同學也可利用化學系微積分張詔揚助教的 Office Hour　<br>\r\n若實體教學　時間：星期二 1000～1200　地點：資訊科學大樓 406<br>\r\n若遠距教學　時間：星期二 1000～1200　請至 https://meet.google.com/rpa-eihy-hef"
+}

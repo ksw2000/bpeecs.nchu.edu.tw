@@ -1,0 +1,23 @@
+{
+	"Course_name_zh": "電路學概論",
+	"Course_name_en": "Introduction to Electric Circuits",
+	"Offering_dept": "電資學士",
+	"Course_type": "選修",
+	"Credits": "3",
+	"Teacher": "林泓均",
+	"Department": "電資學士  / 學士班",
+	"Language": "中文",
+	"Semester": "1101",
+	"Course_description": "This course introduces the fundamental concepts and analytical methods for electric circuits.",
+	"Prerequisites": "<br>",
+	"Course_objectives": "1. Learn basic circuit theorems and analysis methods<br>\r\n2. Understand characteristics of basic electric components<br>\r\n3. Learn first-order and second-order transient analysis of circuits",
+	"Competency_indicators": "",
+	"Ratio": "",
+	"Teaching_methods": "網路/遠距教學<br>講授",
+	"Assessment_methods": "出席狀況<br>作業<br>測驗",
+	"Course_content": "1. Basic Concepts<br>\r\n2. Basic Laws<br>\r\n3. Methods of Analysis<br>\r\n4. Circuit Theorems<br>\r\n5. Operational Amplifiers<br>\r\n6. Capacitors, Inductors and Mutual Inductors<br>\r\n7. First-order Circuits<br>\r\n8. Second-order Circuits",
+	"Evaluation": "作業與出席狀況(10%)、期中考(40%)、期末考(50%)<br>\r\n",
+	"Textbook": "\"Fundamentals of Electric Circuits,\" McGraw-Hill, 7th Ed., 2021<br>\r\nby C. K. Alexander and M. N. O. Sadiku<br>\r\n",
+	"Teaching_aids": "講義下載可依序點擊下列網頁取得：<br>\r\niLearning(http://lms2020.nchu.edu.tw/)登入後，選電路學概論<br>\r\n",
+	"Office_hours": "每週三 上午10點至中午"
+}
