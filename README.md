@@ -55,20 +55,26 @@ __NCHU BPEECS__ [https://bpeecs.nchu.edu.tw/](https://bpeecs.nchu.edu.tw/)
 ## Quick start
 
 1. Create database from /db/*.sql
-2. Create a new account
-
-    ```go
-    handler.NewAcount("user_id", "password", "userName")
+    + /db/calendar.db.sql
+    + /db/main.db.sql
+    ```sh
+    cat calendar.db.sql | sqlite3 calendar.db
+    cat main.db.sql | sqlite3 main.db
     ```
-
-3. run
+2. run
     ```sh
     # build
     $ go build main.go
 
-    # run at port 9000
+    # run at port 8086
     $ ./main
 
     # run at port 443
     $ ./main -p 443
+
+    # disable minify static files
+    $ ./main --debug
     ```
+3. default user
+    + id: root
+    + password: 00000000
