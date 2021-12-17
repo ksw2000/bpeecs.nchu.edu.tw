@@ -1,5 +1,5 @@
-upload/
-assets/js/ckeditor
+assets/upload/*
+!assets/upload/nonempty
 .well-known/
 *.crt
 *.key
