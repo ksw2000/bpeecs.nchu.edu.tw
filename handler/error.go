@@ -25,7 +25,7 @@ func ErrorWebHandler(w http.ResponseWriter, r *http.Request) {
 		NotFound(w, r)
 	}
 
-	t, _ := template.ParseFiles("./include/layout.gohtml")
+	t, _ := template.ParseFiles("./html/layout.gohtml")
 	t.Execute(w, data)
 }
 

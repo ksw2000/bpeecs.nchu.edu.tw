@@ -22,7 +22,7 @@ func SyllabusWebHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		data.Title = fmt.Sprintf("%d學年度課程內容 | 國立中興大學電機資訊學院學士班", year)
-		t, _ := template.ParseFiles("./include/layout.gohtml")
+		t, _ := template.ParseFiles("./html/layout.gohtml")
 		t.Execute(w, data)
 		return
 	}
@@ -39,7 +39,7 @@ func SyllabusWebHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		data.Title = fmt.Sprintf("%s | 教學大綱 | 國立中興大學電機資訊學院學士班", courseName)
-		t, _ := template.ParseFiles("./include/layout.gohtml")
+		t, _ := template.ParseFiles("./html/layout.gohtml")
 		t.Execute(w, data)
 		return
 	}

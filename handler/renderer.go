@@ -11,17 +11,17 @@ import (
 	"time"
 )
 
-const articleTemplate = "./include/article_layout.gohtml"
+const articleTemplate = "./html/article_layout.gohtml"
 
 const syllabusDataDir = "./assets/json/syllabus/"
-const syllabusTemplate = "./include/syllabus/template.gohtml"
+const syllabusTemplate = "./html/syllabus/template.gohtml"
 
 const courseDataDir = "./assets/json/course/"
-const courseTemplate = "./include/course/template.gohtml"
+const courseTemplate = "./html/course/template.gohtml"
 
-const calendarTemplate = "./include/calendar_layout.gohtml"
-const manageTemplate = "./include/manage.gohtml"
-const indexTemplate = "./include/index.gohtml"
+const calendarTemplate = "./html/calendar_layout.gohtml"
+const manageTemplate = "./html/manage.gohtml"
+const indexTemplate = "./html/index.gohtml"
 
 type courseInfo struct {
 	Subtitle string

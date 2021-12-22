@@ -44,6 +44,6 @@ func ManageWebHandler(w http.ResponseWriter, r *http.Request) {
 	data.Title += " | 國立中興大學電機資訊學院學士班"
 
 	// TEMPLATE
-	t, _ := template.ParseFiles("./include/layout.gohtml")
+	t, _ := template.ParseFiles("./html/layout.gohtml")
 	t.Execute(w, data)
 }

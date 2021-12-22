@@ -30,7 +30,7 @@ func initPageData() *PageData {
 }
 
 func getHTML(fileName string) (template.HTML, error) {
-	t, err := template.ParseFiles("./include" + fileName + ".html")
+	t, err := template.ParseFiles("./html" + fileName + ".html")
 	if err != nil {
 		log.Println(err)
 		return template.HTML("error try again"), err
@@ -155,6 +155,6 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 		data.Main, _ = getHTML(r.URL.Path)
 	}
 
-	t, _ := template.ParseFiles("./include/layout.gohtml")
+	t, _ := template.ParseFiles("./html/layout.gohtml")
 	t.Execute(w, data)
 }

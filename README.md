@@ -47,7 +47,7 @@ __NCHU BPEECS__ [https://bpeecs.nchu.edu.tw/](https://bpeecs.nchu.edu.tw/)
         + files.go (manage the uploaded files)
         + login.go
         + renderer.go
-    + include/  (html files & gohtml layout files)
+    + html/  (html files & gohtml layout files)
     + go.mod
     + go.sum
     + __main.go__ (main program)
