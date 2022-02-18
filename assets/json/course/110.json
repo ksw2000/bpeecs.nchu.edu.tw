@@ -1,99 +1,222 @@
-[{
+[
+  {
     "strm": 1,
     "level": 1,
-    "list":[
-        {
-            "course": "服務學習(一)：勞作教育",
-            "number": 1136,
-            "required": true,
-            "teacher": [
-                "全體教師"
-            ]
-        },
-        {
-            "course": "微積分(一)",
-            "number": 1208,
-            "required": true,
-            "teacher": [
-                "戴佳原"
-            ]
-        },
-        {
-            "course": "普通物理學",
-            "number": 1224,
-            "required": true,
-            "teacher": [
-                "孫允武"
-            ]
-        },
-        {
-            "course": "普通物理學實驗",
-            "number": 1262,
-            "required": true,
-            "teacher": [
-                "陳建宇"
-            ]
-        },
-        {
-            "course": "計算機程式設計",
-            "number": 1302,
-            "required": true,
-            "teacher": [
-                "吳國光"
-            ]
-        },
-        {
-            "course": "離散數學",
-            "number": 1306,
-            "required": true,
-            "teacher": [
-                "高勝助"
-            ]
-        }
+    "list": [
+      {
+        "course": "服務學習(一)：勞作教育",
+        "number": 1136,
+        "required": true,
+        "teacher": [
+          "全體教師"
+        ]
+      },
+      {
+        "course": "微積分(一)",
+        "number": 1208,
+        "required": true,
+        "teacher": [
+          "戴佳原"
+        ]
+      },
+      {
+        "course": "普通物理學",
+        "number": 1224,
+        "required": true,
+        "teacher": [
+          "孫允武"
+        ]
+      },
+      {
+        "course": "普通物理學實驗",
+        "number": 1262,
+        "required": true,
+        "teacher": [
+          "陳建宇"
+        ]
+      },
+      {
+        "course": "計算機程式設計",
+        "number": 1302,
+        "required": true,
+        "teacher": [
+          "吳國光"
+        ]
+      },
+      {
+        "course": "離散數學",
+        "number": 1306,
+        "required": true,
+        "teacher": [
+          "高勝助"
+        ]
+      }
     ]
-},{
+  },
+  {
+    "strm": 2,
+    "level": 1,
+    "list": [
+      {
+        "course": "服務學習(二)：勞作教育",
+        "number": 1089,
+        "urlNumber": 4032,
+        "required": true,
+        "teacher": [
+          "全體教師"
+        ]
+      },
+      {
+        "course": "微積分(二)",
+        "number": 1219,
+        "urlNumber": 2796,
+        "required": true,
+        "teacher": [
+          "戴佳原"
+        ]
+      },
+      {
+        "course": "人工智慧概論",
+        "number": 1303,
+        "urlNumber": 3278,
+        "required": true,
+        "teacher": [
+          "林維亮"
+        ]
+      },
+      {
+        "course": "線性代數",
+        "number": 1305,
+        "urlNumber": 3531,
+        "required": true,
+        "teacher": [
+          "陳正倫"
+        ]
+      },
+      {
+        "course": "物件導向程式設計",
+        "number": 1302,
+        "urlNumber": 3572,
+        "required": true,
+        "teacher": [
+          "歐陽彥杰"
+        ]
+      },
+      {
+        "course": "交換電路與邏輯設計",
+        "number": 1332,
+        "urlNumber": 3282,
+        "required": true,
+        "teacher": [
+          "楊谷章"
+        ]
+      }
+    ]
+  },
+  {
     "strm": 1,
     "level": 2,
     "list": [
-        {
-            "course": "電路學概論",
-            "number": 2352,
-            "required": false,
-            "teacher": [
-                "林泓均"
-            ]
-        },
-        {
-            "course": "常微分方程",
-            "number": 2353,
-            "required": true,
-            "teacher": [
-                "蔡清池"
-            ]
-        },
-        {
-            "course": "資料結構",
-            "number": 2354,
-            "required": true,
-            "teacher": [
-                "蔡曉萍"
-            ]
-        },
-        {
-            "course": "機率",
-            "number": 2355,
-            "required": true,
-            "teacher": [
-                "陳建宇"
-            ]
-        },
-        {
-            "course": "硬體描述語言設計",
-            "number": 2356,
-            "required": false,
-            "teacher": [
-                "黃穎聰"
-            ]
-        }
+      {
+        "course": "電路學概論",
+        "number": 2352,
+        "required": false,
+        "teacher": [
+          "林泓均"
+        ]
+      },
+      {
+        "course": "常微分方程",
+        "number": 2353,
+        "required": true,
+        "teacher": [
+          "蔡清池"
+        ]
+      },
+      {
+        "course": "資料結構",
+        "number": 2354,
+        "required": true,
+        "teacher": [
+          "蔡曉萍"
+        ]
+      },
+      {
+        "course": "機率",
+        "number": 2355,
+        "required": true,
+        "teacher": [
+          "陳建宇"
+        ]
+      },
+      {
+        "course": "硬體描述語言設計",
+        "number": 2356,
+        "required": false,
+        "teacher": [
+          "黃穎聰"
+        ]
+      }
     ]
-}]
+  },
+  {
+    "strm": 2,
+    "level": 2,
+    "list": [
+      {
+        "course": "Python程式設計",
+        "number": 1159,
+        "urlNumber": 3197,
+        "required": false,
+        "teacher": [
+          "曾學文"
+        ]
+      },
+      {
+        "course": "電子學概論",
+        "number": 2229,
+        "urlNumber": 4092,
+        "required": false,
+        "teacher": [
+          "劉漢文"
+        ]
+      },
+      {
+        "course": "Unix系統與Script程式設計",
+        "number": 2310,
+        "urlNumber": 3243,
+        "required": true,
+        "teacher": [
+          "黃春融"
+        ]
+      },
+      {
+        "course": "微處理機",
+        "number": 2338,
+        "urlNumber": 2120,
+        "required": false,
+        "teacher": [
+          "蔡智強"
+        ]
+      },
+      {
+        "course": "演算法",
+        "number": 2347,
+        "urlNumber": 3380,
+        "required": true,
+        "teacher": [
+          "范耀中"
+        ]
+      },
+      {
+        "course": "信號與系統",
+        "number": 2396,
+        "urlNumber": 4091,
+        "required": true,
+        "teacher": [
+          "翁芳標"
+        ]
+      }
+    ]
+  }
+]
