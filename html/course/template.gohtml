@@ -13,6 +13,8 @@
       {{range .Course}}
         <tr>
           {{if .link}}
+            <td><a href="https://onepiece2-sso.nchu.edu.tw/cofsys/plsql/Syllabus_main?v_strm={{.semester}}&v_class_nbr={{.urlNumber}}" title="查看課程大綱">{{.course}}</a></td>
+          {{else if .mirrorLink}}
             <td><a href="/syllabus/{{.semester}}/{{.number}}" title="查看課程大綱">{{.course}}</a></td>
           {{else}}
             <td>{{.course}}</td>

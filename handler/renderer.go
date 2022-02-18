@@ -48,12 +48,6 @@ type articleRenderInfo struct {
 	PhotoAttachment []fileInfo // render photos by HTML <img>
 }
 
-type calendarRenderInfo struct {
-	Calendar
-	HaveLink bool
-	ReadOnly bool
-}
-
 func convertStrm(i int) string {
 	switch i {
 	case 1:
@@ -240,7 +234,11 @@ func RenderCourseByYear(year uint) (template.HTML, error) {
 			} else {
 				info["required"] = "選修"
 			}
-			info["link"] = (info["number"].(float64) > 0)
+			// mirror link 是我們自己做的頁面
+			// link 是連結到學校的頁面
+			// 優先使用 link
+			_, info["link"] = info["urlNumber"]
+			info["mirrorLink"] = (info["number"].(float64) > 0)
 			info["semester"] = fmt.Sprintf("%d%d", year, int(s["strm"].(float64)))
 			unit.Course = append(unit.Course, info)
 		}
