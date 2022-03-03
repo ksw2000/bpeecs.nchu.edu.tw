@@ -399,8 +399,8 @@ button.blue-green:hover {
 }
 
 button.black {
-  border-color: var(dark-gray);
-  background-color: var(dark-gray);
+  border-color: var(--dark-gray);
+  background-color: var(--dark-gray);
   color: #fff;
 }
 
