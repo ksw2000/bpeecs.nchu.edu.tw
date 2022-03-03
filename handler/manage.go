@@ -22,6 +22,7 @@ func ManageWebHandler(w http.ResponseWriter, r *http.Request) {
 		"/manage/calendar": "行事曆管理",
 		"/manage/reg":      "註冊新用戶",
 		"/manage/reg-done": "新用戶註冊成功",
+		"/manage/pwd":      "修改密碼",
 	}
 
 	var ok bool

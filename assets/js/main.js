@@ -186,3 +186,17 @@ function register() {
         }
     }, 'json');
 }
+
+// ---------------------------------- modify pwd page ---------------------------------
+function modifyPwd() {
+    $.post('/api/pwd', {
+        pwd: $("#modify-pwd #pwd").val(),
+        re_pwd: $("#modify-pwd #re-pwd").val()
+    }, (data) => {
+        if (data.err) {
+            notice(data.err);
+        } else {
+            window.location.href = "/manage";
+        }
+    }, 'json');
+}

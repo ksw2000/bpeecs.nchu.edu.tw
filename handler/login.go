@@ -74,6 +74,26 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+// check password format and return error
+func passwordFormatChecker(pwd string) error {
+	match, err := regexp.MatchString("^[a-zA-Z0-9_@]{8,40}$", pwd)
+	if err != nil || !match {
+		return fmt.Errorf("密碼僅接受「英文字母、數字、-、_、@」且介於 8 到 40 字元")
+	}
+
+	match, err = regexp.MatchString("^.*?\\d+.*?$", pwd)
+	if err != nil || !match {
+		return fmt.Errorf("密碼必需含有數字")
+	}
+
+	match, err = regexp.MatchString("^.*?[a-zA-Z]+.*?$", pwd)
+	if err != nil || !match {
+		return fmt.Errorf("密碼必需含有英文字母")
+	}
+	return nil
+}
+
+// RegHandler helps user register a new account.
 func RegHandler(w http.ResponseWriter, r *http.Request) {
 	encoder := json.NewEncoder(w)
 	ret := struct {
@@ -112,23 +132,9 @@ func RegHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	match, err = regexp.MatchString("^[a-zA-Z0-9_]{8,30}$", pwd)
-	if err != nil || !match {
-		ret.Err = "密碼僅接受「英文字母、數字、-、_」且需介於 8 到 30 字元"
-		encoder.Encode(ret)
-		return
-	}
-
-	match, err = regexp.MatchString("^.*?\\d+.*?$", pwd)
-	if err != nil || !match {
-		ret.Err = "密碼必需含有數字"
-		encoder.Encode(ret)
-		return
-	}
-
-	match, err = regexp.MatchString("^.*?[a-zA-Z]+.*?$", pwd)
-	if err != nil || !match {
-		ret.Err = "密碼必需含有英文字母"
+	// check password format
+	if err := passwordFormatChecker(pwd); err != nil {
+		ret.Err = err.Error()
 		encoder.Encode(ret)
 		return
 	}
@@ -143,15 +149,69 @@ func RegHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-// NewAcount creates a new account
-func NewAcount(id string, pwd string, name string) error {
-	// check if there are the same id in db
+func ModifyPwdHandler(w http.ResponseWriter, r *http.Request) {
+	encoder := json.NewEncoder(w)
+	ret := struct {
+		Err string `json:"err"`
+	}{}
+
+	user := CheckLoginBySession(w, r)
+	if user == nil {
+		ret.Err = "必需登入才能變更密碼"
+		encoder.Encode(ret)
+		return
+	}
+
+	id := user.ID
+	pwd := get("pwd", r)
+	rePwd := get("re_pwd", r)
+
+	if pwd != rePwd {
+		ret.Err = "密碼與確認密碼不一致"
+	}
+
+	// check password format
+	if err := passwordFormatChecker(pwd); err != nil {
+		ret.Err = err.Error()
+	}
+
+	if err := ModifyPwd(id, pwd); err != nil {
+		ret.Err = err.Error()
+	}
+
+	encoder.Encode(ret)
+	return
+}
+
+// ModifyPwd can modify password by given password and user id
+func ModifyPwd(id string, pwd string) error {
 	d, err := sql.Open("sqlite3", config.MainDB)
 	if err != nil {
 		return fmt.Errorf("sql.Open() error %v", err)
 	}
 	defer d.Close()
 
+	salt := randomString(64)
+	pwd = pwdHash(pwd, salt)
+
+	stmt, err := d.Prepare("UPDATE user SET salt = ?, password = ? WHERE id = ?")
+	if err != nil {
+		return fmt.Errorf("d.Prepare() error %v", err)
+	}
+
+	_, err = stmt.Exec(salt, pwd, id)
+	return err
+}
+
+// NewAcount creates a new account
+func NewAcount(id string, pwd string, name string) error {
+	d, err := sql.Open("sqlite3", config.MainDB)
+	if err != nil {
+		return fmt.Errorf("sql.Open() error %v", err)
+	}
+	defer d.Close()
+
+	// check if there are the same id in db
 	row := d.QueryRow("SELECT COUNT(*) FROM user WHERE `id` = ?", id)
 
 	count := 0
@@ -169,8 +229,8 @@ func NewAcount(id string, pwd string, name string) error {
 			return fmt.Errorf("d.Prepare() error %v", err)
 		}
 
-		stmt.Exec(id, pwd, salt, name)
-		return nil
+		_, err = stmt.Exec(id, pwd, salt, name)
+		return err
 	}
 
 	return fmt.Errorf("所申請之 ID 已重複")
