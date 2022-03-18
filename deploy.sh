@@ -7,5 +7,7 @@ do
    sudo kill -9 $var
 done
 
-go build main.go
+ulimit -n 100000
+
 nohup sudo ./main -p 443 &
+echo $! > pid.txt
