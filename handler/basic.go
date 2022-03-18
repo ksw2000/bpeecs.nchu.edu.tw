@@ -45,7 +45,7 @@ func getHTML(fileName string) (template.HTML, error) {
 func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	// Handle static file
-	staticFiles := []string{"/robot.txt", "/sitemap.xml", "/favicon.ico"}
+	staticFiles := []string{"/robots.txt", "/sitemap.xml", "/favicon.ico"}
 	for _, f := range staticFiles {
 		if r.URL.Path == f {
 			http.StripPrefix("/", http.FileServer(http.Dir("./"))).ServeHTTP(w, r)
