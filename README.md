@@ -1,6 +1,6 @@
 # bpeecs.nchu.edu.tw
 
-__NCHU BPEECS__ [https://bpeecs.nchu.edu.tw/](https://bpeecs.nchu.edu.tw/)
+國立中興大學電機資訊學院學士班 [https://bpeecs.nchu.edu.tw/](https://bpeecs.nchu.edu.tw/)
 
 ![](https://imgur.com/OUv4VWm.png)
 
@@ -9,9 +9,6 @@ __NCHU BPEECS__ [https://bpeecs.nchu.edu.tw/](https://bpeecs.nchu.edu.tw/)
 
 + Go 1.12
 + SQLite3
-    ```sh
-    $ sqlite3 main.db
-    ```
 + Front-end javascript
 
     + jQuery (v3.5.1)
