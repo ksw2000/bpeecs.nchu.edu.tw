@@ -9,12 +9,14 @@ import (
 	"strings"
 	"time"
 
+	"bpeecs.nchu.edu.tw/config"
 	"bpeecs.nchu.edu.tw/handler"
 
 	"github.com/tdewolff/minify/v2"
 	"github.com/tdewolff/minify/v2/css"
 	"github.com/tdewolff/minify/v2/js"
 	"github.com/tdewolff/minify/v2/svg"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 func main() {
@@ -24,7 +26,7 @@ func main() {
 
 	// web server
 	mux := http.NewServeMux()
-	staticFolder := []string{"/assets", "/.well-known/pki-validation"}
+	staticFolder := []string{"/assets"}
 
 	// minify static files
 	m := minify.New()
@@ -43,9 +45,17 @@ func main() {
 	mux.HandleFunc("/syllabus/", handler.SyllabusWebHandler)
 	mux.HandleFunc("/", handler.BasicWebHandler)
 
+	// TLS Manager
+	tls := &autocert.Manager{
+		Cache:      autocert.DirCache("./"),
+		Prompt:     autocert.AcceptTOS,
+		HostPolicy: autocert.HostWhitelist(config.Domain, "www."+config.Domain),
+	}
+
 	server := &http.Server{
-		Addr:    fmt.Sprintf(":%d", *port),
-		Handler: mux,
+		Addr:      fmt.Sprintf(":%d", *port),
+		Handler:   mux,
+		TLSConfig: tls.TLSConfig(),
 	}
 
 	// https://stackoverflow.com/questions/32325343/go-tcp-too-many-open-files-debug
@@ -55,7 +65,7 @@ func main() {
 	if *port == 443 {
 		fmt.Println("https://localhost")
 		go http.ListenAndServe(":80", http.HandlerFunc(redirect))
-		if err := server.ListenAndServeTLS("certificate.crt", "private.key"); err != nil {
+		if err := server.ListenAndServeTLS("", ""); err != nil {
 			log.Fatalln("ListenAndServe: ", err)
 		}
 	} else {
