@@ -1,16 +1,17 @@
 <h1>{{.Title}}</h1>
 <div class="article" data-id="{{.ID}}" style="border:0px;">
-  <div class="header" onclick="javascript:appendMoreInfo(this)">
-    <div class="candy-header"><span>發佈於</span><span>{{.PublishTime}}</span></div>
+  <div class="header">
+    <div class="candy-header" onclick="javascript:appendMoreInfo(this)"><span>發佈於</span><span>{{.PublishTime}}</span></div>
+    <div style="display: none;">
+      <div class="candy-header"><span>分類</span><span class="green">{{.Type}}</span></div>
+      <div class="candy-header"><span>發文</span><span class="cyan">@{{.User}}</span></div>
+    </div>
   </div>
-  <div class="header" style="display: none;">
-    <div class="candy-header"><span>分類</span><span class="green">{{.Type}}</span></div>
-    <div class="candy-header"><span>發文</span><span class="cyan">@{{.User}}</span></div>
-  </div>
+  
   <div class="content">
     {{.Content}}
     {{range $photo := .PhotoAttachment}}
-      <img src="{{$photo.Path}}" style="max-width:100%; display:block; margin:10px auto;">
+      <img src="{{$photo.Path}}" style="display:block; margin:10px auto;">
     {{end}}
   </div>
   <div id="attachmentArea">
