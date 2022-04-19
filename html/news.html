@@ -57,14 +57,13 @@
       ret +=`
         <div class="article" data-id="${data.id}">
           <h2 class="title">${data.title}</h2>
-          <div class="header" onclick="javascript:appendMoreInfo(this)">
-            <div class="candy-header"><span>發佈於</span><span>${data.publish}</span></div>
+          <div class="header">
+            <div class="candy-header" onclick="javascript:appendMoreInfo(this)"><span>發佈於</span><span>${data.publish}</span></div>
+            <div style="display:none;">
+              <div class="candy-header"><span>分類</span><span class="green">${articleTypeMap[data.type]}</span></div>
+              <div class="candy-header"><span>發文</span><span class="cyan">@${data.user}</span></div>
+            </div>
           </div>
-          <div style="display:none;">
-            <div class="candy-header"><span>分類</span><span class="green">${articleTypeMap[data.type]}</span></div>
-            <div class="candy-header"><span>發文</span><span class="cyan">@${data.user}</span></div>
-          </div>
-            
           <div class="content">
             ${newContent}
           </div>
