@@ -2,14 +2,14 @@
   font-family: 'NotoSans';
   font-style: normal;
   font-weight: normal;
-  src: local("NotoSans")， url('/assets/fonts/NotoSans-Regular') format("woff"),
+  src: local("NotoSans"), url('/assets/fonts/NotoSans-Regular') format("woff"),
 }
 
 @font-face {
   font-family: 'Noto Sans CJK TC';
   font-style: normal;
   font-weight: normal;
-  src: local("Noto Sans CJK TC")， url('/assets/fonts/NotoSansTC-Regular') format("woff"),
+  src: local("Noto Sans CJK TC"), url('/assets/fonts/NotoSansTC-Regular') format("woff"),
 }
 
 * {
@@ -150,22 +150,6 @@ h1 {
   font-size: 30px;
   width: fit-content;
 }
-
-/*
-#main h1:after{
-  border-bottom: 3px solid rgb(23,76,111);
-  content: "";
-  display: block;
-  padding-top: 10px;
-  transition: width 1800ms;
-  width: 0%;
-}
-
-#main h1:hover:after{
-  transition: width 600ms;
-  width: 100%;
-}
-*/
 
 h2 {
   color: var(--deep-blue);
@@ -503,6 +487,11 @@ input[type="button"]:hover, button:hover {
   line-height: 30px;
 }
 
+.article .content img {
+  max-width: 600px;
+  width: 100%;
+}
+
 .article h1 {
   border-bottom: 0px!important;
   color: var(--blue)!important;
@@ -520,11 +509,6 @@ input[type="button"]:hover, button:hover {
   margin-right: 5px;
   padding: 3px 8px;
   vertical-align: text-bottom;
-}
-
-#article-parent .content img {
-  max-width: 500px;
-  width: 100%;
 }
 
 @media screen and (max-width: 700px) {
