@@ -864,3 +864,20 @@ nav #button-over-900px>ul>li>ul>li>a:hover {
 .calendar-tail i.delete:hover {
   color: var(--pink);
 }
+
+/*------------------------------------------------bloopers------------------------------------------------*/
+.activity{
+  animation-name: rainbow;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-direction: alternate;
+  border: 0px;
+  border-radius: 5px;
+  box-shadow: 2px 2px 3px #393950;
+  margin: 0px;
+  margin-bottom: 20px;
+  max-width: 500px;
+  width: 100%;
+  padding: 15px;
+}
