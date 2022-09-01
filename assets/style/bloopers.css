@@ -1,0 +1,27 @@
+.activity1{
+    width: 40%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    margin: 5px 10px 10px 10px;
+    box-shadow: 3px 6px;
+}
+
+.activity2{
+    width: 40%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    margin: 10px 10px 20px 10px;
+    box-shadow: 3px 6px;
+}
+  
+li{
+    font-family: "DFKai-SB", "STKaiti", "sans-serif";
+    font-weight: 900;
+    font-size: 20px
+}
+
+hr{
+    border: 2px solid;
+}
