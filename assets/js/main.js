@@ -200,3 +200,9 @@ function modifyPwd() {
         }
     }, 'json');
 }
+
+// ---------------------------------- jump to nchu ----------------------------------
+
+function jump(){
+    setTimeout("location.href= 'https://www.nchu.edu.tw/index1.php'",10000); // 10秒後跳轉頁面
+}

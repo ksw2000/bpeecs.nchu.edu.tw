@@ -186,7 +186,7 @@
           "course": "學術英文讀寫",
           "number": 0,
           "urlNumber": 0,
-          "required": false,
+          "required": true,
           "teacher": [
             "待定"
           ]

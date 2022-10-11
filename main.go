@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -21,6 +22,11 @@ import (
 
 func main() {
 	// parse flag
+	args := os.Args
+	argNum := len(args)
+	arg := args[argNum-1]
+	fmt.Println(arg)
+
 	port := flag.Int("p", 9000, "Port number (default: 9000)")
 	flag.Parse()
 
@@ -43,7 +49,11 @@ func main() {
 	mux.HandleFunc("/error/", handler.ErrorWebHandler)
 	mux.HandleFunc("/manage/", handler.ManageWebHandler)
 	mux.HandleFunc("/syllabus/", handler.SyllabusWebHandler)
-	mux.HandleFunc("/", handler.BasicWebHandler)
+	if arg == "0" {
+		mux.HandleFunc("/", handler.BasicWebHandler)
+	} else {
+		mux.HandleFunc("/", handler.MaintainWebHandler)
+	}
 
 	// TLS Manager
 	tls := &autocert.Manager{

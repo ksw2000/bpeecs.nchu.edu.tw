@@ -74,6 +74,7 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 		"/syllabus":                              "課程大綱",
 		"/about/bloopers":                        "活動照片",
 		"/rightofprivacy":                        "隱私權",
+		"/maintance":                             "維護網頁",
 	}
 
 	// Handle simple web

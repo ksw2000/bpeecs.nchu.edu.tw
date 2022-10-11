@@ -12,5 +12,5 @@ done
 
 ulimit -n 100000
 
-nohup sudo ./main -p 443 0 &
+nohup sudo ./main -p 443 1 &
 echo $! > pid.txt
