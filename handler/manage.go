@@ -20,6 +20,7 @@ func ManageWebHandler(w http.ResponseWriter, r *http.Request) {
 		"/manage/":         "歡迎進入後台管理系統",
 		"/manage/article":  "文章管理",
 		"/manage/calendar": "行事曆管理",
+		"/manage/honor":    "榮譽榜管理",
 		"/manage/reg":      "註冊新用戶",
 		"/manage/reg-done": "新用戶註冊成功",
 		"/manage/pwd":      "修改密碼",

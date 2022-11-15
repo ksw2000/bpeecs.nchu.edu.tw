@@ -64,10 +64,10 @@
     $ go build main.go
 
     # run at port 8086
-    $ ./main
+    $ ./main 
 
     # run at port 443
-    $ ./main -p 443
+    $ ./main -p 443 0
 
     # disable minify static files
     $ ./main --debug

@@ -129,6 +129,36 @@ func BasicWebHandler(w http.ResponseWriter, r *http.Request) {
 				data.Title += " | 國立中興大學電機資訊學院學士班"
 				data.Main, _ = getHTML(r.URL.Path)
 			}
+		case "/honor":
+			data.Title = "榮譽榜"
+
+			if id := strings.Join(r.Form["id"], ""); id != "" {
+				aid, err := strconv.ParseInt(id, 10, 64)
+
+				if err != nil {
+					NotFound(w, r)
+					return
+				}
+
+				uid := ""
+				if data.IsLogin {
+					uid = user.ID
+				}
+
+				artInfo := GetArticleByAid(aid, uid)
+
+				// avoid /news?id=xxx
+				if artInfo == nil {
+					NotFound(w, r)
+					return
+				}
+
+				data.Title = artInfo.Title + " | 國立中興大學電機資訊學院學士班"
+				data.Main = RenderPublicArticle(artInfo)
+			} else {
+				data.Title += " | 國立中興大學電機資訊學院學士班"
+				data.Main, _ = getHTML(r.URL.Path)
+			}
 		case "/login":
 			if CheckLoginBySession(w, r) != nil {
 				http.Redirect(w, r, "/manage", 302)

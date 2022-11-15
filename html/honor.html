@@ -1,0 +1,77 @@
+<h1 id="title"></h1>
+<div id="article-parent">
+  <div class="loader" style="margin:30px auto"></div>
+</div>
+
+<script>
+  let type = "honor";
+  $("h1#title").text("榮譽榜");
+  
+  function load(from , to){
+    return new Promise((resolve, reject) => {
+      loadNews((type === null)? 'public' : 'public-with-type', type, from, to).then((data)=>{
+        let content = artListRenderer(data.list);
+        if (data.hasNext) {
+          content += `<button style="margin:0px auto;" onclick="loadNext(${to+1}, ${to+to-from+1}, this)">More</button></div>`;
+        }
+        resolve(content);
+      }).catch((e)=>{
+        reject(e);
+      });
+    });
+  }
+
+  function loadNext(from, to, obj){
+    load(from, to).then((text)=>{
+      if(from === 0){
+        $("#article-parent").html(text);
+      }else{
+        $("#article-parent").append(text);
+      }
+    }).catch((e)=>{
+      console.log(e);
+      $("#article-parent").html("Error " + e.status);
+    });
+    if(obj){
+      obj.remove();
+    }
+  }
+
+  function artListRenderer(dataList){
+    if (dataList == null) return "沒有文章";
+    let ret = '';
+    dataList.forEach((data)=>{
+      data.publish = $.format.date(new Date(data.publish * 1000), "yyyy-MM-dd");
+      let newContent = stripHtml(data.content);
+      if (newContent.length > 30) {
+        newContent = newContent.slice(0, 80);
+        newContent += `...<a href="/news?id=${data.id}">略</a>`;
+      }
+      let attachment = renderAttachment(data.attachment);
+      ret +=`
+        <div class="article" data-id="${data.id}">
+          <h2 class="title">${data.title}</h2>
+          <div class="header">
+            <div class="candy-header" onclick="javascript:appendMoreInfo(this)"><span>發佈於</span><span>${data.publish}</span></div>
+            <div style="display:none;">
+              <div class="candy-header"><span>分類</span><span class="green">${articleTypeMap[data.type]}</span></div>
+              <div class="candy-header"><span>發文</span><span class="cyan">@${data.user}</span></div>
+            </div>
+          </div>
+          <div class="content">
+            ${newContent}
+          </div>
+          <div id="attachmentArea">
+            <ul>${attachment}</ul>
+          </div>
+          <div class="buttonArea" style="text-align: right;">
+            <button id="attachment" onclick="window.location='/news?id=${data.id}'" style="display: inline-block;">閱讀全文</button>
+          </div>
+        </div>
+      `;
+    });
+    return ret;
+  }
+
+  loadNext(0, 19);
+</script>

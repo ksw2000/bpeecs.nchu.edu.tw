@@ -1,0 +1,128 @@
+<script src="/assets/js/manage.js?20210722" type="text/javascript" defer></script>
+
+<style>
+#new-article-area{
+  display: none;
+}
+
+.editor-area #title{
+  border-width: 0px 0px 2px 0px;
+  border-radius: 0px;
+  background-color: transparent;
+  height: 50px;
+  font-size: 25px;
+  line-height: 50px;
+  margin-top: 0px;
+  max-width: 1200px!important;
+  padding: 0px 10px;
+  width: 100%;
+}
+
+.editor-area #title:focus, select:focus{
+  outline: none;
+  border-color: rgb(7, 126, 224);
+  transition: border 1s ;
+  /*scubic-bezier(0.455, 0.03, 0.515, 0.955)*/;
+}
+
+.buttonArea button{
+  display: inline-block;
+  margin: 3px 5px;
+}
+
+#attachment, .attachment{
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+}
+
+#attachment input, .attachment input{
+  border: 0px;
+  bottom: 0px;
+  cursor: pointer;
+  height: 100px;
+  margin: 0px;
+  position: absolute;
+  right: 0px;
+  width: 500px;
+}
+
+#new-article-area #attachmentArea li{
+  margin: 15px 0px;
+}
+
+#new-article-area #attachmentArea button{
+  display: inline-block;
+  font-size: 0.85em;
+  height: inherit;
+  line-height: inherit;
+  margin-left: 10px;
+  padding: 2px 10px;
+  width: auto;
+}
+
+#new-article-area #attachmentArea .loader {
+  border: 3px solid transparent;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  display: none;
+  width: 30px;
+  height: 30px;
+}
+
+@media screen and (max-width: 700px){
+  .hide-less-700px{
+    display: none!important;
+  }
+
+  button{
+    font-size: 12px;
+    line-height: 20px;
+    margin: 2px 2px 2px 2px!important;
+    padding: 3px 0px;
+    width: 80px;
+  }
+}
+
+@media screen and (max-width: 500px){
+  .hide-less-500px{
+    display: none!important;
+  }
+}
+
+@media screen and (max-width: 400px){
+  .hide-less-400px{
+    display: none!important;
+  }
+}
+</style>
+
+<h1>榮譽榜管理</h1>
+
+<div class="buttonArea">
+  <button onclick="javascript:newArticle()" id="btn-add">新增</button>
+  <button onclick="javascript:goToAll()" id="btn-all">全部</button>
+  <button onclick="javascript:goToDraft()" id="btn-draft" class="hide-less-400px">草稿</button>
+  <button onclick="javascript:goToPublished()" id="btn-published" class="hide-less-400px">已發佈</button>
+</div>
+
+<div id="top-editor-area">
+  <div class="article editor-area" id="new-article-area">
+    <div class="title"><input id="title" placeholder="標題" autocomplete="off"/></div>
+    <select id="type">
+      <option value="honor">榮譽榜</option>
+    </select>
+    <div class="content">
+      <textarea name="mainEditor"></textarea>
+    </div>
+    <div id="attachmentArea">
+      <ul></ul>
+      <div class="loader"></div>
+    </div>
+    <div class="buttonArea" style="text-align: right;"></div>
+  </div>
+</div>
+
+<div id="article-parent">
+  載入中...
+</div>
