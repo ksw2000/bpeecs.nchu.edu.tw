@@ -6,6 +6,7 @@
         {
           "course": "服務學習(一)：勞作教育",
           "number": 1136,
+          "urlNumber": 3286,
           "required": true,
           "teacher": [
             "全體教師"
@@ -14,6 +15,7 @@
         {
           "course": "微積分(一)",
           "number": 1208,
+          "urlNumber": 4968,
           "required": true,
           "teacher": [
             "戴佳原"
@@ -22,6 +24,7 @@
         {
           "course": "普通物理學",
           "number": 1224,
+          "urlNumber": 2483,
           "required": true,
           "teacher": [
             "孫允武"
@@ -30,6 +33,7 @@
         {
           "course": "普通物理學實驗",
           "number": 1262,
+          "urlNumber": 5486,
           "required": true,
           "teacher": [
             "陳建宇"
@@ -38,6 +42,7 @@
         {
           "course": "計算機程式設計",
           "number": 1302,
+          "urlNumber": 5459,
           "required": true,
           "teacher": [
             "吳國光"
@@ -112,6 +117,7 @@
         {
           "course": "電路學概論",
           "number": 2352,
+          "urlNumber": 4127,
           "required": false,
           "teacher": [
             "林泓均"
@@ -120,6 +126,7 @@
         {
           "course": "常微分方程",
           "number": 2353,
+          "urlNumber": 4197,
           "required": true,
           "teacher": [
             "蔡清池"
@@ -128,6 +135,7 @@
         {
           "course": "資料結構",
           "number": 2354,
+          "urlNumber": 4408,
           "required": true,
           "teacher": [
             "蔡曉萍"
@@ -136,6 +144,7 @@
         {
           "course": "機率",
           "number": 2355,
+          "urlNumber": 4415,
           "required": true,
           "teacher": [
             "陳後守"
@@ -144,6 +153,7 @@
         {
           "course": "硬體描述語言設計",
           "number": 2356,
+          "urlNumber": 4422,
           "required": false,
           "teacher": [
             "黃穎聰"
@@ -227,7 +237,7 @@
         {
           "course": "通訊系統",
           "number": 0,
-          "urlNumber": 0,
+          "urlNumber": 5084,
           "required": false,
           "teacher": [
             "翁芳標"
@@ -236,7 +246,7 @@
         {
           "course": "機器學習",
           "number": 0,
-          "urlNumber": 0,
+          "urlNumber": 3016,
           "required": false,
           "teacher": [
             "張敏寬"
@@ -245,7 +255,7 @@
         {
           "course": "自動控制",
           "number": 0,
-          "urlNumber": 0,
+          "urlNumber": 5175,
           "required": false,
           "teacher": [
             "陳正倫"
@@ -254,16 +264,16 @@
         {
           "course": "自動控制",
           "number": 0,
-          "urlNumber": 0,
+          "urlNumber": 4250,
           "required": false,
           "teacher": [
-            "林俊良"
+            "莊家峰"
           ]
         },
         {
           "course": "作業系統",
           "number": 0,
-          "urlNumber": 0,
+          "urlNumber": 5249,
           "required": false,
           "teacher": [
             "蔡智強"
@@ -272,7 +282,7 @@
         {
           "course": "超大型積體電路設計實驗",
           "number": 0,
-          "urlNumber": 0,
+          "urlNumber": 5115,
           "required": false,
           "teacher": [
             "吳崇賓"
@@ -281,7 +291,7 @@
         {
           "course": "超大型積體電路設計導論",
           "number": 0,
-          "urlNumber": 0,
+          "urlNumber": 2741,
           "required": false,
           "teacher": [
             "黃穎聰"
@@ -290,7 +300,7 @@
         {
           "course": "AI晶片設計",
           "number": 0,
-          "urlNumber": 0,
+          "urlNumber": 3083,
           "required": false,
           "teacher": [
             "吳崇賓"
@@ -299,7 +309,7 @@
         {
           "course": "智慧車輛",
           "number": 0,
-          "urlNumber": 0,
+          "urlNumber": 3071,
           "required": false,
           "teacher": [
             "賴慶明"
@@ -314,7 +324,7 @@
         {
           "course": "組合語言與系統程式",
           "number": 0,
-          "urlNumber": 0,
+          "urlNumber": 2270,
           "required": false,
           "teacher": [
             "郭姝妤"
@@ -323,7 +333,7 @@
         {
           "course": "電機機械",
           "number": 0,
-          "urlNumber": 0,
+          "urlNumber": 2848,
           "required": false,
           "teacher": [
             "蘇武昌"
@@ -332,7 +342,7 @@
         {
           "course": "現代控制",
           "number": 0,
-          "urlNumber": 0,
+          "urlNumber": 2856,
           "required": false,
           "teacher": [
             "蔡清池"
@@ -341,7 +351,7 @@
         {
           "course": "智慧物聯網應用與實作",
           "number": 0,
-          "urlNumber": 0,
+          "urlNumber": 3795,
           "required": false,
           "teacher": [
             "陳煥"
@@ -350,7 +360,7 @@
         {
           "course": "計算機組織",
           "number": 0,
-          "urlNumber": 0,
+          "urlNumber": 5110,
           "required": false,
           "teacher": [
             "賴永康"
@@ -359,7 +369,7 @@
         {
           "course": "計算機網路",
           "number": 0,
-          "urlNumber": 0,
+          "urlNumber": 2268,
           "required": false,
           "teacher": [
             "王丕中"
@@ -368,7 +378,7 @@
         {
           "course": "數位系統之快速雛型製作",
           "number": 0,
-          "urlNumber": 0,
+          "urlNumber": 2307,
           "required": false,
           "teacher": [
             "范志鵬"
@@ -377,7 +387,7 @@
         {
           "course": "作業系統實驗",
           "number": 0,
-          "urlNumber": 0,
+          "urlNumber": 3974,
           "required": false,
           "teacher": [
             "蔡智強"
@@ -386,7 +396,7 @@
         {
           "course": "網路安全導論",
           "number": 0,
-          "urlNumber": 0,
+          "urlNumber": 3271,
           "required": false,
           "teacher": [
             "郭姝妤"
@@ -395,7 +405,7 @@
         {
           "course": "數位影像處理導論",
           "number": 0,
-          "urlNumber": 0,
+          "urlNumber": 4198,
           "required": false,
           "teacher": [
             "劉宗榮"
